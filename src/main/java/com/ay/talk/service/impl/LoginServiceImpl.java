@@ -142,7 +142,7 @@ public class LoginServiceImpl implements LoginService{
 						}
 					}
 				}
-				User user=new User(studentId, reqLogin.getFcm(), getCurrentTime(), null, roomIds,authorities);
+				User user=new User(studentId, reqLogin.getFcm(), getCurrentTime(), roomIds,authorities);
 				dbRepository.insertUser(user);
 				resLogin.setRoomInfos(roomInfos);
 				serverRepository.addFbToken(studentId,reqLogin.getFcm()); //학번 토큰 등록

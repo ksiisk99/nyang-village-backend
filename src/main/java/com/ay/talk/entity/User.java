@@ -10,7 +10,7 @@ public class User{
 	private String studentId;
 	private String fcm;
 	private String date;
-	private String stopdate;
+
 	@Field
 	private ArrayList<UserRoomData> roomIds;
 	@Field
@@ -24,13 +24,12 @@ public class User{
 //		this.roomIds = roomIds;
 //	}
 	
-	public User(String studentId, String fcm, String date, String stopdate, ArrayList<UserRoomData> roomIds,
+	public User(String studentId, String fcm, String date, ArrayList<UserRoomData> roomIds,
 			ArrayList<String> authorities) {
 		super();
 		this.studentId = studentId;
 		this.fcm = fcm;
 		this.date = date;
-		this.stopdate = stopdate;
 		this.roomIds = roomIds;
 		this.authorities = authorities;
 	}
@@ -46,9 +45,7 @@ public class User{
 		return date;
 	}
 	
-	public String getStopdate() {
-		return stopdate;
-	}	
+
 	public ArrayList<UserRoomData> getRoomIds() {
 		return roomIds;
 	}
