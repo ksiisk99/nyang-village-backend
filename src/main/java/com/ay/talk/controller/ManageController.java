@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authorization.method.PreAuthorizeAuthorizationManager;
+import org.springframework.security.config.method.MethodSecurityBeanDefinitionParser.PreAuthorizeAuthorizationMethodInterceptor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,19 +39,16 @@ public class ManageController {
 
 	//신고 목록 보기
 	@GetMapping(path="/manage")
-	//@PreAuthorize("@ManageSecurity.isJwt(#jwt)")
-	public @ResponseBody List<ReportDto> reports() {
-		//@RequestHeader(name = "jwt") String jwt
-		System.out.println("manage");
+	@PreAuthorize("@ManageSecurity.isJwt(#jwt)")
+	public @ResponseBody List<ReportDto> reports(@RequestHeader(name = "jwt") String jwt) {
 		return manageService.displayReports();
 	}
 	
 	//신고 처리 하기==유저 정지
 	@PostMapping(path="/manage/report")
-	//@PreAuthorize("@ManageSecurity.isJwt(#jwt)")
-	public boolean manageReport(@RequestBody ReqSuspend reqSuspend) {
-		//,@RequestHeader(name = "jwt") String jwt
-		System.out.println("manage/report");
+	@PreAuthorize("@ManageSecurity.isJwt(#jwt)")
+	public boolean manageReport(@RequestBody ReqSuspend reqSuspend
+		,@RequestHeader(name = "jwt") String jwt){
 		return manageService.manageReport(reqSuspend);
 	}
 }
