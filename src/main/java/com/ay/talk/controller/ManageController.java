@@ -23,9 +23,11 @@ import com.ay.talk.dto.request.ReqSuspend;
 import com.ay.talk.dto.response.ResManage;
 import com.ay.talk.service.ManageService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @ApiOperation("swagger")
+@Api(tags = "관리자 API")
 @RestController
 @RequestMapping("/ay")
 @PropertySource("classpath:application.properties")
@@ -40,6 +42,7 @@ public class ManageController {
 	//신고 목록 보기
 	@GetMapping(path="/manage")
 	@PreAuthorize("@ManageSecurity.isJwt(#jwt)")
+	@ApiOperation(value = "신고 목록 조회", notes = "사용자가 유저를 신고한 목록 조회")
 	public @ResponseBody List<ReportDto> reports(@RequestHeader(name = "jwt") String jwt) {
 		return manageService.displayReports();
 	}
@@ -47,6 +50,7 @@ public class ManageController {
 	//신고 처리 하기==유저 정지
 	@PostMapping(path="/manage/report")
 	@PreAuthorize("@ManageSecurity.isJwt(#jwt)")
+	@ApiOperation(value = "사용자 정지 주기", notes = "신고 목록 중 신고 대상자 정지 주기")
 	public boolean manageReport(@RequestBody ReqSuspend reqSuspend
 		,@RequestHeader(name = "jwt") String jwt){
 		return manageService.manageReport(reqSuspend);

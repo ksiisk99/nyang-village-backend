@@ -1,12 +1,21 @@
 package com.ay.talk.dto.request;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class ReqReportMsg {
+	@ApiModelProperty(example = "신고 대상자(=닉네임)")
     String reportName;
+	@ApiModelProperty(example = "채팅 내용")
     String reportContent;
+	@ApiModelProperty(example = "신고 사유")
     String reportWhy;
+	@ApiModelProperty(example = "신고자")
     String reporter;
+	@ApiModelProperty(example = "신고자 학번")
     String studentId;
+	@ApiModelProperty(example = "채팅방 이름(=과목명)")
     String roomName;
+	@ApiModelProperty(example = "교수님 성함")
     String professorName;
     
     public ReqReportMsg() {}

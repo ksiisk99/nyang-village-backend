@@ -1,15 +1,23 @@
 package com.ay.talk.dto;
 
-import org.bson.types.ObjectId;
+import io.swagger.annotations.ApiModelProperty;
 
 public class ReportDto {
+	@ApiModelProperty(example = "고유 식별 번호(=신고 목록 번호)")
 	private String id;
+	@ApiModelProperty(example = "채팅방 이름(=과목명)")
 	private String roomName; //채팅방 이름
+	@ApiModelProperty(example = "신고 대상자(=닉네임)")
 	private String reportName; //신고 대상
+	@ApiModelProperty(example = "채팅 내용")
 	private String reportContent; //채팅 내용
+	@ApiModelProperty(example = "신고 사유")
 	private String reportWhy; //신고 사유
+	@ApiModelProperty(example = "신고자")
 	private String reporter; //신고자
+	@ApiModelProperty(example = "신고자 학번")
 	private String reporterStudentId; //신고자 학번
+	@ApiModelProperty(example = "신고 대상자 학번")
 	private String targetStudentId; //신고 대상 학번
     
     public ReportDto() {}

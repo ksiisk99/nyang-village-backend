@@ -4,12 +4,19 @@ import java.util.ArrayList;
 
 import com.ay.talk.dto.RoomInfo;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class ResPcLogin {
-	int signal;
-	String suspendedDate;
-	ArrayList<String> authority;
-	ArrayList<RoomInfo> roomInfos;
-	String jwt;
+	@ApiModelProperty(example = "로그인 시 신호 => 1:로그인성공 / 2:모바일로그인요구 / 3:정지회원 / 4:잘못입력")
+	private int signal;
+	@ApiModelProperty(example = "signal이 3이면 정지기간 아니면 NULL")
+	private String suspendedDate;
+	@ApiModelProperty(example = "유저 권한(Customer , Manager")
+	private ArrayList<String> authority;
+	@ApiModelProperty(example = "채팅방 목록")
+	private ArrayList<RoomInfo> roomInfos;
+	@ApiModelProperty(example = "jwt")
+	private String jwt;
 	
 	public ResPcLogin() {}
 	

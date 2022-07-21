@@ -1,12 +1,17 @@
 package com.ay.talk.dto.request;
 
-import org.bson.types.ObjectId;
+import io.swagger.annotations.ApiModelProperty;
 
 public class ReqSuspend {
+	@ApiModelProperty(example = "고유 식별 번호(=신고 목록 번호)")
 	private String id;
+	@ApiModelProperty(example = "정지받을 사용자 아이디(학번)")
 	private String studentId;
+	@ApiModelProperty(example = "정지기간")
 	private String period;
+	@ApiModelProperty(example = "채팅내용")
 	private String reportContent;
+	@ApiModelProperty(example = "정지사유")
 	private String reportWhy;
 	
 	public ReqSuspend() {}

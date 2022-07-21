@@ -3,13 +3,20 @@ package com.ay.talk.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-//클라이언트에게 전송을 위한  방 정보에 대해객체
+import io.swagger.annotations.ApiModelProperty;
+
+//클라이언트에게 전송을 위한  방 정보
 public class RoomInfo implements Serializable{
-	String roomName; //과목이름
-    int roomId; //과목인덱스 서버에서 채팅방 인덱스에 해당함
-    String nickName; //채팅방 안에서 내 랜덤닉네임
-    String professorName; //교수이름
-    ArrayList<String> roomInNames; //채팅방 안에 있는 유저 닉네임
+	@ApiModelProperty(example = "과목명")
+	private String roomName; //과목이름
+	@ApiModelProperty(example = "방번호")
+    private int roomId; //과목인덱스 서버에서 채팅방 인덱스에 해당함
+	@ApiModelProperty(example = "랜덤닉네임")
+    private String nickName; //채팅방 안에서 내 랜덤닉네임
+	@ApiModelProperty(example = "교수님성함")
+    private String professorName; //교수이름
+	@ApiModelProperty(example = "방안에 있는 사용자들 닉네임")
+    private ArrayList<String> roomInNames; //채팅방 안에 있는 유저 닉네임
     
     public RoomInfo() {}
  

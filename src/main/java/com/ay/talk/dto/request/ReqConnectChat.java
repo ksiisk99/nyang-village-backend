@@ -1,9 +1,16 @@
 package com.ay.talk.dto.request;
 
+import io.swagger.annotations.ApiModelProperty;
 
 //웹소켓 처음 연결시 전달하는 데이터 정지유저나 이중로그인을 판별한다.
 public class ReqConnectChat {
-	String roomId, studentId, token;
+	@ApiModelProperty(example = "채팅방방 번호")
+	private String roomId;
+	@ApiModelProperty(example = "학번")
+	private String studentId;
+	@ApiModelProperty(example = "파베토큰")
+	private String token;
+	@ApiModelProperty(example = "앱 업데이트 버전")
 	int version;
 	
 	public ReqConnectChat() {}

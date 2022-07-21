@@ -28,6 +28,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 
@@ -38,6 +39,7 @@ import io.swagger.annotations.ApiOperation;
  * Handles requests for the application home page.
  */
 @ApiOperation("swagger")
+@Api(tags = "로그인 API")
 @RestController
 @RequestMapping("/ay")
 @PropertySource("classpath:application.properties")
@@ -75,6 +77,7 @@ public class LoginController{
 		
 	//모바일 로그인
 	@PostMapping(path = "/login")
+	@ApiOperation(value = "모바일 로그인", notes = "모바일 전용 로그인")
 	public @ResponseBody ResLogin login(@RequestBody ReqLogin reqLogin) throws FirebaseMessagingException, IOException {
 		long beforeTime = System.currentTimeMillis();
 
@@ -88,6 +91,7 @@ public class LoginController{
 	
 	//pc 로그인
 	@PostMapping(path="/pc/login")
+	@ApiOperation(value = "PC 로그인", notes = "PC 전용 로그인")
 	public @ResponseBody ResPcLogin pcLogin(@RequestBody ReqPcLogin reqPcLogin) throws IOException {
 	
 		return loginService.pcLogin(reqPcLogin);

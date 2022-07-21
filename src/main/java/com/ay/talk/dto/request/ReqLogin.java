@@ -1,10 +1,15 @@
 package com.ay.talk.dto.request;
 
+import io.swagger.annotations.ApiModelProperty;
 
 public class ReqLogin {
+	@ApiModelProperty(example = "앱 업데이트 버전")
 	private int version; //앱 업데이트 버전
+	@ApiModelProperty(example = "파이어베이스 토큰")
     private String fcm; //파이어베이스 토큰
+	@ApiModelProperty(example = "학번")
     private String studentId; //학번
+	@ApiModelProperty(example = "비밀번호")
     private String password; //비밀번호
 
     public ReqLogin() {}

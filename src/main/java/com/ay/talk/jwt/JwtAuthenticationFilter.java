@@ -34,14 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		boolean valid=jwtTokenProvider.validateToken(token);
 		if(token != null && valid) {
 			//throw new JwtException("anyang");
-			System.out.println("토큰 존재: "+token);
+			//System.out.println("토큰 존재: "+token);
 		}else if(token==null) {
-			System.out.println("No Token??");
-			response.setStatus(403);
+			response.setStatus(401);
+			//System.out.println("No Token??");
 			//throw new JwtException("토큰 없음");
 		}else if(!valid){
-			System.out.println("만료된 토큰");
-			response.setStatus(403);
+			response.setStatus(401);
+			//System.out.println("만료된 토큰");
 			//throw new JwtException("만료된 토큰");
 		}
 		filterChain.doFilter(request, response);

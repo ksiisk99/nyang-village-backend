@@ -33,7 +33,6 @@ public class ServerServiceImpl implements ServerService{
 		
 		//수강과목 초기화
 		List<Subject> subjectList=dbRepository.findSubjects();
-		System.out.println("subjectList:"+subjectList.size());
 		for(int roomId=0;roomId<subjectList.size();roomId++) {
 			serverRepository.initRoomIn(subjectList.get(roomId).getName(),roomId);
 		}
