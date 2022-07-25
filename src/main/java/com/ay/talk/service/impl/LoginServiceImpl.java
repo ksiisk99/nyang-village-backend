@@ -25,8 +25,10 @@ import org.springframework.stereotype.Service;
 import com.ay.talk.dto.RoomInfo;
 import com.ay.talk.dto.SubjectInfo;
 import com.ay.talk.dto.request.ReqLogin;
+import com.ay.talk.dto.request.ReqLogout;
 import com.ay.talk.dto.request.ReqPcLogin;
 import com.ay.talk.dto.response.ResLogin;
+import com.ay.talk.dto.response.ResLogout;
 import com.ay.talk.dto.response.ResPcLogin;
 import com.ay.talk.entity.User;
 import com.ay.talk.entity.UserRoomData;
@@ -62,6 +64,9 @@ public class LoginServiceImpl implements LoginService{
 	private final int pcFailLoginSignal=4; //pc 아이디 비밀번호 잘못 입력됨 신호 4
 	private final int enterMsgSignal=0; //입장 신호 0
 	private final int exitMsgSignal=1; //퇴장 신호 1
+	private final int failLogoutSignal=0; //로그아웃 실패 신호 0
+	private final int successLogoutSignal=1; //로그아웃 성공 신호 1
+
 	private Logger logger; //로그
 	@Autowired
 	public LoginServiceImpl(DbRepository dbRepository, ServerRepository serverRepository
@@ -72,6 +77,39 @@ public class LoginServiceImpl implements LoginService{
 		this.chatService=chatService;
 		this.jwtTokenProvider=jwtTokenProvider;
 		logger=LoggerFactory.getLogger(this.getClass());
+	}
+	
+	public ResLogin loginNew(ReqLogin reqLogin) throws IOException {
+		ResLogin resLogin=new ResLogin();
+		if(reqLogin.getVersion()!=serverRepository.getVersion()) { //버전이 다르면 업데이트 신호 전달
+			resLogin.setSignal(updateSignal); //업데이트 신호 1
+			return resLogin;
+		}
+		
+		String studentId=reqLogin.getStudentId();
+		String password=reqLogin.getPassword();
+				
+		ArrayList<SubjectInfo>userSubjects=Crawling(studentId, password); //크롤링 정보 가져오기
+		if(userSubjects==null) { //아이디 비밀번호가 잘못 입력됨 신호 5
+			resLogin.setSignal(misspellSignal);
+			return resLogin;
+		}
+		
+		if(serverRepository.getSuspendedUser(studentId)!=null) { //정지 회원이면 정지 기간 전달
+			//현재날짜와 정지날짜 비교후 정지가 아닐때와 정지일때 처리
+			if(Integer.parseInt(serverRepository.getSuspendedUser(studentId))>=Integer.parseInt(getCurrentTime())) { //정지 회원
+				resLogin.setSuspendedDate(serverRepository.getSuspendedUser(studentId));
+				resLogin.setSignal(suspendedSignal); //정지 회원 신호 6
+				return resLogin;
+			}else {//정지가 풀린 회원
+				serverRepository.removeSuspendedUser(studentId);
+				dbRepository.removeSuspendedUser(studentId);
+			}
+		}
+		String jwt=null;
+		
+		
+		return resLogin;
 	}
 
 	@Override
@@ -118,7 +156,7 @@ public class LoginServiceImpl implements LoginService{
 				for(int i=0;i<curSubjects.size();i++) { //사용자의 모든 수강 과목 정보
 					String subjectName=curSubjects.get(i).getSubjectName();
 					for(int j=serverRepository.getStartRandomNickNameIdx(subjectName);j<200;j++) { //각 방에 대한 미사용 랜덤닉네임 찾기 
-						//새학기 시작할때 계절학기랑 구분 어떻게할래?
+						
 						if(serverRepository.isCheckRoomName(subjectName,j)==false) { //미사용중인 랜덤닉네임
 							UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(j),
 									serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
@@ -311,6 +349,26 @@ public class LoginServiceImpl implements LoginService{
 		return resLogin;
 	}
 	
+	
+	
+	@Override
+	public ResLogout logout(ReqLogout reqLogout) {
+		// TODO Auto-generated method stub
+		ResLogout resLogout=new ResLogout();
+		if(serverRepository.getUserFbToken(reqLogout.getStudentId())==null) { //새학기 시작
+			resLogout.setSignal(successLogoutSignal);
+			return resLogout;
+		}
+		
+		User user=dbRepository.findUser(reqLogout.getStudentId());
+		List<UserRoomData> subjects=user.getRoomIds();
+		for(int i=0;i<subjects.size();i++) {
+			serverRepository.removeRoomInToken(subjects.get(i).getRoomId(), user.getFcm()); //방에 속한 파베토큰 삭제
+		}
+		resLogout.setSignal(successLogoutSignal);
+		return resLogout;
+	}
+
 	@Override
 	public ArrayList<SubjectInfo> Crawling(String studentId, String password) throws IOException{
 		Document html;
