@@ -76,30 +76,35 @@ public class ChatServiceImpl implements ChatService{
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 			return;
 		}
-		String fbToken=serverRepository.getUserFbToken(cc.getStudentId());
-		if(fbToken==null){ //새학기 시작이라 해당하는 학번에 토큰값이 없다면 이전 학기에서 새롭게 로그인을 안한 유저이다.
+		
+		String userInfo=serverRepository.getUserInfo(cc.getStudentId());
+		
+		if(userInfo==null){ //새학기 시작이라 해당하는 학번에 토큰값이 없다면 이전 학기에서 새롭게 로그인을 안한 유저이다.
 			ResConnectChat resConnectChat=new ResConnectChat(semeterSignal, null,cc.getStudentId()); //3 새학기 신호
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
-		}else if(!fbToken.equals(cc.getToken())) {//이중로그인 이라면
+			return;
+		}
+		String[] userInfos=userInfo.split(",");
+		if(!userInfos[0].equals(cc.getToken())){//이중로그인 이라면
 			ResConnectChat resConnectChat=new ResConnectChat(doubleLoginSignal, null,cc.getStudentId()); //1 이중로그인 신호
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 		}else{
-			String period=serverRepository.getSuspendedUser(cc.getStudentId()); //정지회원이라면 정지기간 있다.
-			if(period!=null) { //정지 회원이라면
+			if(!userInfos[1].equals("0")) { //정지 회원이라면
 				//현재날짜와 정지날짜를 비교한다
-				if(Integer.parseInt(period)>=Integer.parseInt(getCurrentTime())) { //정지회원
-					ResConnectChat resConnectChat=new ResConnectChat(suspendedSignal, period,cc.getStudentId()); //2 정지 회원
+				if(Integer.parseInt(userInfos[1])>=Integer.parseInt(getCurrentTime())) { //정지회원
+					ResConnectChat resConnectChat=new ResConnectChat(suspendedSignal, userInfos[1],cc.getStudentId()); //2 정지 회원
 					simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 					
 					//모든 방들에 대해서 토큰 값들을 제거한다. 정지유저에게 메시지가 안가게 된다.
 					User user=dbRepository.findUser(cc.getStudentId());
 					ArrayList<UserRoomData>curSubjects=user.getRoomIds();
 					for(int i=0;i<curSubjects.size();i++) {
-						serverRepository.removeRoomInToken(curSubjects.get(i).getRoomId(), cc.getToken());
+						serverRepository.removeRoomInToken(curSubjects.get(i).getRoomName(), cc.getToken());
 					}
 					//System.out.println("정지 회원");
 				}else { //정지가 풀린 회원
-					serverRepository.removeSuspendedUser(cc.getStudentId());
+					serverRepository.removeSuspendedUser(cc.getStudentId()
+							,new StringBuilder().append(cc.getToken()+",0").toString());
 					dbRepository.removeSuspendedUser(cc.getStudentId());
 				}
 			}

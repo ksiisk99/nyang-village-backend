@@ -1,6 +1,10 @@
 package com.ay.talk.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.print.attribute.HashAttributeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,24 +49,34 @@ public class ServerServiceImpl implements ServerService{
 			serverRepository.initRandomName(randomNameList.get(idx).getName(),idx);
 		}
 		
-		//사용자 정보를 가져와서 fbTokens변수에 학번에 대응하는 fcm토큰으로 초기화
+		//정지 회원 정보 초기화
+		List<Suspended> suspendedUserList=dbRepository.findSuspendedUserList();
+		Map<String,String>suspendedUserMap=new HashMap<String,String>();
+		for(int i=0;i<suspendedUserList.size();i++) {
+			suspendedUserMap.put(suspendedUserList.get(i).getStudentId(), suspendedUserList.get(i).getPeriod());
+		}
+		
+		//사용자 정보 초기화
 		List<User> userList=dbRepository.findUserList();
 		for(int i=0;i<userList.size();i++) {
 			List<UserRoomData> roomIds=userList.get(i).getRoomIds();
 			String fcm=userList.get(i).getFcm();
 			String studentId=userList.get(i).getStudentId();
-			
-			for(int j=0;j<roomIds.size();j++) {
-				serverRepository.initUser(fcm,studentId,
-						roomIds.get(j).getRoomId(),roomIds.get(j).getNickName());
+			String suspendedPriod;
+			if(suspendedUserMap.get(studentId)!=null) {
+				suspendedPriod=suspendedUserMap.get(studentId);
+			}else {
+				suspendedPriod="0";
 			}
-		}
-		
-		//정지 회원 정보를 가져와서 suspendedUsers 초기화
-		List<Suspended> suspendedUserList=dbRepository.findSuspendedUserList();
-		for(int i=0;i<suspendedUserList.size();i++) {
-			serverRepository.initSuspendedUser(suspendedUserList.get(i).getStudentId(), suspendedUserList.get(i).getPeriod());
-		}	
+			for(int j=0;j<roomIds.size();j++) {
+				serverRepository.initUser(fcm
+						,studentId
+						,String.valueOf(roomIds.get(j).getRoomId())
+						,roomIds.get(j).getNickName()
+						,suspendedPriod
+						,roomIds.get(j).getRoomName());
+			}
+		}			
 	}
 	
 	//사용자 신고

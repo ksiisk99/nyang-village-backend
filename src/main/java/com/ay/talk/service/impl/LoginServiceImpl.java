@@ -79,38 +79,6 @@ public class LoginServiceImpl implements LoginService{
 		logger=LoggerFactory.getLogger(this.getClass());
 	}
 	
-	public ResLogin loginNew(ReqLogin reqLogin) throws IOException {
-		ResLogin resLogin=new ResLogin();
-		if(reqLogin.getVersion()!=serverRepository.getVersion()) { //버전이 다르면 업데이트 신호 전달
-			resLogin.setSignal(updateSignal); //업데이트 신호 1
-			return resLogin;
-		}
-		
-		String studentId=reqLogin.getStudentId();
-		String password=reqLogin.getPassword();
-				
-		ArrayList<SubjectInfo>userSubjects=Crawling(studentId, password); //크롤링 정보 가져오기
-		if(userSubjects==null) { //아이디 비밀번호가 잘못 입력됨 신호 5
-			resLogin.setSignal(misspellSignal);
-			return resLogin;
-		}
-		
-		if(serverRepository.getSuspendedUser(studentId)!=null) { //정지 회원이면 정지 기간 전달
-			//현재날짜와 정지날짜 비교후 정지가 아닐때와 정지일때 처리
-			if(Integer.parseInt(serverRepository.getSuspendedUser(studentId))>=Integer.parseInt(getCurrentTime())) { //정지 회원
-				resLogin.setSuspendedDate(serverRepository.getSuspendedUser(studentId));
-				resLogin.setSignal(suspendedSignal); //정지 회원 신호 6
-				return resLogin;
-			}else {//정지가 풀린 회원
-				serverRepository.removeSuspendedUser(studentId);
-				dbRepository.removeSuspendedUser(studentId);
-			}
-		}
-		String jwt=null;
-		
-		
-		return resLogin;
-	}
 
 	@Override
 	public ResLogin login(ReqLogin reqLogin) throws FirebaseMessagingException, IOException {
@@ -130,221 +98,235 @@ public class LoginServiceImpl implements LoginService{
 			resLogin.setSignal(misspellSignal);
 			return resLogin;
 		}
+		String tmp=serverRepository.getUserInfo(studentId);
+		String[] userInfo=null;
+		if(tmp!=null)
+			userInfo=serverRepository.getUserInfo(studentId).split(","); //0:fcm , 1:suspendedPriod
 		
-		if(serverRepository.getSuspendedUser(studentId)!=null) { //정지 회원이면 정지 기간 전달
+		if(userInfo!=null && !userInfo[1].equals("0")) { //정지 회원이면 정지 기간 전달
 			//현재날짜와 정지날짜 비교후 정지가 아닐때와 정지일때 처리
-			if(Integer.parseInt(serverRepository.getSuspendedUser(studentId))>=Integer.parseInt(getCurrentTime())) { //정지 회원
-				resLogin.setSuspendedDate(serverRepository.getSuspendedUser(studentId));
+			if(Integer.parseInt(userInfo[1])>=Integer.parseInt(getCurrentTime())) { //정지 회원
+				resLogin.setSuspendedDate(userInfo[1]);
 				resLogin.setSignal(suspendedSignal); //정지 회원 신호 6
 				return resLogin;
 			}else {//정지가 풀린 회원
-				serverRepository.removeSuspendedUser(studentId);
+				serverRepository.removeSuspendedUser(studentId
+						,new StringBuilder().append(reqLogin.getFcm()+",0").toString());
 				dbRepository.removeSuspendedUser(studentId);
 			}
 		}
 		//long beforeTime = System.currentTimeMillis();
 		String jwt=null;
-		synchronized (this) {
-			if(serverRepository.getUserFbToken(studentId)==null) { //처음 로그인한 회원
-				resLogin.setSignal(firstLoginSignal); //처음 로그인 신호 3
-				
-				ArrayList<UserRoomData> roomIds=new ArrayList<UserRoomData>(); //방에 대한 사용자 정보(닉네임,방아이디,방이름)
-				ArrayList<SubjectInfo> curSubjects=userSubjects; //사용자의 과목 정보를 임시 변수에 저장
-				ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //response하기 위한 과목별 방안에 유저 닉네임
-				ArrayList<String> authorities=new ArrayList<String>(); //권한
-				authorities.add("Customer");
-				for(int i=0;i<curSubjects.size();i++) { //사용자의 모든 수강 과목 정보
-					String subjectName=curSubjects.get(i).getSubjectName();
-					for(int j=serverRepository.getStartRandomNickNameIdx(subjectName);j<200;j++) { //각 방에 대한 미사용 랜덤닉네임 찾기 
-						
-						if(serverRepository.isCheckRoomName(subjectName,j)==false) { //미사용중인 랜덤닉네임
-							UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(j),
-									serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-							RoomInfo roomInfo=new RoomInfo(subjectName,
-									serverRepository.getRoomId(subjectName),
-									serverRepository.getRandomNickName(j),curSubjects.get(i).getProfessorName(),
-									serverRepository.getRoomInNames(subjectName));
-							serverRepository.setCheckRoomName(subjectName,j,true); //해당 방의 랜덤닉네임을 사용중으로 check한다.
-							roomIds.add(userRoomData); //db에 저장 시키기 위해 방 정보 추가
-							roomInfos.add(roomInfo); //response할 방 정보 추가
-									
-							//fcm 입장 메시지 전송
-							fcmService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName),serverRepository.getRandomNickName(j));
-						
-							//웹 소켓 입장 메시지 전송
-							chatService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName)
-									,serverRepository.getRandomNickName(j)); 
-							serverRepository.addRoomInName(subjectName,j); //방 안에 사용자 닉네임 추가
-							serverRepository.addRoomInToken(subjectName,reqLogin.getFcm()); //방 안에 사용자 토큰 추가
-							break;
-						}
+		
+		if(userInfo==null) { //처음 로그인한 회원
+			resLogin.setSignal(firstLoginSignal); //처음 로그인 신호 3
+			
+			ArrayList<UserRoomData> roomIds=new ArrayList<UserRoomData>(); //방에 대한 사용자 정보(닉네임,방아이디,방이름)
+			ArrayList<SubjectInfo> curSubjects=userSubjects; //사용자의 과목 정보를 임시 변수에 저장
+			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //response하기 위한 과목별 방안에 유저 닉네임
+			ArrayList<String> authorities=new ArrayList<String>(); //권한
+			authorities.add("Customer");
+			for(int i=0;i<curSubjects.size();i++) { //사용자의 모든 수강 과목 정보
+				String subjectName=curSubjects.get(i).getSubjectName();
+				for(int j=serverRepository.getStartRandomNickNameIdx(subjectName);j<200;j++) { //각 방에 대한 미사용 랜덤닉네임 찾기 
+					
+					if(serverRepository.isCheckRoomName(subjectName,j)==false) { //미사용중인 랜덤닉네임
+						UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(j),
+								serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
+						RoomInfo roomInfo=new RoomInfo(subjectName,
+								serverRepository.getRoomId(subjectName),
+								serverRepository.getRandomNickName(j),curSubjects.get(i).getProfessorName(),
+								(ArrayList<String>)serverRepository.getRoomInNames(subjectName));
+						serverRepository.setCheckRoomName(subjectName,j,true); //해당 방의 랜덤닉네임을 사용중으로 check한다.
+						roomIds.add(userRoomData); //db에 저장 시키기 위해 방 정보 추가
+						roomInfos.add(roomInfo); //response할 방 정보 추가
+								
+						//fcm 입장 메시지 전송
+						fcmService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName),serverRepository.getRandomNickName(j));
+					
+						//웹 소켓 입장 메시지 전송
+						chatService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName)
+								,serverRepository.getRandomNickName(j)); 
+						serverRepository.addRoomInName(subjectName,j); //방 안에 사용자 닉네임 추가
+						serverRepository.addRoomInToken(subjectName,reqLogin.getFcm()); //방 안에 사용자 토큰 추가
+						break;
 					}
 				}
-				User user=new User(studentId, reqLogin.getFcm(), getCurrentTime(), roomIds,authorities);
-				dbRepository.insertUser(user);
-				resLogin.setRoomInfos(roomInfos);
-				serverRepository.addFbToken(studentId,reqLogin.getFcm()); //학번 토큰 등록
-				jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt 생성
-			}else if(serverRepository.getUserFbToken(studentId).equals(reqLogin.getFcm())) { //같은 기기로 로그아웃하고 로그인한 회원
-				resLogin.setSignal(reviseSubjectSignal); //같은 기기 로그아웃하고 로그인한 회원 신호4
-				ArrayList<SubjectInfo> curSubjects=userSubjects; //사용자의 과목 정보를 임시 변수에 저장
-				ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //response하기 위한 과목별 방안에 유저 닉네임
-				int[] checkRoom=new int[curSubjects.size()]; //새롭게 듣는 과목 인덱스 기존 방은 유지 시켜야하기 때문이다.
-				int cnt=0; //이전 과목과 겹치지 않는 새로 듣는 과목 수
-				ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //최종 수강과목 db 저장용
-				User user=dbRepository.findUser(studentId); //db에 저장된 유저 정보를 불러온다
-				List<UserRoomData> beforeSubjects=user.getRoomIds(); //바뀌기 전 수강 과목
-				boolean[] overlap=new boolean[beforeSubjects.size()]; //이전과 현재 수강과목 중 겹치는 부분 체크
-				List<String> authorities=user.getAuthorities();
-				
-				int curSize=curSubjects.size();
-				int beforeSize=beforeSubjects.size();
-				for(int i=0;i<curSize;i++) { //현재 수강과목
-					for(int j=0;j<beforeSize;j++) { //바뀌기 전 수강과목
-						if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //바뀌기 전 수강과목과 기존의 수강과목이 동일하다면
-							UserRoomData userRoomData=new UserRoomData(beforeSubjects.get(j).getNickName(),
-									beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),curSubjects.get(i).getProfessorName());
-							resultSubjects.add(userRoomData);
-							overlap[j]=true; //겹치는 수강과목 인덱스 체크 겹치지 않는 기존의 이전 방들을 나가기 위함이다.
-							RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
-									,beforeSubjects.get(j).getRoomId(),beforeSubjects.get(j).getNickName(),curSubjects.get(i).getProfessorName()
-									,serverRepository.getRoomInNames(beforeSubjects.get(j).getRoomName()));
-							roomInfos.add(roomInfo);
-							break;
-						}
-						
-						if(j==(beforeSize-1)) { //다 비교할때까지 겹치는 과목이 없다면 그 과목은 새로 듣는 과목임
-							String subjectName=curSubjects.get(i).getSubjectName();
-							for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
-								if(serverRepository.isCheckRoomName(subjectName, k)==false) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
-									UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
-											,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-									serverRepository.setCheckRoomName(subjectName, k, true);
-									resultSubjects.add(userRoomData);
-									checkRoom[cnt++]=resultSubjects.size()-1; //새로 듣는 과목 현재 과목 인덱스 번호 저장 나중에 입장 메시지를 보내기 위함
-									break;
-								}
-							}
-						}
-					}
-				}
-				
-				dbRepository.updateUserRoom(studentId,resultSubjects); //유저 정보를 db에 업데이트 한다
-				
-				for(int i=0;i<beforeSize;i++) { //기존 과목중에서 겹치지 않는 과목에 있어서 퇴장메시지를 보낸다.
-					if(overlap[i])continue; //겹치는 과목은 방을 유지한다.
-					serverRepository.removeRoomInName(beforeSubjects.get(i).getRoomId(),
-							beforeSubjects.get(i).getNickName());
-					serverRepository.removeRoomInToken(beforeSubjects.get(i).getRoomId(),
-							reqLogin.getFcm());
-					//퇴장 메시지 전송
-					fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
-					chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
-				}			
-				for(int i=0;i<cnt;i++) { //현재 과목중에서 겹치지 않는 새로운 과목에 있어서 입장메시지를 보낸다.
-					fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName());
-					chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName());
-					
-					serverRepository.addRoomInName2(resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName());
-					serverRepository.addRoomInToken(resultSubjects.get(checkRoom[i]).getRoomName(),
-							reqLogin.getFcm());
-					
-					RoomInfo roomInfo=new RoomInfo(resultSubjects.get(checkRoom[i]).getRoomName(), resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName(),resultSubjects.get(checkRoom[i]).getProfessorName(),
-							serverRepository.getRoomInNames(resultSubjects.get(checkRoom[i]).getRoomName()));
-					roomInfos.add(roomInfo);
-				}
-				resLogin.setRoomInfos(roomInfos);
-				jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt 생성
-			} else { //다른 기기로 로그인하거나 삭제하고 다시 깐 회원(토큰이 달라짐)
-				resLogin.setSignal(doubleLoginSignal); //다른 기기로 로그인한 회원 신호4
-				User user=dbRepository.findUser(studentId);
-				ArrayList<SubjectInfo> curSubjects=userSubjects; //사용자의 과목 정보를 임시 변수에 저장
-				List<UserRoomData> beforeSubjects=user.getRoomIds(); //이전 수강과목
-				List<String> authorities=user.getAuthorities();
-				ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //response하기 위한 과목별 방안에 유저 닉네임
-				int[] checkRoom=new int[curSubjects.size()]; //새롭게 듣는 과목 인덱스 기존 방은 유지 시켜야하기 때문이다.
-				int cnt=0; //이전 과목과 겹치지 않는 새로 듣는 과목 수
-				ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //최종 수강과목 db 저장용
-				boolean[] overlap=new boolean[beforeSubjects.size()]; //이전과 현재 수강과목 중 겹치는 부분 체크
-				
-				int curSize=curSubjects.size(); //현재 수강과목 수
-				int beforeSize=beforeSubjects.size(); //이전 수강과목 수
-							
-				//이전 수강과목에 대해 모든 토큰 값을 삭제한다.
-				for(int i=0;i<beforeSubjects.size();i++) {
-					serverRepository.removeRoomInToken(beforeSubjects.get(i).getRoomId(), user.getFcm());
-				}
-				
-				for(int i=0;i<curSize;i++) { //현재 수강과목
-					for(int j=0;j<beforeSize;j++) { //바뀌기 전 수강과목
-						if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //바뀌기 전 수강과목과 기존의 수강과목이 동일하다면
-							UserRoomData userRoomData=new UserRoomData(beforeSubjects.get(j).getNickName(),
-									beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),beforeSubjects.get(i).getProfessorName());
-							resultSubjects.add(userRoomData);
-							overlap[j]=true; //겹치는 수강과목 인덱스 체크 겹치지 않는 기존의 이전 방들을 나가기 위함이다.
-							RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
-									,beforeSubjects.get(j).getRoomId(),beforeSubjects.get(j).getNickName(),beforeSubjects.get(i).getProfessorName()
-									,serverRepository.getRoomInNames(beforeSubjects.get(j).getRoomName()));
-							roomInfos.add(roomInfo);
-							break;
-						}
-						
-						if(j==(beforeSize-1)) { //다 비교할때까지 겹치는 과목이 없다면 그 과목은 새로 듣는 과목임
-							String subjectName=curSubjects.get(i).getSubjectName();
-							for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
-								if(serverRepository.isCheckRoomName(subjectName, k)==false) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
-									UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
-											,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-									serverRepository.setCheckRoomName(subjectName, k, true);
-									resultSubjects.add(userRoomData);
-									checkRoom[cnt++]=resultSubjects.size()-1; //새로 듣는 과목 현재 과목 인덱스 번호 저장 나중에 입장 메시지를 보내기 위함
-									break;
-								}
-							}
-						}
-					}
-				}
-				
-				dbRepository.updateUserRoomAndToken(studentId,resultSubjects,reqLogin.getFcm()); //유저 정보 방과 fcm을 db에 업데이트 한다
-				
-				for(int i=0;i<beforeSize;i++) { //기존 과목중에서 겹치지 않는 과목에 있어서 퇴장메시지를 보낸다.
-					//겹치는 과목은 방을 유지하고 바뀐 토큰 값을 넣어준다.
-					if(overlap[i]) {
-						serverRepository.addRoomInToken(beforeSubjects.get(i).getRoomName(), reqLogin.getFcm());
-						continue; 
-					}
-					serverRepository.removeRoomInName(beforeSubjects.get(i).getRoomId(),
-							beforeSubjects.get(i).getNickName());
-				
-					//퇴장 메시지 전송
-					fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
-					chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
-				}			
-				for(int i=0;i<cnt;i++) { //현재 과목중에서 겹치지 않는 새로운 과목에 있어서 입장메시지를 보낸다.
-					fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName());
-					chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName());
-					
-					serverRepository.addRoomInName2(resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName());
-					serverRepository.addRoomInToken(resultSubjects.get(checkRoom[i]).getRoomName(),
-							reqLogin.getFcm());
-					
-					RoomInfo roomInfo=new RoomInfo(resultSubjects.get(checkRoom[i]).getRoomName(), resultSubjects.get(checkRoom[i]).getRoomId(),
-							resultSubjects.get(checkRoom[i]).getNickName(), resultSubjects.get(checkRoom[i]).getProfessorName(),
-							serverRepository.getRoomInNames(resultSubjects.get(checkRoom[i]).getRoomName()));
-					roomInfos.add(roomInfo);
-				}
-				resLogin.setRoomInfos(roomInfos);
-				serverRepository.addFbToken(studentId, reqLogin.getFcm());
-				jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt 생성
 			}
+			User user=new User(studentId, reqLogin.getFcm(), getCurrentTime(), roomIds,authorities);
+			dbRepository.insertUser(user);
+			resLogin.setRoomInfos(roomInfos);
+			serverRepository.addUserInfo(studentId,
+					new StringBuilder().append(reqLogin.getFcm()+",0").toString()); //학번 토큰 등록
+			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt 생성
+		}else if(userInfo[0].equals(reqLogin.getFcm())) { //같은 기기로 로그아웃하고 로그인한 회원
+			resLogin.setSignal(reviseSubjectSignal); //같은 기기 로그아웃하고 로그인한 회원 신호4
+			ArrayList<SubjectInfo> curSubjects=userSubjects; //사용자의 과목 정보를 임시 변수에 저장
+			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //response하기 위한 과목별 방안에 유저 닉네임
+			int[] checkRoom=new int[curSubjects.size()]; //새롭게 듣는 과목 인덱스 기존 방은 유지 시켜야하기 때문이다.
+			int cnt=0; //이전 과목과 겹치지 않는 새로 듣는 과목 수
+			ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //최종 수강과목 db 저장용
+			User user=dbRepository.findUser(studentId); //db에 저장된 유저 정보를 불러온다
+			List<UserRoomData> beforeSubjects=user.getRoomIds(); //바뀌기 전 수강 과목
+			boolean[] overlap=new boolean[beforeSubjects.size()]; //이전과 현재 수강과목 중 겹치는 부분 체크
+			List<String> authorities=user.getAuthorities();
+			
+			int curSize=curSubjects.size();
+			int beforeSize=beforeSubjects.size();
+			for(int i=0;i<curSize;i++) { //현재 수강과목
+				for(int j=0;j<beforeSize;j++) { //바뀌기 전 수강과목
+					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //바뀌기 전 수강과목과 기존의 수강과목이 동일하다면
+						UserRoomData userRoomData=new UserRoomData(beforeSubjects.get(j).getNickName(),
+								beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),curSubjects.get(i).getProfessorName());
+						resultSubjects.add(userRoomData);
+						overlap[j]=true; //겹치는 수강과목 인덱스 체크 겹치지 않는 기존의 이전 방들을 나가기 위함이다.
+						RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
+								,beforeSubjects.get(j).getRoomId(),beforeSubjects.get(j).getNickName()
+								,curSubjects.get(i).getProfessorName()
+								,(ArrayList<String>)serverRepository.getRoomInNames(beforeSubjects.get(j).getRoomName()));
+						roomInfos.add(roomInfo);
+						break;
+					}
+					
+					if(j==(beforeSize-1)) { //다 비교할때까지 겹치는 과목이 없다면 그 과목은 새로 듣는 과목임
+						String subjectName=curSubjects.get(i).getSubjectName();
+						for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
+							if(serverRepository.isCheckRoomName(subjectName, k)==false) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
+								UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
+										,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
+								serverRepository.setCheckRoomName(subjectName, k, true);
+								resultSubjects.add(userRoomData);
+								checkRoom[cnt++]=resultSubjects.size()-1; //새로 듣는 과목 현재 과목 인덱스 번호 저장 나중에 입장 메시지를 보내기 위함
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			dbRepository.updateUserRoom(studentId,resultSubjects); //유저 정보를 db에 업데이트 한다
+			
+			for(int i=0;i<beforeSize;i++) { //기존 과목중에서 겹치지 않는 과목에 있어서 퇴장메시지를 보낸다.
+				if(overlap[i])continue; //겹치는 과목은 방을 유지한다.
+				serverRepository.removeRoomInName(beforeSubjects.get(i).getRoomName(),
+						beforeSubjects.get(i).getNickName());
+				serverRepository.removeRoomInToken(beforeSubjects.get(i).getRoomName(),
+						reqLogin.getFcm());
+				//퇴장 메시지 전송
+				fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
+				chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
+			}			
+			for(int i=0;i<cnt;i++) { //현재 과목중에서 겹치지 않는 새로운 과목에 있어서 입장메시지를 보낸다.
+				fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
+						resultSubjects.get(checkRoom[i]).getNickName());
+				chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
+						resultSubjects.get(checkRoom[i]).getNickName());
+				
+				serverRepository.addRoomInName(resultSubjects.get(checkRoom[i]).getRoomName(),
+						resultSubjects.get(checkRoom[i]).getNickName());
+				serverRepository.addRoomInToken(resultSubjects.get(checkRoom[i]).getRoomName(),
+						reqLogin.getFcm());
+				
+				RoomInfo roomInfo=new RoomInfo(resultSubjects.get(checkRoom[i]).getRoomName()
+						,resultSubjects.get(checkRoom[i]).getRoomId()
+						,resultSubjects.get(checkRoom[i]).getNickName()
+						,resultSubjects.get(checkRoom[i]).getProfessorName()
+						,(ArrayList<String>)serverRepository.getRoomInNames(resultSubjects.get(checkRoom[i]).getRoomName()));
+				roomInfos.add(roomInfo);
+			}
+			resLogin.setRoomInfos(roomInfos);
+			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt 생성
+		} else { //다른 기기로 로그인하거나 삭제하고 다시 깐 회원(토큰이 달라짐)
+			resLogin.setSignal(doubleLoginSignal); //다른 기기로 로그인한 회원 신호4
+			User user=dbRepository.findUser(studentId);
+			ArrayList<SubjectInfo> curSubjects=userSubjects; //사용자의 과목 정보를 임시 변수에 저장
+			List<UserRoomData> beforeSubjects=user.getRoomIds(); //이전 수강과목
+			List<String> authorities=user.getAuthorities();
+			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //response하기 위한 과목별 방안에 유저 닉네임
+			int[] checkRoom=new int[curSubjects.size()]; //새롭게 듣는 과목 인덱스 기존 방은 유지 시켜야하기 때문이다.
+			int cnt=0; //이전 과목과 겹치지 않는 새로 듣는 과목 수
+			ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //최종 수강과목 db 저장용
+			boolean[] overlap=new boolean[beforeSubjects.size()]; //이전과 현재 수강과목 중 겹치는 부분 체크
+			
+			int curSize=curSubjects.size(); //현재 수강과목 수
+			int beforeSize=beforeSubjects.size(); //이전 수강과목 수
+						
+			//이전 수강과목에 대해 모든 토큰 값을 삭제한다.
+			for(int i=0;i<beforeSubjects.size();i++) {
+				serverRepository.removeRoomInToken(beforeSubjects.get(i).getRoomName(), user.getFcm());
+			}
+			
+			for(int i=0;i<curSize;i++) { //현재 수강과목
+				for(int j=0;j<beforeSize;j++) { //바뀌기 전 수강과목
+					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //바뀌기 전 수강과목과 기존의 수강과목이 동일하다면
+						UserRoomData userRoomData=new UserRoomData(beforeSubjects.get(j).getNickName(),
+								beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),beforeSubjects.get(i).getProfessorName());
+						resultSubjects.add(userRoomData);
+						overlap[j]=true; //겹치는 수강과목 인덱스 체크 겹치지 않는 기존의 이전 방들을 나가기 위함이다.
+						RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
+								,beforeSubjects.get(j).getRoomId()
+								,beforeSubjects.get(j).getNickName()
+								,beforeSubjects.get(i).getProfessorName()
+								,(ArrayList<String>)serverRepository.getRoomInNames(beforeSubjects.get(j).getRoomName()));
+						roomInfos.add(roomInfo);
+						break;
+					}
+					
+					if(j==(beforeSize-1)) { //다 비교할때까지 겹치는 과목이 없다면 그 과목은 새로 듣는 과목임
+						String subjectName=curSubjects.get(i).getSubjectName();
+						for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
+							if(serverRepository.isCheckRoomName(subjectName, k)==false) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
+								UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
+										,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
+								serverRepository.setCheckRoomName(subjectName, k, true);
+								resultSubjects.add(userRoomData);
+								checkRoom[cnt++]=resultSubjects.size()-1; //새로 듣는 과목 현재 과목 인덱스 번호 저장 나중에 입장 메시지를 보내기 위함
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			dbRepository.updateUserRoomAndToken(studentId,resultSubjects,reqLogin.getFcm()); //유저 정보 방과 fcm을 db에 업데이트 한다
+			
+			for(int i=0;i<beforeSize;i++) { //기존 과목중에서 겹치지 않는 과목에 있어서 퇴장메시지를 보낸다.
+				//겹치는 과목은 방을 유지하고 바뀐 토큰 값을 넣어준다.
+				if(overlap[i]) {
+					serverRepository.addRoomInToken(beforeSubjects.get(i).getRoomName(), reqLogin.getFcm());
+					continue; 
+				}
+				serverRepository.removeRoomInName(beforeSubjects.get(i).getRoomName(),
+						beforeSubjects.get(i).getNickName());
+			
+				//퇴장 메시지 전송
+				fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
+				chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
+			}			
+			for(int i=0;i<cnt;i++) { //현재 과목중에서 겹치지 않는 새로운 과목에 있어서 입장메시지를 보낸다.
+				fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
+						resultSubjects.get(checkRoom[i]).getNickName());
+				chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
+						resultSubjects.get(checkRoom[i]).getNickName());
+				
+				serverRepository.addRoomInName(resultSubjects.get(checkRoom[i]).getRoomName(),
+						resultSubjects.get(checkRoom[i]).getNickName());
+				serverRepository.addRoomInToken(resultSubjects.get(checkRoom[i]).getRoomName(),
+						reqLogin.getFcm());
+				
+				RoomInfo roomInfo=new RoomInfo(resultSubjects.get(checkRoom[i]).getRoomName()
+						,resultSubjects.get(checkRoom[i]).getRoomId()
+						,resultSubjects.get(checkRoom[i]).getNickName()
+						,resultSubjects.get(checkRoom[i]).getProfessorName()
+						,(ArrayList<String>)serverRepository.getRoomInNames(resultSubjects.get(checkRoom[i]).getRoomName()));
+				roomInfos.add(roomInfo);
+			}
+			resLogin.setRoomInfos(roomInfos);
+			serverRepository.addUserInfo(studentId,
+					new StringBuilder().append(reqLogin.getFcm()+",0").toString());
+			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt 생성
 		}
+		
 		resLogin.setJwt(jwt);
 		return resLogin;
 	}
@@ -355,7 +337,8 @@ public class LoginServiceImpl implements LoginService{
 	public ResLogout logout(ReqLogout reqLogout) {
 		// TODO Auto-generated method stub
 		ResLogout resLogout=new ResLogout();
-		if(serverRepository.getUserFbToken(reqLogout.getStudentId())==null) { //새학기 시작
+		String userInfo=serverRepository.getUserInfo(reqLogout.getStudentId());
+		if(userInfo==null) { //새학기 시작
 			resLogout.setSignal(successLogoutSignal);
 			return resLogout;
 		}
@@ -363,7 +346,7 @@ public class LoginServiceImpl implements LoginService{
 		User user=dbRepository.findUser(reqLogout.getStudentId());
 		List<UserRoomData> subjects=user.getRoomIds();
 		for(int i=0;i<subjects.size();i++) {
-			serverRepository.removeRoomInToken(subjects.get(i).getRoomId(), user.getFcm()); //방에 속한 파베토큰 삭제
+			serverRepository.removeRoomInToken(subjects.get(i).getRoomName(), user.getFcm()); //방에 속한 파베토큰 삭제
 		}
 		resLogout.setSignal(successLogoutSignal);
 		return resLogout;
@@ -428,13 +411,15 @@ public class LoginServiceImpl implements LoginService{
 	public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException {
 		// TODO Auto-generated method stub
 		ResPcLogin resPcLogin=new ResPcLogin();
-		if(serverRepository.getUserFbToken(reqPcLogin.getStudentId())==null) { //모바일에서 로그인 안 한 유저라면
+		String userInfo=serverRepository.getUserInfo(reqPcLogin.getStudentId());
+		if(userInfo==null) { //모바일에서 로그인 안 한 유저라면
 			resPcLogin.setSignal(pcNotMobileLoginSignal);
 			return resPcLogin;
 		}else { //모바일에서 로그인 한 유저라면
-			if(serverRepository.getSuspendedUser(reqPcLogin.getStudentId())!=null) { //정지 회원이라면
+			String suspendedPriod=userInfo.split(",")[1];
+			if(!suspendedPriod.equals("0")) { //정지 회원이라면
 				resPcLogin.setSignal(pcSuspendedUserLoginSignal);
-				resPcLogin.setSuspendedDate(serverRepository.getSuspendedUser(reqPcLogin.getStudentId()));
+				resPcLogin.setSuspendedDate(suspendedPriod);
 				return resPcLogin;
 			}else {
 				pcCrawling(reqPcLogin, resPcLogin);
@@ -490,8 +475,10 @@ public class LoginServiceImpl implements LoginService{
 			
 			for(int i=0;i<userRoomInfos.size();i++) {
 				RoomInfo roomInfo=new RoomInfo(userRoomInfos.get(i).getRoomName()
-						,userRoomInfos.get(i).getRoomId(),userRoomInfos.get(i).getNickName()
-						,userRoomInfos.get(i).getProfessorName(),serverRepository.getRoomInNames(userRoomInfos.get(i).getRoomName()));
+						,userRoomInfos.get(i).getRoomId()
+						,userRoomInfos.get(i).getNickName()
+						,userRoomInfos.get(i).getProfessorName()
+						,(ArrayList<String>)serverRepository.getRoomInNames(userRoomInfos.get(i).getRoomName()));
 				roomInfos.add(roomInfo);
 			}
 			resPcLogin.setSignal(pcSuccessLoginSignal);

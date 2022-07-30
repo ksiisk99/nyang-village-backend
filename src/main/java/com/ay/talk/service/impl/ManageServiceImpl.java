@@ -39,12 +39,14 @@ public class ManageServiceImpl implements ManageService{
 	@Override
 	public boolean manageReport(ReqSuspend reqSuspend) {
 		// TODO Auto-generated method stub
-		if(serverRepository.getSuspendedUser(reqSuspend.getStudentId())!=null)return false; //이미 정지 회원
+		String[] userInfo=serverRepository.getUserInfo(reqSuspend.getStudentId()).split(",");
+		if(!userInfo[1].equals("0"))return false; //이미 정지 회원
 		else {
 			//정지회원추가
 			dbRepository.insertSuspendedUser(reqSuspend);
-			serverRepository.addSuspendedUser(reqSuspend.getStudentId(), reqSuspend.getPeriod());
-			System.out.println("정지회원추가완료");
+			serverRepository.addSuspendedUser(reqSuspend.getStudentId()
+					,new StringBuilder().append(userInfo[0]+","+reqSuspend.getPeriod()).toString());
+			
 			//처리 완료된 신고 항목 삭제
 			dbRepository.removeReports(reqSuspend.getId());
 			return true;

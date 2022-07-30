@@ -22,7 +22,7 @@ import com.ay.talk.service.FcmService;
 import com.ay.talk.service.ServerService;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
-import ch.qos.logback.classic.LoggerContext;
+//import ch.qos.logback.classic.LoggerContext;
 import io.swagger.annotations.ApiOperation;
 
 
@@ -37,8 +37,8 @@ import io.swagger.annotations.ApiOperation;
 public class ChatController{
 	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ChatController.class);
 	private ApplicationContext ac=new AnnotationConfigApplicationContext(MongoConfig.class);
-	LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
-	ch.qos.logback.classic.Logger logger2=loggerContext.getLogger("org.mongodb.driver");	
+	//LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
+	//ch.qos.logback.classic.Logger logger2=loggerContext.getLogger("org.mongodb.driver");	
 	private final ServerService serverService;
 	private final FcmService fcmService;
 	private final ChatService chatService;

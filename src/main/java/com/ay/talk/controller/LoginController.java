@@ -4,12 +4,16 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.internal.build.AllowSysOut;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,24 +50,23 @@ public class LoginController{
 	//private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(LoginController.class);
 	LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
 	ch.qos.logback.classic.Logger mongoLogger=loggerContext.getLogger("org.mongodb.driver");
+	ch.qos.logback.classic.Logger redisLogger=loggerContext.getLogger("io.lettuce.core");
 	private final ServerService serverService;
 	private final LoginService loginService;
 	private Logger logger;
-	@Autowired
-	private MemberRepository memberRepository;
 	
 	@Autowired
 	public LoginController(ServerService serverService, LoginService loginService) {
 		this.serverService=serverService;
 		this.loginService=loginService;
-		logger=LogManager.getLogger();	
-		//this.memberRepository=memberRepository;
+		logger=LogManager.getLogger();
 	}
 	
 	@EventListener(ContextRefreshedEvent.class)
 	public void ServerSetting() throws IOException {
-		//몽고디비 로그가 계속 발생함 이걸 막는다.
+		//몽고디비와 레디스 수많은 로그발생을 막음
 		mongoLogger.setLevel(Level.OFF);
+		redisLogger.setLevel(Level.OFF);
 		//fcmService.Init(); //fcm세팅
 		serverService.init(); //서버 인 메모리 초기화
 		logger.info("server start");
@@ -74,19 +77,7 @@ public class LoginController{
 	 * @throws FirebaseMessagingException 
 	 * @throws IOException 
 	 */
-	@GetMapping(path ="/jpa")
-	public void goood() {
-		Member member=new Member("memberB");
-		memberRepository.save(member);
-		System.out.println(member.getId());
-//		if(savedMember==null) {
-//			System.out.println("NULL");
-//		}else {
-//			System.out.println(savedMember.getId());
-//		}
-	}
 
-		
 	//모바일 로그인
 	@PostMapping(path = "/login")
 	@ApiOperation(value = "모바일 로그인", notes = "모바일 전용 로그인")

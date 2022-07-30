@@ -1,7 +1,6 @@
 package com.ay.talk.repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public interface ServerRepository {
 		
@@ -14,23 +13,16 @@ public interface ServerRepository {
 		//랜덤 닉네임 초기화
 		public void initRandomName(String name,int idx);
 		
-		//사용자 정보를 가져와서 fbTokens변수에 학번에 대응하는 fcm토큰으로 초기화하고 방에 해당하는 닉네임 초기화
-		public void initUser(String fcm, String studentId, int roomId, String nickName);
-		
-		//정지 회원 정보를 가져와서 suspendedUsers 초기화
-		public void initSuspendedUser(String studentId, String period);
+		//사용자 정보를 가져와서 학번에 대응하는 fcm토큰과 정지기간 초기화하고 방정보 초기화
+		public void initUser(String fcm, String studentId, String roomId, String nickName, String suspendedPriod,String roomName);
 		
 		//버전 비교
 		public int getVersion();
 		
-		//정지 회원 날짜 주기 정지 회원이 아니면 null
-		public String getSuspendedUser(String studentId);
+		//정지 기간 풀린 회원 데이터 삭제(=교체)
+		public void removeSuspendedUser(String studentId, String fcm);
 		
-		//정지 기간 풀린 회원 데이터 삭제
-		public void removeSuspendedUser(String studentId);
-		
-		//회원 fcm토큰
-		public String getUserFbToken(String studentId);
+
 		
 		//각 방에 대한 처음 랜덤닉네임 인덱스 방 인원의 사이즈만큼 return하는 이유는 순차적으로 랜덤닉네임을 할당하기 때문
 		public int getStartRandomNickNameIdx(String roomName);
@@ -48,34 +40,37 @@ public interface ServerRepository {
 		public int getRoomId(String roomName);
 		
 		//방 안의 사용자 닉네임들
-		public ArrayList<String> getRoomInNames(String roomName);
+		public List<String> getRoomInNames(String roomName);
 		
 		//방 안의 사용자 토큰들
-		public ArrayList<String> getRoomInTokens(String roomId);
+		public List<String> getRoomInTokens(String roomId);
 		
 		//방 안의 사용자 토큰들 roomId로 조회
-		public ArrayList<String> getRoomInTokens2(int roomId);
+		public List<String> getRoomInTokens2(int roomId);
 		
 		//randomNames 인덱스로 방 안에 사용자 랜덤닉네임 추가
 		public void addRoomInName(String roomName,int idx);
 		
 		//랜덤닉네임을 매개변수로 받아 방 안에 사용자 닉네임 추가
-		public void addRoomInName2(int roomId,String nickName);
+		public void addRoomInName(String roomName,String nickName);
 		
 		//방 안에 사용자 토큰 추가
 		public void addRoomInToken(String roomName,String fcm);
 		
 		
 		
-		//사용자 토큰 추가
-		public void addFbToken(String studentId, String fcm);
-		
 		//방 안의 사용자 닉네임 삭제
-		public void removeRoomInName(int roomId, String nickName);
+		public void removeRoomInName(String roomName, String nickName);
 		
 		//방 안의 사용자 토큰 삭제
-		public void removeRoomInToken(int roomId, String fcm);
+		public void removeRoomInToken(String roomName, String fcm);
 		
 		//정지 회원 추가
-		public void addSuspendedUser(String studentId, String period);
+		public void addSuspendedUser(String studentId, String userInfo);
+		
+		//회원 정보 조회(fcm,suspendedPriod)
+		public String getUserInfo(String studentId);
+		
+		//회원 정보 추가
+		public void addUserInfo(String studentId, String userInfo);
 }
