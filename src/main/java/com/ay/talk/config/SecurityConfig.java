@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                  "/swagger-resources/**",
                  "/configuration/security",
                  "/swagger-ui.html",
-                 "/webjars/**","/ay/login","/ay/pc/login","/ay/login2"
+                 "/webjars/**","/ay/login","/ay/pc/login","/ay/login2","/ay/logout"
                  ,"/favicon.ico","/","/stomp","/ay/manage","/ay/manage/report");
 	}
 	@Override
