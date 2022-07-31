@@ -1,5 +1,8 @@
 package com.ay.talk.config;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -25,12 +28,14 @@ public class SwaggerConfig extends WebMvcConfigurationSupport{
 	@Bean
     public Docket api() { 
         return new Docket(DocumentationType.SWAGGER_2)  
-        	.apiInfo(apiInfo())
-        	.select()                                  
-        	.apis(RequestHandlerSelectors.basePackage("com.ay.talk"))              
-        	.paths(PathSelectors.ant("/**"))                       
-        	.build()
-        	.groupName("NY DOC");                                           
+        		.consumes(getConsumeContentTypes())
+        		.produces(getProduceContentTypes())
+	        	.apiInfo(apiInfo())
+	        	.select()                                  
+	        	.apis(RequestHandlerSelectors.basePackage("com.ay.talk"))              
+	        	.paths(PathSelectors.ant("/**"))                       
+	        	.build()
+	        	.groupName("NY DOC");                                           
     }
 	
 	@Override
@@ -50,5 +55,19 @@ public class SwaggerConfig extends WebMvcConfigurationSupport{
 				.description(API_DESCRIPTION)
 				.build();
 	}
+	
+    private Set<String> getConsumeContentTypes(){        
+    	Set<String> consumes = new HashSet<>();        
+    	consumes.add("application/json;charset=UTF-8");        
+    	consumes.add("application/x-www-form-urlencoded");        
+    	return consumes;    
+    }
+
+	
+    private Set<String> getProduceContentTypes(){        
+    	Set<String> produces = new HashSet<>();        
+    	produces.add("application/json;charset=UTF-8");       
+    	return produces;    
+    }
 
 }
