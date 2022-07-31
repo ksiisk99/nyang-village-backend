@@ -5,16 +5,27 @@ import io.swagger.annotations.ApiModelProperty;
 public class ReqLogout {
 	@ApiModelProperty(example = "사용자 학번")
 	private String studentId;
+	@ApiModelProperty(example = "파베 토큰")
+	private String fcm;
 
     public ReqLogout(){}
-    public ReqLogout(String studentId) {
-        this.studentId = studentId;
-    }
+	public ReqLogout(String studentId, String fcm) {
+		super();
+		this.studentId = studentId;
+		this.fcm = fcm;
+	}
+
 	public String getStudentId() {
 		return studentId;
 	}
 	public void setStudentId(String studentId) {
 		this.studentId = studentId;
+	}
+	public String getFcm() {
+		return fcm;
+	}
+	public void setFcm(String fcm) {
+		this.fcm = fcm;
 	}
     
     
