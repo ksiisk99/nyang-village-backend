@@ -19,7 +19,7 @@ import com.ay.talk.dto.request.ReqConnectChat;
 import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.service.ChatService;
 import com.ay.talk.service.FcmService;
-import com.ay.talk.service.ServerService;
+import com.ay.talk.service.ManageService;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
 //import ch.qos.logback.classic.LoggerContext;
@@ -39,17 +39,17 @@ public class ChatController{
 	private ApplicationContext ac=new AnnotationConfigApplicationContext(MongoConfig.class);
 	//LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
 	//ch.qos.logback.classic.Logger logger2=loggerContext.getLogger("org.mongodb.driver");	
-	private final ServerService serverService;
+	private final ManageService manageService;
 	private final FcmService fcmService;
 	private final ChatService chatService;
 	private Logger logger;
 	
 	@Autowired
 	public ChatController(FcmService fcmService ,SimpMessagingTemplate simpMessagingTemplate
-			,ChatService chatService,ServerService serverService) {
+			,ChatService chatService,ManageService manageService) {
 		this.fcmService=fcmService;
 		this.chatService=chatService;
-		this.serverService=serverService;
+		this.manageService=manageService;
 		logger=LogManager.getLogger();
 	}
 	
@@ -99,7 +99,7 @@ public class ChatController{
 	public void Report(ReqReportMsg reportMsg) {
 		long beforeTime = System.currentTimeMillis();
 	
-		serverService.report(reportMsg);
+		manageService.report(reportMsg);
 		
 		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
