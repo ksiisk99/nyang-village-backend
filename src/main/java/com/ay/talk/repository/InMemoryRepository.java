@@ -3,6 +3,7 @@ package com.ay.talk.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import javax.annotation.PostConstruct;
 
@@ -12,11 +13,16 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
+import com.ay.talk.entity.RandomName;
+import com.ay.talk.entity.Subject;
+import com.ay.talk.entity.Suspended;
+import com.ay.talk.entity.User;
+import com.ay.talk.entity.UserRoomData;
+
 @Repository
 public class InMemoryRepository implements ServerRepository{
 	private Map<String,Integer> subjects=null; //모든 과목(과목명,인덱스)
 	private Map<String,String> strSubjects=null; //모든 과목(과목명,인덱스문자열);
-	private boolean[][] checkRoomNames=null; //모든 방안에 있는 랜덤닉네임 체크 중복제거
 	private String[] randomNames=null; //랜덤닉네임 200개. 각 방에 랜덤으로 뿌려준다.
 	private Map<String,Integer> idxRandomNames=null; //랜덤닉네임(닉네임,인덱스)
 	private final int VERSION=1; //업데이트 버전
@@ -25,11 +31,15 @@ public class InMemoryRepository implements ServerRepository{
 	private ValueOperations<String, String> userInfos; //학번에 해당하는 파베,정지기간 정지기간이 없으면 0
 	@SuppressWarnings("rawtypes")
 	private final RedisTemplate redisTemplate;
+	private final DbRepository dbRepository;
+	private AtomicIntegerArray checkRoomNames; //모든 방안에 있는 랜덤닉네임 체크 중복제거
 	
 	
 	@Autowired
-	public InMemoryRepository(@SuppressWarnings("rawtypes") RedisTemplate redisTemplate) {
+	public InMemoryRepository(@SuppressWarnings("rawtypes") RedisTemplate redisTemplate
+			,DbRepository dbRepository) {
 		this.redisTemplate = redisTemplate;
+		this.dbRepository=dbRepository;
 	}
 
 	//모든 변수 초기화
@@ -44,19 +54,64 @@ public class InMemoryRepository implements ServerRepository{
 		roomInNames=redisTemplate.opsForList();
 		roomInTokens=redisTemplate.opsForList();
 		userInfos=redisTemplate.opsForValue();
+		
+		//수강과목 초기화
+		List<Subject> subjectList=dbRepository.findSubjects();
+		for(int roomId=0;roomId<subjectList.size();roomId++) {
+			initRoomIn(subjectList.get(roomId).getName(),roomId);
+		}
+		initCheckRoomNames(subjectList.size()); //checkRoomNames 초기화
+		
+		
+		//랜덤 닉네임 초기화
+		List<RandomName> randomNameList=dbRepository.findRandomNames();
+		for(int idx=0; idx<randomNameList.size();idx++) {
+			initRandomName(randomNameList.get(idx).getName(),idx);
+		}
+		
+		//정지 회원 정보 초기화
+		List<Suspended> suspendedUserList=dbRepository.findSuspendedUserList();
+		Map<String,String>suspendedUserMap=new HashMap<String,String>();
+		for(int i=0;i<suspendedUserList.size();i++) {
+			suspendedUserMap.put(suspendedUserList.get(i).getStudentId(), suspendedUserList.get(i).getPeriod());
+		}
+		
+		//사용자 정보 초기화
+		List<User> userList=dbRepository.findUserList();
+		for(int i=0;i<userList.size();i++) {
+			List<UserRoomData> roomIds=userList.get(i).getRoomIds();
+			String fcm=userList.get(i).getFcm();
+			String studentId=userList.get(i).getStudentId();
+			String suspendedPriod;
+			if(suspendedUserMap.get(studentId)!=null) {
+				suspendedPriod=suspendedUserMap.get(studentId);
+			}else {
+				suspendedPriod="0";
+			}
+			for(int j=0;j<roomIds.size();j++) {
+				initUser(fcm
+						,studentId
+						,String.valueOf(roomIds.get(j).getRoomId())
+						,roomIds.get(j).getNickName()
+						,suspendedPriod
+						,roomIds.get(j).getRoomName());
+			}
+		}
 	}
 	
 	//checkRoomNames 초기화
 	@Override
 	public void initCheckRoomNames(int size) { 
-		checkRoomNames=new boolean[size][200];
+		checkRoomNames=new AtomicIntegerArray(size*200);
 	}
 	
 	//subjects,strSubjects 초기화
 	@Override
 	public void initRoomIn(String subjectName, int roomId) { 
+		
 		subjects.put(subjectName, roomId);
 		strSubjects.put(subjectName, String.valueOf(roomId));
+		roomInTokens.rightPush(String.valueOf(roomId), "a");
 	}
 	
 	//랜덤 닉네임 초기화
@@ -72,7 +127,7 @@ public class InMemoryRepository implements ServerRepository{
 		userInfos.set(studentId, new StringBuilder().append(fcm+","+suspendedPriod).toString());
 		roomInTokens.rightPush(roomId, fcm);
 		roomInNames.rightPush(roomName,nickName);
-		checkRoomNames[Integer.parseInt(roomId)][idxRandomNames.get(nickName)]=true;
+		checkRoomNames.set((Integer.parseInt(roomId)*200)+(idxRandomNames.get(nickName)), 1);
 	}
 
 	
@@ -93,20 +148,14 @@ public class InMemoryRepository implements ServerRepository{
 	//각 방에 대한 처음 랜덤닉네임 인덱스 방 인원의 사이즈만큼 return하는 이유는 순차적으로 랜덤닉네임을 할당하기 때문
 	@Override
 	public int getStartRandomNickNameIdx(String roomName) {
-		return (int) (subjects.get(roomName)==null?300:roomInNames.size(roomName)-1);
-	}
-	
-	//각 방에 대한 랜덤닉네임을 사용중인지 아닌지 확인
-	@Override
-	public boolean isCheckRoomName(String roomName,int idx) {
-		return checkRoomNames[subjects.get(roomName)][idx];
+		return (int) (subjects.get(roomName)==null?300:roomInNames.size(roomName));
 	}
 	
 	//방에 대한 랜덤닉네임 체크
 	@Override
-	public void setCheckRoomName(String roomName,int idx, boolean check) {
-		checkRoomNames[subjects.get(roomName)][idx]=check;
-		//System.out.println("checkRoomName"+checkRoomNames[subjects.get(roomName)]);
+	public boolean setCheckRoomName(String roomName, int idx) {
+		// TODO Auto-generated method stub
+		return checkRoomNames.compareAndSet(subjects.get(roomName)*200+idx, 0, 1);
 	}
 	
 	//랜덤닉네임
@@ -115,6 +164,8 @@ public class InMemoryRepository implements ServerRepository{
 		return randomNames[idx];
 	}
 	
+	
+
 	//과목명에 대한 방 아이디값
 	@Override
 	public int getRoomId(String roomName) {
