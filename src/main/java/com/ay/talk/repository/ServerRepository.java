@@ -27,11 +27,8 @@ public interface ServerRepository {
 		//각 방에 대한 처음 랜덤닉네임 인덱스 방 인원의 사이즈만큼 return하는 이유는 순차적으로 랜덤닉네임을 할당하기 때문
 		public int getStartRandomNickNameIdx(String roomName);
 		
-		//각 방에 대한 랜덤닉네임을 사용중인지 아닌지 확인
-		public boolean isCheckRoomName(String roomName,int idx);
-		
 		//방에 대한 랜덤닉네임 체크
-		public void setCheckRoomName(String roomName,int idx, boolean check);
+		public boolean setCheckRoomName(String roomName,int idx);
 		
 		//랜덤닉네임
 		public String getRandomNickName(int idx);
