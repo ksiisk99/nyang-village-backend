@@ -132,12 +132,8 @@ public class LoginServiceImpl implements LoginService{
 					if(serverRepository.setCheckRoomName(subjectName, j)) { //미사용중인 랜덤닉네임을 먼저 사용중으로 check한다.
 						UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(j),
 								serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-						RoomInfo roomInfo=new RoomInfo(subjectName,
-								serverRepository.getRoomId(subjectName),
-								serverRepository.getRandomNickName(j),curSubjects.get(i).getProfessorName(),
-								(ArrayList<String>)serverRepository.getRoomInNames(subjectName));
 						roomIds.add(userRoomData); //db에 저장 시키기 위해 방 정보 추가
-						roomInfos.add(roomInfo); //response할 방 정보 추가
+						
 								
 						//fcm 입장 메시지 전송
 						fcmService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName),serverRepository.getRandomNickName(j));
@@ -147,6 +143,11 @@ public class LoginServiceImpl implements LoginService{
 								,serverRepository.getRandomNickName(j)); 
 						serverRepository.addRoomInName(subjectName,j); //방 안에 사용자 닉네임 추가
 						serverRepository.addRoomInToken(subjectName,reqLogin.getFcm()); //방 안에 사용자 토큰 추가
+						RoomInfo roomInfo=new RoomInfo(subjectName,
+								serverRepository.getRoomId(subjectName),
+								serverRepository.getRandomNickName(j),curSubjects.get(i).getProfessorName(),
+								(ArrayList<String>)serverRepository.getRoomInNames(subjectName));
+						roomInfos.add(roomInfo); //response할 방 정보 추가
 						break;
 					}
 				}
@@ -212,13 +213,12 @@ public class LoginServiceImpl implements LoginService{
 				//퇴장 메시지 전송
 				fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
 				chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
-			}			
+			}	
 			for(int i=0;i<cnt;i++) { //현재 과목중에서 겹치지 않는 새로운 과목에 있어서 입장메시지를 보낸다.
 				fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
 						resultSubjects.get(checkRoom[i]).getNickName());
 				chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
 						resultSubjects.get(checkRoom[i]).getNickName());
-				
 				serverRepository.addRoomInName(resultSubjects.get(checkRoom[i]).getRoomName(),
 						resultSubjects.get(checkRoom[i]).getNickName());
 				serverRepository.addRoomInToken(resultSubjects.get(checkRoom[i]).getRoomName(),
@@ -326,8 +326,6 @@ public class LoginServiceImpl implements LoginService{
 		resLogin.setJwt(jwt);
 		return resLogin;
 	}
-	
-	
 	
 	@Override
 	public ResLogout logout(ReqLogout reqLogout) {
