@@ -129,15 +129,13 @@ public class LoginServiceImpl implements LoginService{
 			for(int i=0;i<curSubjects.size();i++) { //사용자의 모든 수강 과목 정보
 				String subjectName=curSubjects.get(i).getSubjectName();
 				for(int j=serverRepository.getStartRandomNickNameIdx(subjectName);j<200;j++) { //각 방에 대한 미사용 랜덤닉네임 찾기 
-					
-					if(serverRepository.isCheckRoomName(subjectName,j)==false) { //미사용중인 랜덤닉네임
+					if(serverRepository.setCheckRoomName(subjectName, j)) { //미사용중인 랜덤닉네임을 먼저 사용중으로 check한다.
 						UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(j),
 								serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
 						RoomInfo roomInfo=new RoomInfo(subjectName,
 								serverRepository.getRoomId(subjectName),
 								serverRepository.getRandomNickName(j),curSubjects.get(i).getProfessorName(),
 								(ArrayList<String>)serverRepository.getRoomInNames(subjectName));
-						serverRepository.setCheckRoomName(subjectName,j,true); //해당 방의 랜덤닉네임을 사용중으로 check한다.
 						roomIds.add(userRoomData); //db에 저장 시키기 위해 방 정보 추가
 						roomInfos.add(roomInfo); //response할 방 정보 추가
 								
@@ -191,10 +189,9 @@ public class LoginServiceImpl implements LoginService{
 					if(j==(beforeSize-1)) { //다 비교할때까지 겹치는 과목이 없다면 그 과목은 새로 듣는 과목임
 						String subjectName=curSubjects.get(i).getSubjectName();
 						for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
-							if(serverRepository.isCheckRoomName(subjectName, k)==false) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
+							if(serverRepository.setCheckRoomName(subjectName, k)) { //해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
 								UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
 										,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-								serverRepository.setCheckRoomName(subjectName, k, true);
 								resultSubjects.add(userRoomData);
 								checkRoom[cnt++]=resultSubjects.size()-1; //새로 듣는 과목 현재 과목 인덱스 번호 저장 나중에 입장 메시지를 보내기 위함
 								break;
@@ -275,10 +272,9 @@ public class LoginServiceImpl implements LoginService{
 					if(j==(beforeSize-1)) { //다 비교할때까지 겹치는 과목이 없다면 그 과목은 새로 듣는 과목임
 						String subjectName=curSubjects.get(i).getSubjectName();
 						for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
-							if(serverRepository.isCheckRoomName(subjectName, k)==false) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
+							if(serverRepository.setCheckRoomName(subjectName, k)) {//해당 과목에 랜덤닉네임 인덱스에 해당하는 이름을 사용하는 사용자가 없다면
 								UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
 										,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-								serverRepository.setCheckRoomName(subjectName, k, true);
 								resultSubjects.add(userRoomData);
 								checkRoom[cnt++]=resultSubjects.size()-1; //새로 듣는 과목 현재 과목 인덱스 번호 저장 나중에 입장 메시지를 보내기 위함
 								break;
@@ -342,6 +338,10 @@ public class LoginServiceImpl implements LoginService{
 			resLogout.setSignal(successLogoutSignal);
 			return resLogout;
 		}
+		if(!userInfo.split(",")[0].equals(reqLogout.getFcm())) { //이중로그인 이므로 로그아웃만 시킨다.
+			resLogout.setSignal(successLogoutSignal);
+			return resLogout;
+		}
 		
 		User user=dbRepository.findUser(reqLogout.getStudentId());
 		List<UserRoomData> subjects=user.getRoomIds();
@@ -397,9 +397,9 @@ public class LoginServiceImpl implements LoginService{
             	String attr=crawlingList.get(i).attr("value");
             	String[] attrValue=attr.split(",");
             	//본학기
-            	//subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString(), attrValue[1]));
+            	subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString(), attrValue[1]));
             	//계절학기용
-            	subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()+" "+attrValue[1], attrValue[1])); //계절학기용
+            	//subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()+" "+attrValue[1], attrValue[1])); //계절학기용
             }
             return subjectList;
         }
