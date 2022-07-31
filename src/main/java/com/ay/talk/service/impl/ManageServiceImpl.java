@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ay.talk.dto.ReportDto;
+import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.dto.request.ReqSuspend;
 import com.ay.talk.entity.Report;
+import com.ay.talk.entity.UserRoomData;
 import com.ay.talk.repository.DbRepository;
 import com.ay.talk.repository.ServerRepository;
 import com.ay.talk.service.ManageService;
@@ -53,6 +55,13 @@ public class ManageServiceImpl implements ManageService{
 		}
 	}
 
+	//사용자 신고
+	@Override
+	public void report(ReqReportMsg reportMsg) {
+		UserRoomData userRoomData=new UserRoomData(reportMsg.getReportName(),
+				serverRepository.getRoomId(reportMsg.getRoomName()),reportMsg.getRoomName(),reportMsg.getProfessorName());
+		dbRepository.insertReport(userRoomData,reportMsg);
+	}
 	
 	
 	
