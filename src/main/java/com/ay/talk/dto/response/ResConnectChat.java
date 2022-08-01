@@ -2,13 +2,13 @@ package com.ay.talk.dto.response;
 
 import io.swagger.annotations.ApiModelProperty;
 
-//Ã¤ÆÃ ¿¬°á ½Ã ÇÑ¹ø ÀÌÁß·Î±×ÀÎ°ú Á¤Áö¿¡ ´ëÇØ¼­ Ã¼Å©ÇÏ¿© responseÇÑ´Ù.
+//ì±„íŒ… ì—°ê²° ì‹œ í•œë²ˆ ì´ì¤‘ë¡œê·¸ì¸ê³¼ ì •ì§€ì— ëŒ€í•´ì„œ ì²´í¬í•˜ì—¬ responseí•œë‹¤.
 public class ResConnectChat {
-	@ApiModelProperty(example = "Ã¤ÆÃ ¿¬°á ½Ã ½ÅÈ£ => 1:ÀÌÁß·Î±×ÀÎ / 2:Á¤Áö / 3:»õÇĞ±â½ÃÀÛ")
-	private int start; //1ÀÌÁß·Î±×ÀÎ / 2Á¤Áö  / 3»õÇĞ±â ½ÃÀÛ
-	@ApiModelProperty(example = "start°¡ 2¹øÀÏ °æ¿ì Á¤Áö ±â°£ ¾Æ´Ï¸é NULL")
-	private String suspendedDate; //Á¤Áö ±â°£
-	@ApiModelProperty(example = "ÇĞ¹ø")
+	@ApiModelProperty(example = "ì±„íŒ… ì—°ê²° ì‹œ ì‹ í˜¸ => 1:ì´ì¤‘ë¡œê·¸ì¸ / 2:ì •ì§€ / 3:ìƒˆí•™ê¸°ì‹œì‘")
+	private int start; //1ì´ì¤‘ë¡œê·¸ì¸ / 2ì •ì§€  / 3ìƒˆí•™ê¸° ì‹œì‘
+	@ApiModelProperty(example = "startê°€ 2ë²ˆì¼ ê²½ìš° ì •ì§€ ê¸°ê°„ ì•„ë‹ˆë©´ NULL")
+	private String suspendedDate; //ì •ì§€ ê¸°ê°„
+	@ApiModelProperty(example = "í•™ë²ˆ")
 	private String studentId;
 	
 	public ResConnectChat(int start, String suspendedDate, String studentId) {

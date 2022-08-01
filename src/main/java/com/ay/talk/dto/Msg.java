@@ -1,14 +1,15 @@
 package com.ay.talk.dto;
 
 
-//stomp¿¡ »ç¿ëÇÒ Ã¤ÆÃ ¸Ş½ÃÁö °´Ã¼
+
+//stompì— ì‚¬ìš©í•  ì±„íŒ… ë©”ì‹œì§€ ê°ì²´
 public class Msg {
 	private String roomId;
 	private String nickName;
 	private String content;
 	private String time;
-	private int type; //0ÀÔÀå, 1ÅğÀå, 2Àü¼Û
-	private int pmType=0; //pc¿¡¼­ º¸³½ °ÍÀÎÁö mobile¿¡¼­ º¸³½ °ÍÀÎÁö pc¸é 1
+	private int type; //0ì…ì¥, 1í‡´ì¥, 2ì „ì†¡
+	private int pmType=0; //pcì—ì„œ ë³´ë‚¸ ê²ƒì¸ì§€ mobileì—ì„œ ë³´ë‚¸ ê²ƒì¸ì§€ pcë©´ 1
 	
 	public Msg() {}
 	

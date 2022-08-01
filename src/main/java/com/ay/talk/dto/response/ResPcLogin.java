@@ -7,13 +7,13 @@ import com.ay.talk.dto.RoomInfo;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ResPcLogin {
-	@ApiModelProperty(example = "·Î±×ÀÎ ½Ã ½ÅÈ£ => 1:·Î±×ÀÎ¼º°ø / 2:¸ğ¹ÙÀÏ·Î±×ÀÎ¿ä±¸ / 3:Á¤ÁöÈ¸¿ø / 4:Àß¸øÀÔ·Â")
+	@ApiModelProperty(example = "ë¡œê·¸ì¸ ì‹œ ì‹ í˜¸ => 1:ë¡œê·¸ì¸ì„±ê³µ / 2:ëª¨ë°”ì¼ë¡œê·¸ì¸ìš”êµ¬ / 3:ì •ì§€íšŒì› / 4:ì˜ëª»ì…ë ¥")
 	private int signal;
-	@ApiModelProperty(example = "signalÀÌ 3ÀÌ¸é Á¤Áö±â°£ ¾Æ´Ï¸é NULL")
+	@ApiModelProperty(example = "signalì´ 3ì´ë©´ ì •ì§€ê¸°ê°„ ì•„ë‹ˆë©´ NULL")
 	private String suspendedDate;
-	@ApiModelProperty(example = "À¯Àú ±ÇÇÑ(Customer , Manager")
+	@ApiModelProperty(example = "ìœ ì € ê¶Œí•œ(Customer , Manager")
 	private ArrayList<String> authority;
-	@ApiModelProperty(example = "Ã¤ÆÃ¹æ ¸ñ·Ï")
+	@ApiModelProperty(example = "ì±„íŒ…ë°© ëª©ë¡")
 	private ArrayList<RoomInfo> roomInfos;
 	@ApiModelProperty(example = "jwt")
 	private String jwt;

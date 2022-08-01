@@ -3,14 +3,14 @@ package com.ay.talk.dto.request;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ReqLogin {
-	@ApiModelProperty(example = "¾Û ¾÷µ¥ÀÌÆ® ¹öÀü")
-	private int version; //¾Û ¾÷µ¥ÀÌÆ® ¹öÀü
-	@ApiModelProperty(example = "ÆÄÀÌ¾îº£ÀÌ½º ÅäÅ«")
-    private String fcm; //ÆÄÀÌ¾îº£ÀÌ½º ÅäÅ«
-	@ApiModelProperty(example = "ÇĞ¹ø")
-    private String studentId; //ÇĞ¹ø
-	@ApiModelProperty(example = "ºñ¹Ğ¹øÈ£")
-    private String password; //ºñ¹Ğ¹øÈ£
+	@ApiModelProperty(example = "ì•± ì—…ë°ì´íŠ¸ ë²„ì „")
+	private int version; //ì•± ì—…ë°ì´íŠ¸ ë²„ì „
+	@ApiModelProperty(example = "íŒŒì´ì–´ë² ì´ìŠ¤ í† í°")
+    private String fcm; //íŒŒì´ì–´ë² ì´ìŠ¤ í† í°
+	@ApiModelProperty(example = "í•™ë²ˆ")
+    private String studentId; //í•™ë²ˆ
+	@ApiModelProperty(example = "ë¹„ë°€ë²ˆí˜¸")
+    private String password; //ë¹„ë°€ë²ˆí˜¸
 
     public ReqLogin() {}
     

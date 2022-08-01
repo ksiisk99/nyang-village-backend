@@ -3,22 +3,22 @@ package com.ay.talk.dto;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ReportDto {
-	@ApiModelProperty(example = "°íÀ¯ ½Äº° ¹øÈ£(=½Å°í ¸ñ·Ï ¹øÈ£)")
+	@ApiModelProperty(example = "ê³ ìœ  ì‹ë³„ ë²ˆí˜¸(=ì‹ ê³  ëª©ë¡ ë²ˆí˜¸)")
 	private String id;
-	@ApiModelProperty(example = "Ã¤ÆÃ¹æ ÀÌ¸§(=°ú¸ñ¸í)")
-	private String roomName; //Ã¤ÆÃ¹æ ÀÌ¸§
-	@ApiModelProperty(example = "½Å°í ´ë»óÀÚ(=´Ğ³×ÀÓ)")
-	private String reportName; //½Å°í ´ë»ó
-	@ApiModelProperty(example = "Ã¤ÆÃ ³»¿ë")
-	private String reportContent; //Ã¤ÆÃ ³»¿ë
-	@ApiModelProperty(example = "½Å°í »çÀ¯")
-	private String reportWhy; //½Å°í »çÀ¯
-	@ApiModelProperty(example = "½Å°íÀÚ")
-	private String reporter; //½Å°íÀÚ
-	@ApiModelProperty(example = "½Å°íÀÚ ÇĞ¹ø")
-	private String reporterStudentId; //½Å°íÀÚ ÇĞ¹ø
-	@ApiModelProperty(example = "½Å°í ´ë»óÀÚ ÇĞ¹ø")
-	private String targetStudentId; //½Å°í ´ë»ó ÇĞ¹ø
+	@ApiModelProperty(example = "ì±„íŒ…ë°© ì´ë¦„(=ê³¼ëª©ëª…)")
+	private String roomName; //ì±„íŒ…ë°© ì´ë¦„
+	@ApiModelProperty(example = "ì‹ ê³  ëŒ€ìƒì(=ë‹‰ë„¤ì„)")
+	private String reportName; //ì‹ ê³  ëŒ€ìƒ
+	@ApiModelProperty(example = "ì±„íŒ… ë‚´ìš©")
+	private String reportContent; //ì±„íŒ… ë‚´ìš©
+	@ApiModelProperty(example = "ì‹ ê³  ì‚¬ìœ ")
+	private String reportWhy; //ì‹ ê³  ì‚¬ìœ 
+	@ApiModelProperty(example = "ì‹ ê³ ì")
+	private String reporter; //ì‹ ê³ ì
+	@ApiModelProperty(example = "ì‹ ê³ ì í•™ë²ˆ")
+	private String reporterStudentId; //ì‹ ê³ ì í•™ë²ˆ
+	@ApiModelProperty(example = "ì‹ ê³  ëŒ€ìƒì í•™ë²ˆ")
+	private String targetStudentId; //ì‹ ê³  ëŒ€ìƒ í•™ë²ˆ
     
     public ReportDto() {}
 	public ReportDto(String id, String roomName, String reportName, String reportContent, String reportWhy,

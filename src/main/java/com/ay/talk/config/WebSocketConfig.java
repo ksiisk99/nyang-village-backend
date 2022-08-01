@@ -7,12 +7,9 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 import org.springframework.web.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
-import org.springframework.web.socket.server.standard.WebSphereRequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
-import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import com.ay.talk.security.StompHandler;
 
@@ -43,7 +40,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 				.setAllowedOrigins("*")
 				.setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy()));	
 				//.withSockJS();
-				//.addInterceptors(new HttpSessionHandshakeInterceptor()) //ÇöÀç ±¸µ¿µÇ°í ÀÖ´Â ¼­¹ö¿Í ´Ù¸¥ µµ¸ŞÀÎ¿¡¼­µµ Á¢±Ù °¡´É
+				//.addInterceptors(new HttpSessionHandshakeInterceptor()) //í˜„ì¬ êµ¬ë™ë˜ê³  ìˆëŠ” ì„œë²„ì™€ ë‹¤ë¥¸ ë„ë©”ì¸ì—ì„œë„ ì ‘ê·¼ ê°€ëŠ¥
 	}
 	
 	@Override

@@ -19,16 +19,16 @@ public class ChatMsgDaoImpl implements ChatMsgDao{
 
 	@Autowired
 	public ChatMsgDaoImpl(MongoTemplate mongoTemplate, MongoDatabase mongoDatabase) {
-		this.mongoTemplate=mongoTemplate; //find ¿ë
-		this.mongoDatabase=mongoDatabase; //insert update¿ë
+		this.mongoTemplate=mongoTemplate; //find
+		this.mongoDatabase=mongoDatabase; //insert update
 	}
 	
 	@PostConstruct
 	public void initMongoCollections() {
-		chatMsgCollection=mongoDatabase.getCollection("ChatMsg",ChatMsg.class); //Ã¤ÆÃ ¸Þ½ÃÁö ÄÃ·º¼Ç ÃÊ±âÈ­
+		chatMsgCollection=mongoDatabase.getCollection("ChatMsg",ChatMsg.class); //ì±„íŒ… ë©”ì‹œì§€ ì»¬ë ‰ì…˜ ì´ˆê¸°í™”
 	}
 	
-	//Ã¤ÆÃ ¸Þ½ÃÁö Ãß°¡
+	//ì±„íŒ… ë©”ì‹œì§€ ì¶”ê°€
 	public void insertChatMsg(ChatMsg chatMsg) {
 		chatMsgCollection.insertOne(chatMsg);
 	}

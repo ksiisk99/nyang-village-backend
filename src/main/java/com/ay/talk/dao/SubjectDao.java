@@ -5,6 +5,6 @@ import java.util.List;
 import com.ay.talk.entity.Subject;
 
 public interface SubjectDao {
-	//ÀüÃ¼ °ú¸ñ °¡Á®¿À±â
+	//ì „ì²´ ê³¼ëª© ì¡°íšŒ
 	public List<Subject> findSubjects();
 }

@@ -21,18 +21,18 @@ import com.ay.talk.entity.UserRoomData;
 
 @Repository
 public class InMemoryRepository implements ServerRepository{
-	private Map<String,Integer> subjects=null; //¸ğµç °ú¸ñ(°ú¸ñ¸í,ÀÎµ¦½º)
-	private Map<String,String> strSubjects=null; //¸ğµç °ú¸ñ(°ú¸ñ¸í,ÀÎµ¦½º¹®ÀÚ¿­);
-	private String[] randomNames=null; //·£´ı´Ğ³×ÀÓ 200°³. °¢ ¹æ¿¡ ·£´ıÀ¸·Î »Ñ·ÁÁØ´Ù.
-	private Map<String,Integer> idxRandomNames=null; //·£´ı´Ğ³×ÀÓ(´Ğ³×ÀÓ,ÀÎµ¦½º)
-	private final int VERSION=1; //¾÷µ¥ÀÌÆ® ¹öÀü
-	private ListOperations<String, String> roomInNames;	//¹æ¾È¿¡ ÀÖ´Â »ç¿ëÀÚµé ·£´ı´Ğ³×ÀÓ(¹æ¹øÈ£, À¯Àú´Ğ³×ÀÓµé)
-	private ListOperations<String, String> roomInTokens;	//¹æ¾È¿¡ ÀÖ´Â »ç¿ëÀÚµé ÅäÅ«(¹æ¹øÈ£, À¯ÀúÅäÅ«µé)
-	private ValueOperations<String, String> userInfos; //ÇĞ¹ø¿¡ ÇØ´çÇÏ´Â ÆÄº£,Á¤Áö±â°£ Á¤Áö±â°£ÀÌ ¾øÀ¸¸é 0
+	private Map<String,Integer> subjects=null; //ëª¨ë“  ê³¼ëª©(ê³¼ëª©ëª…,ì¸ë±ìŠ¤)
+	private Map<String,String> strSubjects=null; //ëª¨ë“  ê³¼ëª©(ê³¼ëª©ëª…,ì¸ë±ìŠ¤ë¬¸ìì—´);
+	private String[] randomNames=null; //ëœë¤ë‹‰ë„¤ì„ 200ê°œ. ê° ë°©ì— ëœë¤ìœ¼ë¡œ ë¿Œë ¤ì¤€ë‹¤.
+	private Map<String,Integer> idxRandomNames=null; //ëœë¤ë‹‰ë„¤ì„(ë‹‰ë„¤ì„,ì¸ë±ìŠ¤)
+	private final int VERSION=1; //ì—…ë°ì´íŠ¸ ë²„ì „
+	private ListOperations<String, String> roomInNames;	//ë°©ì•ˆì— ìˆëŠ” ì‚¬ìš©ìë“¤ ëœë¤ë‹‰ë„¤ì„(ë°©ë²ˆí˜¸, ìœ ì €ë‹‰ë„¤ì„ë“¤)
+	private ListOperations<String, String> roomInTokens;	//ë°©ì•ˆì— ìˆëŠ” ì‚¬ìš©ìë“¤ í† í°(ë°©ë²ˆí˜¸, ìœ ì €í† í°ë“¤)
+	private ValueOperations<String, String> userInfos; //í•™ë²ˆì— í•´ë‹¹í•˜ëŠ” íŒŒë² ,ì •ì§€ê¸°ê°„ ì •ì§€ê¸°ê°„ì´ ì—†ìœ¼ë©´ 0
 	@SuppressWarnings("rawtypes")
 	private final RedisTemplate redisTemplate;
 	private final DbRepository dbRepository;
-	private AtomicIntegerArray checkRoomNames; //¸ğµç ¹æ¾È¿¡ ÀÖ´Â ·£´ı´Ğ³×ÀÓ Ã¼Å© Áßº¹Á¦°Å
+	private AtomicIntegerArray checkRoomNames; //ëª¨ë“  ë°©ì•ˆì— ìˆëŠ” ëœë¤ë‹‰ë„¤ì„ ì²´í¬ ì¤‘ë³µì œê±°
 	
 	
 	@Autowired
@@ -42,7 +42,7 @@ public class InMemoryRepository implements ServerRepository{
 		this.dbRepository=dbRepository;
 	}
 
-	//¸ğµç º¯¼ö ÃÊ±âÈ­
+	//ëª¨ë“  ë³€ìˆ˜ ì´ˆê¸°í™”
 	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void init() {
@@ -55,28 +55,28 @@ public class InMemoryRepository implements ServerRepository{
 		roomInTokens=redisTemplate.opsForList();
 		userInfos=redisTemplate.opsForValue();
 		
-		//¼ö°­°ú¸ñ ÃÊ±âÈ­
+		//ìˆ˜ê°•ê³¼ëª© ì´ˆê¸°í™”
 		List<Subject> subjectList=dbRepository.findSubjects();
 		for(int roomId=0;roomId<subjectList.size();roomId++) {
 			initRoomIn(subjectList.get(roomId).getName(),roomId);
 		}
-		initCheckRoomNames(subjectList.size()); //checkRoomNames ÃÊ±âÈ­
+		initCheckRoomNames(subjectList.size()); //checkRoomNames ì´ˆê¸°í™”
 		
 		
-		//·£´ı ´Ğ³×ÀÓ ÃÊ±âÈ­
+		//ëœë¤ ë‹‰ë„¤ì„ ì´ˆê¸°í™”
 		List<RandomName> randomNameList=dbRepository.findRandomNames();
 		for(int idx=0; idx<randomNameList.size();idx++) {
 			initRandomName(randomNameList.get(idx).getName(),idx);
 		}
 		
-		//Á¤Áö È¸¿ø Á¤º¸ ÃÊ±âÈ­
+		//ì •ì§€ íšŒì› ì •ë³´ ì´ˆê¸°í™”
 		List<Suspended> suspendedUserList=dbRepository.findSuspendedUserList();
 		Map<String,String>suspendedUserMap=new HashMap<String,String>();
 		for(int i=0;i<suspendedUserList.size();i++) {
 			suspendedUserMap.put(suspendedUserList.get(i).getStudentId(), suspendedUserList.get(i).getPeriod());
 		}
 		
-		//»ç¿ëÀÚ Á¤º¸ ÃÊ±âÈ­
+		//ì‚¬ìš©ì ì •ë³´ ì´ˆê¸°í™”
 		List<User> userList=dbRepository.findUserList();
 		for(int i=0;i<userList.size();i++) {
 			List<UserRoomData> roomIds=userList.get(i).getRoomIds();
@@ -99,13 +99,13 @@ public class InMemoryRepository implements ServerRepository{
 		}
 	}
 	
-	//checkRoomNames ÃÊ±âÈ­
+	//checkRoomNames ì´ˆê¸°í™”
 	@Override
 	public void initCheckRoomNames(int size) { 
 		checkRoomNames=new AtomicIntegerArray(size*200);
 	}
 	
-	//subjects,strSubjects ÃÊ±âÈ­
+	//subjects,strSubjects ì´ˆê¸°í™”
 	@Override
 	public void initRoomIn(String subjectName, int roomId) { 
 		
@@ -114,14 +114,14 @@ public class InMemoryRepository implements ServerRepository{
 		roomInTokens.rightPush(String.valueOf(roomId), "a");
 	}
 	
-	//·£´ı ´Ğ³×ÀÓ ÃÊ±âÈ­
+	//ëœë¤ ë‹‰ë„¤ì„ ì´ˆê¸°í™”
 	@Override
 	public void initRandomName(String name,int idx) {
 		randomNames[idx]=name;
 		idxRandomNames.put(name, idx);
 	}
 	
-	//»ç¿ëÀÚ Á¤º¸¸¦ °¡Á®¿Í¼­ ÇĞ¹ø¿¡ ´ëÀÀÇÏ´Â fcmÅäÅ«°ú Á¤Áö±â°£ ÃÊ±âÈ­ÇÏ°í ¹æÁ¤º¸ ÃÊ±âÈ­
+	//ì‚¬ìš©ì ì •ë³´ë¥¼ ê°€ì ¸ì™€ì„œ í•™ë²ˆì— ëŒ€ì‘í•˜ëŠ” fcmí† í°ê³¼ ì •ì§€ê¸°ê°„ ì´ˆê¸°í™”í•˜ê³  ë°©ì •ë³´ ì´ˆê¸°í™”
 	@Override
 	public void initUser(String fcm, String studentId, String roomId, String nickName, String suspendedPriod, String roomName) {
 		userInfos.set(studentId, new StringBuilder().append(fcm+","+suspendedPriod).toString());
@@ -131,34 +131,34 @@ public class InMemoryRepository implements ServerRepository{
 	}
 
 	
-	//¹öÀü ºñ±³
+	//ë²„ì „ ë¹„êµ
 	@Override
 	public int getVersion() {
 		return VERSION;
 	}
 	
 	
-	//Á¤Áö ±â°£ Ç®¸° È¸¿ø µ¥ÀÌÅÍ »èÁ¦(=±³Ã¼)
+	//ì •ì§€ ê¸°ê°„ í’€ë¦° íšŒì› ë°ì´í„° ì‚­ì œ(=êµì²´)
 	@Override
 	public void removeSuspendedUser(String studentId, String userInfo) {	
 		userInfos.set(studentId, userInfo);
 	}
 	
 	
-	//°¢ ¹æ¿¡ ´ëÇÑ Ã³À½ ·£´ı´Ğ³×ÀÓ ÀÎµ¦½º ¹æ ÀÎ¿øÀÇ »çÀÌÁî¸¸Å­ returnÇÏ´Â ÀÌÀ¯´Â ¼øÂ÷ÀûÀ¸·Î ·£´ı´Ğ³×ÀÓÀ» ÇÒ´çÇÏ±â ¶§¹®
+	//ê° ë°©ì— ëŒ€í•œ ì²˜ìŒ ëœë¤ë‹‰ë„¤ì„ ì¸ë±ìŠ¤ ë°© ì¸ì›ì˜ ì‚¬ì´ì¦ˆë§Œí¼ returní•˜ëŠ” ì´ìœ ëŠ” ìˆœì°¨ì ìœ¼ë¡œ ëœë¤ë‹‰ë„¤ì„ì„ í• ë‹¹í•˜ê¸° ë•Œë¬¸
 	@Override
 	public int getStartRandomNickNameIdx(String roomName) {
 		return (int) (subjects.get(roomName)==null?300:roomInNames.size(roomName));
 	}
 	
-	//¹æ¿¡ ´ëÇÑ ·£´ı´Ğ³×ÀÓ Ã¼Å©
+	//ë°©ì— ëŒ€í•œ ëœë¤ë‹‰ë„¤ì„ ì²´í¬
 	@Override
 	public boolean setCheckRoomName(String roomName, int idx) {
 		// TODO Auto-generated method stub
 		return checkRoomNames.compareAndSet(subjects.get(roomName)*200+idx, 0, 1);
 	}
 	
-	//·£´ı´Ğ³×ÀÓ
+	//ëœë¤ë‹‰ë„¤ì„
 	@Override
 	public String getRandomNickName(int idx){
 		return randomNames[idx];
@@ -166,13 +166,13 @@ public class InMemoryRepository implements ServerRepository{
 	
 	
 
-	//°ú¸ñ¸í¿¡ ´ëÇÑ ¹æ ¾ÆÀÌµğ°ª
+	//ê³¼ëª©ëª…ì— ëŒ€í•œ ë°© ì•„ì´ë””ê°’
 	@Override
 	public int getRoomId(String roomName) {
 		return subjects.get(roomName);
 	}
 	
-	//¹æ ¾ÈÀÇ »ç¿ëÀÚ ´Ğ³×ÀÓµé
+	//ë°© ì•ˆì˜ ì‚¬ìš©ì ë‹‰ë„¤ì„ë“¤
 	@Override
 	public List<String> getRoomInNames(String roomName){
 		//System.out.println(roomInNames.get(subjects.get(roomName)));
@@ -180,69 +180,67 @@ public class InMemoryRepository implements ServerRepository{
 		//return roomInNames.get(subjects.get(roomName));
 	}
 	
-	//¹æ ¾ÈÀÇ »ç¿ëÀÚ ÅäÅ«µé
+	//ë°© ì•ˆì˜ ì‚¬ìš©ì í† í°ë“¤
 	@Override
 	public List<String> getRoomInTokens(String roomId){
 		//System.out.println(roomInTokens.get(Integer.parseInt(roomId)));
 		return roomInTokens.range(roomId, 0, -1);
 	}
 	
-	//¹æ ¾ÈÀÇ »ç¿ëÀÚ ÅäÅ«µé roomId·Î Á¶È¸
+	//ë°© ì•ˆì˜ ì‚¬ìš©ì í† í°ë“¤ roomIdë¡œ ì¡°íšŒ
 	@Override
 	public List<String> getRoomInTokens2(int roomId){
 		return roomInTokens.range(String.valueOf(roomId), 0, -1);
 	}
 	
-	//randomNames ÀÎµ¦½º·Î ¹æ ¾È¿¡ »ç¿ëÀÚ ·£´ı´Ğ³×ÀÓ Ãß°¡
+	//randomNames ì¸ë±ìŠ¤ë¡œ ë°© ì•ˆì— ì‚¬ìš©ì ëœë¤ë‹‰ë„¤ì„ ì¶”ê°€
 	@Override
 	public void addRoomInName(String roomName,int idx) {
 		roomInNames.rightPush(roomName, randomNames[idx]);
 	}
 	
-	//·£´ı´Ğ³×ÀÓÀ» ¸Å°³º¯¼ö·Î ¹Ş¾Æ ¹æ ¾È¿¡ »ç¿ëÀÚ ´Ğ³×ÀÓ Ãß°¡
+	//ëœë¤ë‹‰ë„¤ì„ì„ ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì•„ ë°© ì•ˆì— ì‚¬ìš©ì ë‹‰ë„¤ì„ ì¶”ê°€
 	@Override
 	public void addRoomInName(String roomName,String nickName) {
 		roomInNames.rightPush(roomName, nickName);
 		//System.out.println("addRoomInName2:"+roomInNames.get(roomId));
 	}
 	
-	//¹æ ¾È¿¡ »ç¿ëÀÚ ÅäÅ« Ãß°¡
+	//ë°© ì•ˆì— ì‚¬ìš©ì í† í° ì¶”ê°€
 	@Override
 	public void addRoomInToken(String roomName,String fcm) {
 		roomInTokens.rightPush(strSubjects.get(roomName), fcm);
 		//System.out.println("addRoomInToken"+roomInTokens.get(subjects.get(roomName)));
 	}
 	
-
-	
-	//¹æ ¾ÈÀÇ »ç¿ëÀÚ ´Ğ³×ÀÓ »èÁ¦
+	//ë°© ì•ˆì˜ ì‚¬ìš©ì ë‹‰ë„¤ì„ ì‚­ì œ
 	@Override
 	public void removeRoomInName(String roomName, String nickName) {
 		roomInNames.remove(roomName, 1, nickName);
 		//System.out.println("removeRoomInName"+roomInNames.get(roomId));
 	}
 	
-	//¹æ ¾ÈÀÇ »ç¿ëÀÚ ÅäÅ« »èÁ¦
+	//ë°© ì•ˆì˜ ì‚¬ìš©ì í† í° ì‚­ì œ
 	@Override
 	public void removeRoomInToken(String roomName, String fcm) {
 		roomInTokens.remove(strSubjects.get(roomName), 1, fcm);
 		//System.out.println("removeRoomToken"+roomInTokens.get(roomId));
 	}
 
-	//Á¤Áö È¸¿ø Ãß°¡
+	//ì •ì§€ íšŒì› ì¶”ê°€
 	@Override
 	public void addSuspendedUser(String studentId, String userInfo) {
 		// TODO Auto-generated method stub
 		userInfos.set(studentId, userInfo);
 	}
 	
-	//È¸¿ø Á¤º¸ Á¶È¸(fcm,suspendedPriod)
+	//íšŒì› ì •ë³´ ì¡°íšŒ(fcm,suspendedPriod)
 	@Override
 	public String getUserInfo(String studentId) {
 		return userInfos.get(studentId);
 	}
 	
-	//È¸¿ø Á¤º¸ Ãß°¡
+	//íšŒì› ì •ë³´ ì¶”ê°€
 	@Override
 	public void addUserInfo(String studentId, String userInfo) {
 		userInfos.set(studentId, userInfo);

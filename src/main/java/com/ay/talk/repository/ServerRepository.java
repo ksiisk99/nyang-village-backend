@@ -4,70 +4,70 @@ import java.util.List;
 
 public interface ServerRepository {
 		
-		//checkRoomNames ÃÊ±âÈ­
+		//checkRoomNames ì´ˆê¸°í™”
 		public void initCheckRoomNames(int size);
 		
-		//subjects, roomInNames, roomInTokens ÃÊ±âÈ­
+		//subjects, roomInNames, roomInTokens ì´ˆê¸°í™”
 		public void initRoomIn(String subjectName, int roomId);
 		
-		//·£´ı ´Ğ³×ÀÓ ÃÊ±âÈ­
+		//ëœë¤ ë‹‰ë„¤ì„ ì´ˆê¸°í™”
 		public void initRandomName(String name,int idx);
 		
-		//»ç¿ëÀÚ Á¤º¸¸¦ °¡Á®¿Í¼­ ÇĞ¹ø¿¡ ´ëÀÀÇÏ´Â fcmÅäÅ«°ú Á¤Áö±â°£ ÃÊ±âÈ­ÇÏ°í ¹æÁ¤º¸ ÃÊ±âÈ­
+		//ì‚¬ìš©ì ì •ë³´ë¥¼ ê°€ì ¸ì™€ì„œ í•™ë²ˆì— ëŒ€ì‘í•˜ëŠ” fcmí† í°ê³¼ ì •ì§€ê¸°ê°„ ì´ˆê¸°í™”í•˜ê³  ë°©ì •ë³´ ì´ˆê¸°í™”
 		public void initUser(String fcm, String studentId, String roomId, String nickName, String suspendedPriod,String roomName);
 		
-		//¹öÀü ºñ±³
+		//ë²„ì „ ë¹„êµ
 		public int getVersion();
 		
-		//Á¤Áö ±â°£ Ç®¸° È¸¿ø µ¥ÀÌÅÍ »èÁ¦(=±³Ã¼)
+		//ì •ì§€ ê¸°ê°„ í’€ë¦° íšŒì› ë°ì´í„° ì‚­ì œ(=êµì²´)
 		public void removeSuspendedUser(String studentId, String fcm);
 		
 
 		
-		//°¢ ¹æ¿¡ ´ëÇÑ Ã³À½ ·£´ı´Ğ³×ÀÓ ÀÎµ¦½º ¹æ ÀÎ¿øÀÇ »çÀÌÁî¸¸Å­ returnÇÏ´Â ÀÌÀ¯´Â ¼øÂ÷ÀûÀ¸·Î ·£´ı´Ğ³×ÀÓÀ» ÇÒ´çÇÏ±â ¶§¹®
+		//ê° ë°©ì— ëŒ€í•œ ì²˜ìŒ ëœë¤ë‹‰ë„¤ì„ ì¸ë±ìŠ¤ ë°© ì¸ì›ì˜ ì‚¬ì´ì¦ˆë§Œí¼ returní•˜ëŠ” ì´ìœ ëŠ” ìˆœì°¨ì ìœ¼ë¡œ ëœë¤ë‹‰ë„¤ì„ì„ í• ë‹¹í•˜ê¸° ë•Œë¬¸
 		public int getStartRandomNickNameIdx(String roomName);
 		
-		//¹æ¿¡ ´ëÇÑ ·£´ı´Ğ³×ÀÓ Ã¼Å©
+		//ë°©ì— ëŒ€í•œ ëœë¤ë‹‰ë„¤ì„ ì²´í¬
 		public boolean setCheckRoomName(String roomName,int idx);
 		
-		//·£´ı´Ğ³×ÀÓ
+		//ëœë¤ë‹‰ë„¤ì„
 		public String getRandomNickName(int idx);
 		
-		//°ú¸ñ¸í¿¡ ´ëÇÑ ¹æ ¾ÆÀÌµğ°ª
+		//ê³¼ëª©ëª…ì— ëŒ€í•œ ë°© ì•„ì´ë””ê°’
 		public int getRoomId(String roomName);
 		
-		//¹æ ¾ÈÀÇ »ç¿ëÀÚ ´Ğ³×ÀÓµé
+		//ë°© ì•ˆì˜ ì‚¬ìš©ì ë‹‰ë„¤ì„ë“¤
 		public List<String> getRoomInNames(String roomName);
 		
-		//¹æ ¾ÈÀÇ »ç¿ëÀÚ ÅäÅ«µé
+		//ë°© ì•ˆì˜ ì‚¬ìš©ì í† í°ë“¤
 		public List<String> getRoomInTokens(String roomId);
 		
-		//¹æ ¾ÈÀÇ »ç¿ëÀÚ ÅäÅ«µé roomId·Î Á¶È¸
+		//ë°© ì•ˆì˜ ì‚¬ìš©ì í† í°ë“¤ roomIdë¡œ ì¡°íšŒ
 		public List<String> getRoomInTokens2(int roomId);
 		
-		//randomNames ÀÎµ¦½º·Î ¹æ ¾È¿¡ »ç¿ëÀÚ ·£´ı´Ğ³×ÀÓ Ãß°¡
+		//randomNames ì¸ë±ìŠ¤ë¡œ ë°© ì•ˆì— ì‚¬ìš©ì ëœë¤ë‹‰ë„¤ì„ ì¶”ê°€
 		public void addRoomInName(String roomName,int idx);
 		
-		//·£´ı´Ğ³×ÀÓÀ» ¸Å°³º¯¼ö·Î ¹Ş¾Æ ¹æ ¾È¿¡ »ç¿ëÀÚ ´Ğ³×ÀÓ Ãß°¡
+		//ëœë¤ë‹‰ë„¤ì„ì„ ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì•„ ë°© ì•ˆì— ì‚¬ìš©ì ë‹‰ë„¤ì„ ì¶”ê°€
 		public void addRoomInName(String roomName,String nickName);
 		
-		//¹æ ¾È¿¡ »ç¿ëÀÚ ÅäÅ« Ãß°¡
+		//ë°© ì•ˆì— ì‚¬ìš©ì í† í° ì¶”ê°€
 		public void addRoomInToken(String roomName,String fcm);
 		
 		
 		
-		//¹æ ¾ÈÀÇ »ç¿ëÀÚ ´Ğ³×ÀÓ »èÁ¦
+		//ë°© ì•ˆì˜ ì‚¬ìš©ì ë‹‰ë„¤ì„ ì‚­ì œ
 		public void removeRoomInName(String roomName, String nickName);
 		
-		//¹æ ¾ÈÀÇ »ç¿ëÀÚ ÅäÅ« »èÁ¦
+		//ë°© ì•ˆì˜ ì‚¬ìš©ì í† í° ì‚­ì œ
 		public void removeRoomInToken(String roomName, String fcm);
 		
-		//Á¤Áö È¸¿ø Ãß°¡
+		//ì •ì§€ íšŒì› ì¶”ê°€
 		public void addSuspendedUser(String studentId, String userInfo);
 		
-		//È¸¿ø Á¤º¸ Á¶È¸(fcm,suspendedPriod)
+		//íšŒì› ì •ë³´ ì¡°íšŒ(fcm,suspendedPriod)
 		public String getUserInfo(String studentId);
 		
-		//È¸¿ø Á¤º¸ Ãß°¡
+		//íšŒì› ì •ë³´ ì¶”ê°€
 		public void addUserInfo(String studentId, String userInfo);
 }

@@ -3,19 +3,19 @@ package com.ay.talk.dto.request;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ReqReportMsg {
-	@ApiModelProperty(example = "½Å°í ´ë»óÀÚ(=´Ğ³×ÀÓ)")
+	@ApiModelProperty(example = "ì‹ ê³  ëŒ€ìƒì(=ë‹‰ë„¤ì„)")
     String reportName;
-	@ApiModelProperty(example = "Ã¤ÆÃ ³»¿ë")
+	@ApiModelProperty(example = "ì±„íŒ… ë‚´ìš©")
     String reportContent;
-	@ApiModelProperty(example = "½Å°í »çÀ¯")
+	@ApiModelProperty(example = "ì‹ ê³  ì‚¬ìœ ")
     String reportWhy;
-	@ApiModelProperty(example = "½Å°íÀÚ")
+	@ApiModelProperty(example = "ì‹ ê³ ì")
     String reporter;
-	@ApiModelProperty(example = "½Å°íÀÚ ÇĞ¹ø")
+	@ApiModelProperty(example = "ì‹ ê³ ì í•™ë²ˆ")
     String studentId;
-	@ApiModelProperty(example = "Ã¤ÆÃ¹æ ÀÌ¸§(=°ú¸ñ¸í)")
+	@ApiModelProperty(example = "ì±„íŒ…ë°© ì´ë¦„(=ê³¼ëª©ëª…)")
     String roomName;
-	@ApiModelProperty(example = "±³¼ö´Ô ¼ºÇÔ")
+	@ApiModelProperty(example = "êµìˆ˜ë‹˜ ì„±í•¨")
     String professorName;
     
     public ReqReportMsg() {}

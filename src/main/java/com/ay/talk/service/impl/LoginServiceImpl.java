@@ -48,26 +48,26 @@ public class LoginServiceImpl implements LoginService{
 	@Value("${crawling.path2}")
 	private String crawlingPath2;
 	private final DbRepository dbRepository;
-	private final ServerRepository serverRepository; //¼­¹ö ÀÎ ¸Ş¸ğ¸® º¯¼ö
+	private final ServerRepository serverRepository; //ì„œë²„ ì¸ ë©”ëª¨ë¦¬ ë³€ìˆ˜
 	private final FcmService fcmService;
 	private final ChatService chatService;
-	private final JwtTokenProvider jwtTokenProvider; //ÅäÅ« ¹ß±Ş
-	private final int updateSignal=1; //¾÷µ¥ÀÌÆ® ½ÅÈ£
-	private final int firstLoginSignal=3; //Ã³À½ ·Î±×ÀÎ ½ÅÈ£ 3
-	private final int reviseSubjectSignal=4; //¼ö°­Á¤Á¤ÇÑ È¸¿ø
-	private final int doubleLoginSignal=4; //ÀÌÁß·Î±×ÀÎ ½ÅÈ£ ¼ö°­Á¤Á¤°ú Å¬¶óÀÌ¾ğÆ®¿¡¼­ Ã³¸®ÇÏ´Â ·ÎÁ÷ÀÌ °°À½
-	private final int misspellSignal=5; //¾ÆÀÌµğ ºñ¹Ğ¹øÈ£°¡ Àß¸ø ÀÔ·ÂµÊ ½ÅÈ£ 5
-	private final int suspendedSignal=6; //Á¤ÁöÈ¸¿ø ½ÅÈ£ 6
-	private final int pcNotMobileLoginSignal=2; //pc¿¡¼­ ·Î±×ÀÎ ÇÒ ¶§ ¸ğ¹ÙÀÏ¿¡¼­ ·Î±×ÀÎÀÌ ¾ÈµÇ¾î ÀÖÀ¸¸é ½ÅÈ£ 2
-	private final int pcSuspendedUserLoginSignal=3; //pc¿¡¼­ ·Î±×ÀÎ ÇÒ ¶§ Á¤ÁöÈ¸¿øÀÌ¶ó¸é ½ÅÈ£3
-	private final int pcSuccessLoginSignal=1; //pc·Î±×ÀÎ ¼º°ø ½ÅÈ£ 1
-	private final int pcFailLoginSignal=4; //pc ¾ÆÀÌµğ ºñ¹Ğ¹øÈ£ Àß¸ø ÀÔ·ÂµÊ ½ÅÈ£ 4
-	private final int enterMsgSignal=0; //ÀÔÀå ½ÅÈ£ 0
-	private final int exitMsgSignal=1; //ÅğÀå ½ÅÈ£ 1
-	private final int failLogoutSignal=0; //·Î±×¾Æ¿ô ½ÇÆĞ ½ÅÈ£ 0
-	private final int successLogoutSignal=1; //·Î±×¾Æ¿ô ¼º°ø ½ÅÈ£ 1
+	private final JwtTokenProvider jwtTokenProvider; //í† í° ë°œê¸‰
+	private final int updateSignal=1; //ì—…ë°ì´íŠ¸ ì‹ í˜¸
+	private final int firstLoginSignal=3; //ì²˜ìŒ ë¡œê·¸ì¸ ì‹ í˜¸ 3
+	private final int reviseSubjectSignal=4; //ìˆ˜ê°•ì •ì •í•œ íšŒì›
+	private final int doubleLoginSignal=4; //ì´ì¤‘ë¡œê·¸ì¸ ì‹ í˜¸ ìˆ˜ê°•ì •ì •ê³¼ í´ë¼ì´ì–¸íŠ¸ì—ì„œ ì²˜ë¦¬í•˜ëŠ” ë¡œì§ì´ ê°™ìŒ
+	private final int misspellSignal=5; //ì•„ì´ë”” ë¹„ë°€ë²ˆí˜¸ê°€ ì˜ëª» ì…ë ¥ë¨ ì‹ í˜¸ 5
+	private final int suspendedSignal=6; //ì •ì§€íšŒì› ì‹ í˜¸ 6
+	private final int pcNotMobileLoginSignal=2; //pcì—ì„œ ë¡œê·¸ì¸ í•  ë•Œ ëª¨ë°”ì¼ì—ì„œ ë¡œê·¸ì¸ì´ ì•ˆë˜ì–´ ìˆìœ¼ë©´ ì‹ í˜¸ 2
+	private final int pcSuspendedUserLoginSignal=3; //pcì—ì„œ ë¡œê·¸ì¸ í•  ë•Œ ì •ì§€íšŒì›ì´ë¼ë©´ ì‹ í˜¸3
+	private final int pcSuccessLoginSignal=1; //pcë¡œê·¸ì¸ ì„±ê³µ ì‹ í˜¸ 1
+	private final int pcFailLoginSignal=4; //pc ì•„ì´ë”” ë¹„ë°€ë²ˆí˜¸ ì˜ëª» ì…ë ¥ë¨ ì‹ í˜¸ 4
+	private final int enterMsgSignal=0; //ì…ì¥ ì‹ í˜¸ 0
+	private final int exitMsgSignal=1; //í‡´ì¥ ì‹ í˜¸ 1
+	private final int failLogoutSignal=0; //ë¡œê·¸ì•„ì›ƒ ì‹¤íŒ¨ ì‹ í˜¸ 0
+	private final int successLogoutSignal=1; //ë¡œê·¸ì•„ì›ƒ ì„±ê³µ ì‹ í˜¸ 1
 
-	private Logger logger; //·Î±×
+	private Logger logger; //ë¡œê·¸
 	@Autowired
 	public LoginServiceImpl(DbRepository dbRepository, ServerRepository serverRepository
 			,FcmService fcmService, ChatService chatService, JwtTokenProvider jwtTokenProvider) {
@@ -85,16 +85,16 @@ public class LoginServiceImpl implements LoginService{
 		ResLogin resLogin=new ResLogin();
 		//logger.info("studentId: {}",reqLogin.getStudentId());
 		
-		if(reqLogin.getVersion()!=serverRepository.getVersion()) { //¹öÀüÀÌ ´Ù¸£¸é ¾÷µ¥ÀÌÆ® ½ÅÈ£ Àü´Ş
-			resLogin.setSignal(updateSignal); //¾÷µ¥ÀÌÆ® ½ÅÈ£ 1
+		if(reqLogin.getVersion()!=serverRepository.getVersion()) { //ë²„ì „ì´ ë‹¤ë¥´ë©´ ì—…ë°ì´íŠ¸ ì‹ í˜¸ ì „ë‹¬
+			resLogin.setSignal(updateSignal); //ì—…ë°ì´íŠ¸ ì‹ í˜¸ 1
 			return resLogin;
 		}
 		
 		String studentId=reqLogin.getStudentId();
 		String password=reqLogin.getPassword();
 				
-		ArrayList<SubjectInfo>userSubjects=Crawling(studentId, password); //Å©·Ñ¸µ Á¤º¸ °¡Á®¿À±â
-		if(userSubjects==null) { //¾ÆÀÌµğ ºñ¹Ğ¹øÈ£°¡ Àß¸ø ÀÔ·ÂµÊ ½ÅÈ£ 5
+		ArrayList<SubjectInfo>userSubjects=Crawling(studentId, password); //í¬ë¡¤ë§ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
+		if(userSubjects==null) { //ì•„ì´ë”” ë¹„ë°€ë²ˆí˜¸ê°€ ì˜ëª» ì…ë ¥ë¨ ì‹ í˜¸ 5
 			resLogin.setSignal(misspellSignal);
 			return resLogin;
 		}
@@ -103,13 +103,13 @@ public class LoginServiceImpl implements LoginService{
 		if(tmp!=null)
 			userInfo=serverRepository.getUserInfo(studentId).split(","); //0:fcm , 1:suspendedPriod
 		
-		if(userInfo!=null && !userInfo[1].equals("0")) { //Á¤Áö È¸¿øÀÌ¸é Á¤Áö ±â°£ Àü´Ş
-			//ÇöÀç³¯Â¥¿Í Á¤Áö³¯Â¥ ºñ±³ÈÄ Á¤Áö°¡ ¾Æ´Ò¶§¿Í Á¤ÁöÀÏ¶§ Ã³¸®
-			if(Integer.parseInt(userInfo[1])>=Integer.parseInt(getCurrentTime())) { //Á¤Áö È¸¿ø
+		if(userInfo!=null && !userInfo[1].equals("0")) { //ì •ì§€ íšŒì›ì´ë©´ ì •ì§€ ê¸°ê°„ ì „ë‹¬
+			//í˜„ì¬ë‚ ì§œì™€ ì •ì§€ë‚ ì§œ ë¹„êµí›„ ì •ì§€ê°€ ì•„ë‹ë•Œì™€ ì •ì§€ì¼ë•Œ ì²˜ë¦¬
+			if(Integer.parseInt(userInfo[1])>=Integer.parseInt(getCurrentTime())) { //ì •ì§€ íšŒì›
 				resLogin.setSuspendedDate(userInfo[1]);
-				resLogin.setSignal(suspendedSignal); //Á¤Áö È¸¿ø ½ÅÈ£ 6
+				resLogin.setSignal(suspendedSignal); //ì •ì§€ íšŒì› ì‹ í˜¸ 6
 				return resLogin;
-			}else {//Á¤Áö°¡ Ç®¸° È¸¿ø
+			}else {//ì •ì§€ê°€ í’€ë¦° íšŒì›
 				serverRepository.removeSuspendedUser(studentId
 						,new StringBuilder().append(reqLogin.getFcm()+",0").toString());
 				dbRepository.removeSuspendedUser(studentId);
@@ -118,36 +118,36 @@ public class LoginServiceImpl implements LoginService{
 		//long beforeTime = System.currentTimeMillis();
 		String jwt=null;
 		
-		if(userInfo==null) { //Ã³À½ ·Î±×ÀÎÇÑ È¸¿ø
-			resLogin.setSignal(firstLoginSignal); //Ã³À½ ·Î±×ÀÎ ½ÅÈ£ 3
+		if(userInfo==null) { //ì²˜ìŒ ë¡œê·¸ì¸í•œ íšŒì›
+			resLogin.setSignal(firstLoginSignal); //ì²˜ìŒ ë¡œê·¸ì¸ ì‹ í˜¸ 3
 			
-			ArrayList<UserRoomData> roomIds=new ArrayList<UserRoomData>(); //¹æ¿¡ ´ëÇÑ »ç¿ëÀÚ Á¤º¸(´Ğ³×ÀÓ,¹æ¾ÆÀÌµğ,¹æÀÌ¸§)
-			ArrayList<SubjectInfo> curSubjects=userSubjects; //»ç¿ëÀÚÀÇ °ú¸ñ Á¤º¸¸¦ ÀÓ½Ã º¯¼ö¿¡ ÀúÀå
-			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //responseÇÏ±â À§ÇÑ °ú¸ñº° ¹æ¾È¿¡ À¯Àú ´Ğ³×ÀÓ
-			ArrayList<String> authorities=new ArrayList<String>(); //±ÇÇÑ
+			ArrayList<UserRoomData> roomIds=new ArrayList<UserRoomData>(); //ë°©ì— ëŒ€í•œ ì‚¬ìš©ì ì •ë³´(ë‹‰ë„¤ì„,ë°©ì•„ì´ë””,ë°©ì´ë¦„)
+			ArrayList<SubjectInfo> curSubjects=userSubjects; //ì‚¬ìš©ìì˜ ê³¼ëª© ì •ë³´ë¥¼ ì„ì‹œ ë³€ìˆ˜ì— ì €ì¥
+			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //responseí•˜ê¸° ìœ„í•œ ê³¼ëª©ë³„ ë°©ì•ˆì— ìœ ì € ë‹‰ë„¤ì„
+			ArrayList<String> authorities=new ArrayList<String>(); //ê¶Œí•œ
 			authorities.add("Customer");
-			for(int i=0;i<curSubjects.size();i++) { //»ç¿ëÀÚÀÇ ¸ğµç ¼ö°­ °ú¸ñ Á¤º¸
+			for(int i=0;i<curSubjects.size();i++) { //ì‚¬ìš©ìì˜ ëª¨ë“  ìˆ˜ê°• ê³¼ëª© ì •ë³´
 				String subjectName=curSubjects.get(i).getSubjectName();
-				for(int j=serverRepository.getStartRandomNickNameIdx(subjectName);j<200;j++) { //°¢ ¹æ¿¡ ´ëÇÑ ¹Ì»ç¿ë ·£´ı´Ğ³×ÀÓ Ã£±â 
-					if(serverRepository.setCheckRoomName(subjectName, j)) { //¹Ì»ç¿ëÁßÀÎ ·£´ı´Ğ³×ÀÓÀ» ¸ÕÀú »ç¿ëÁßÀ¸·Î checkÇÑ´Ù.
+				for(int j=serverRepository.getStartRandomNickNameIdx(subjectName);j<200;j++) { //ê° ë°©ì— ëŒ€í•œ ë¯¸ì‚¬ìš© ëœë¤ë‹‰ë„¤ì„ ì°¾ê¸° 
+					if(serverRepository.setCheckRoomName(subjectName, j)) { //ë¯¸ì‚¬ìš©ì¤‘ì¸ ëœë¤ë‹‰ë„¤ì„ì„ ë¨¼ì € ì‚¬ìš©ì¤‘ìœ¼ë¡œ checkí•œë‹¤.
 						UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(j),
 								serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
-						roomIds.add(userRoomData); //db¿¡ ÀúÀå ½ÃÅ°±â À§ÇØ ¹æ Á¤º¸ Ãß°¡
+						roomIds.add(userRoomData); //dbì— ì €ì¥ ì‹œí‚¤ê¸° ìœ„í•´ ë°© ì •ë³´ ì¶”ê°€
 						
 								
-						//fcm ÀÔÀå ¸Ş½ÃÁö Àü¼Û
+						//fcm ì…ì¥ ë©”ì‹œì§€ ì „ì†¡
 						fcmService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName),serverRepository.getRandomNickName(j));
 					
-						//À¥ ¼ÒÄÏ ÀÔÀå ¸Ş½ÃÁö Àü¼Û
+						//ì›¹ ì†Œì¼“ ì…ì¥ ë©”ì‹œì§€ ì „ì†¡
 						chatService.enterExitMsg(enterMsgSignal,serverRepository.getRoomId(subjectName)
 								,serverRepository.getRandomNickName(j)); 
-						serverRepository.addRoomInName(subjectName,j); //¹æ ¾È¿¡ »ç¿ëÀÚ ´Ğ³×ÀÓ Ãß°¡
-						serverRepository.addRoomInToken(subjectName,reqLogin.getFcm()); //¹æ ¾È¿¡ »ç¿ëÀÚ ÅäÅ« Ãß°¡
+						serverRepository.addRoomInName(subjectName,j); //ë°© ì•ˆì— ì‚¬ìš©ì ë‹‰ë„¤ì„ ì¶”ê°€
+						serverRepository.addRoomInToken(subjectName,reqLogin.getFcm()); //ë°© ì•ˆì— ì‚¬ìš©ì í† í° ì¶”ê°€
 						RoomInfo roomInfo=new RoomInfo(subjectName,
 								serverRepository.getRoomId(subjectName),
 								serverRepository.getRandomNickName(j),curSubjects.get(i).getProfessorName(),
 								(ArrayList<String>)serverRepository.getRoomInNames(subjectName));
-						roomInfos.add(roomInfo); //responseÇÒ ¹æ Á¤º¸ Ãß°¡
+						roomInfos.add(roomInfo); //responseí•  ë°© ì •ë³´ ì¶”ê°€
 						break;
 					}
 				}
@@ -156,29 +156,29 @@ public class LoginServiceImpl implements LoginService{
 			dbRepository.insertUser(user);
 			resLogin.setRoomInfos(roomInfos);
 			serverRepository.addUserInfo(studentId,
-					new StringBuilder().append(reqLogin.getFcm()+",0").toString()); //ÇĞ¹ø ÅäÅ« µî·Ï
-			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt »ı¼º
-		}else if(userInfo[0].equals(reqLogin.getFcm())) { //°°Àº ±â±â·Î ·Î±×¾Æ¿ôÇÏ°í ·Î±×ÀÎÇÑ È¸¿ø
-			resLogin.setSignal(reviseSubjectSignal); //°°Àº ±â±â ·Î±×¾Æ¿ôÇÏ°í ·Î±×ÀÎÇÑ È¸¿ø ½ÅÈ£4
-			ArrayList<SubjectInfo> curSubjects=userSubjects; //»ç¿ëÀÚÀÇ °ú¸ñ Á¤º¸¸¦ ÀÓ½Ã º¯¼ö¿¡ ÀúÀå
-			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //responseÇÏ±â À§ÇÑ °ú¸ñº° ¹æ¾È¿¡ À¯Àú ´Ğ³×ÀÓ
-			int[] checkRoom=new int[curSubjects.size()]; //»õ·Ó°Ô µè´Â °ú¸ñ ÀÎµ¦½º ±âÁ¸ ¹æÀº À¯Áö ½ÃÄÑ¾ßÇÏ±â ¶§¹®ÀÌ´Ù.
-			int cnt=0; //ÀÌÀü °ú¸ñ°ú °ãÄ¡Áö ¾Ê´Â »õ·Î µè´Â °ú¸ñ ¼ö
-			ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //ÃÖÁ¾ ¼ö°­°ú¸ñ db ÀúÀå¿ë
-			User user=dbRepository.findUser(studentId); //db¿¡ ÀúÀåµÈ À¯Àú Á¤º¸¸¦ ºÒ·¯¿Â´Ù
-			List<UserRoomData> beforeSubjects=user.getRoomIds(); //¹Ù²î±â Àü ¼ö°­ °ú¸ñ
-			boolean[] overlap=new boolean[beforeSubjects.size()]; //ÀÌÀü°ú ÇöÀç ¼ö°­°ú¸ñ Áß °ãÄ¡´Â ºÎºĞ Ã¼Å©
+					new StringBuilder().append(reqLogin.getFcm()+",0").toString()); //í•™ë²ˆ í† í° ë“±ë¡
+			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt ìƒì„±
+		}else if(userInfo[0].equals(reqLogin.getFcm())) { //ê°™ì€ ê¸°ê¸°ë¡œ ë¡œê·¸ì•„ì›ƒí•˜ê³  ë¡œê·¸ì¸í•œ íšŒì›
+			resLogin.setSignal(reviseSubjectSignal); //ê°™ì€ ê¸°ê¸° ë¡œê·¸ì•„ì›ƒí•˜ê³  ë¡œê·¸ì¸í•œ íšŒì› ì‹ í˜¸4
+			ArrayList<SubjectInfo> curSubjects=userSubjects; //ì‚¬ìš©ìì˜ ê³¼ëª© ì •ë³´ë¥¼ ì„ì‹œ ë³€ìˆ˜ì— ì €ì¥
+			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //responseí•˜ê¸° ìœ„í•œ ê³¼ëª©ë³„ ë°©ì•ˆì— ìœ ì € ë‹‰ë„¤ì„
+			int[] checkRoom=new int[curSubjects.size()]; //ìƒˆë¡­ê²Œ ë“£ëŠ” ê³¼ëª© ì¸ë±ìŠ¤ ê¸°ì¡´ ë°©ì€ ìœ ì§€ ì‹œì¼œì•¼í•˜ê¸° ë•Œë¬¸ì´ë‹¤.
+			int cnt=0; //ì´ì „ ê³¼ëª©ê³¼ ê²¹ì¹˜ì§€ ì•ŠëŠ” ìƒˆë¡œ ë“£ëŠ” ê³¼ëª© ìˆ˜
+			ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //ìµœì¢… ìˆ˜ê°•ê³¼ëª© db ì €ì¥ìš©
+			User user=dbRepository.findUser(studentId); //dbì— ì €ì¥ëœ ìœ ì € ì •ë³´ë¥¼ ë¶ˆëŸ¬ì˜¨ë‹¤
+			List<UserRoomData> beforeSubjects=user.getRoomIds(); //ë°”ë€Œê¸° ì „ ìˆ˜ê°• ê³¼ëª©
+			boolean[] overlap=new boolean[beforeSubjects.size()]; //ì´ì „ê³¼ í˜„ì¬ ìˆ˜ê°•ê³¼ëª© ì¤‘ ê²¹ì¹˜ëŠ” ë¶€ë¶„ ì²´í¬
 			List<String> authorities=user.getAuthorities();
 			
 			int curSize=curSubjects.size();
 			int beforeSize=beforeSubjects.size();
-			for(int i=0;i<curSize;i++) { //ÇöÀç ¼ö°­°ú¸ñ
-				for(int j=0;j<beforeSize;j++) { //¹Ù²î±â Àü ¼ö°­°ú¸ñ
-					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //¹Ù²î±â Àü ¼ö°­°ú¸ñ°ú ±âÁ¸ÀÇ ¼ö°­°ú¸ñÀÌ µ¿ÀÏÇÏ´Ù¸é
+			for(int i=0;i<curSize;i++) { //í˜„ì¬ ìˆ˜ê°•ê³¼ëª©
+				for(int j=0;j<beforeSize;j++) { //ë°”ë€Œê¸° ì „ ìˆ˜ê°•ê³¼ëª©
+					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //ë°”ë€Œê¸° ì „ ìˆ˜ê°•ê³¼ëª©ê³¼ ê¸°ì¡´ì˜ ìˆ˜ê°•ê³¼ëª©ì´ ë™ì¼í•˜ë‹¤ë©´
 						UserRoomData userRoomData=new UserRoomData(beforeSubjects.get(j).getNickName(),
 								beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),curSubjects.get(i).getProfessorName());
 						resultSubjects.add(userRoomData);
-						overlap[j]=true; //°ãÄ¡´Â ¼ö°­°ú¸ñ ÀÎµ¦½º Ã¼Å© °ãÄ¡Áö ¾Ê´Â ±âÁ¸ÀÇ ÀÌÀü ¹æµéÀ» ³ª°¡±â À§ÇÔÀÌ´Ù.
+						overlap[j]=true; //ê²¹ì¹˜ëŠ” ìˆ˜ê°•ê³¼ëª© ì¸ë±ìŠ¤ ì²´í¬ ê²¹ì¹˜ì§€ ì•ŠëŠ” ê¸°ì¡´ì˜ ì´ì „ ë°©ë“¤ì„ ë‚˜ê°€ê¸° ìœ„í•¨ì´ë‹¤.
 						RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
 								,beforeSubjects.get(j).getRoomId(),beforeSubjects.get(j).getNickName()
 								,curSubjects.get(i).getProfessorName()
@@ -187,14 +187,14 @@ public class LoginServiceImpl implements LoginService{
 						break;
 					}
 					
-					if(j==(beforeSize-1)) { //´Ù ºñ±³ÇÒ¶§±îÁö °ãÄ¡´Â °ú¸ñÀÌ ¾ø´Ù¸é ±× °ú¸ñÀº »õ·Î µè´Â °ú¸ñÀÓ
+					if(j==(beforeSize-1)) { //ë‹¤ ë¹„êµí• ë•Œê¹Œì§€ ê²¹ì¹˜ëŠ” ê³¼ëª©ì´ ì—†ë‹¤ë©´ ê·¸ ê³¼ëª©ì€ ìƒˆë¡œ ë“£ëŠ” ê³¼ëª©ì„
 						String subjectName=curSubjects.get(i).getSubjectName();
 						for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
-							if(serverRepository.setCheckRoomName(subjectName, k)) { //ÇØ´ç °ú¸ñ¿¡ ·£´ı´Ğ³×ÀÓ ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ÀÌ¸§À» »ç¿ëÇÏ´Â »ç¿ëÀÚ°¡ ¾ø´Ù¸é
+							if(serverRepository.setCheckRoomName(subjectName, k)) { //í•´ë‹¹ ê³¼ëª©ì— ëœë¤ë‹‰ë„¤ì„ ì¸ë±ìŠ¤ì— í•´ë‹¹í•˜ëŠ” ì´ë¦„ì„ ì‚¬ìš©í•˜ëŠ” ì‚¬ìš©ìê°€ ì—†ë‹¤ë©´
 								UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
 										,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
 								resultSubjects.add(userRoomData);
-								checkRoom[cnt++]=resultSubjects.size()-1; //»õ·Î µè´Â °ú¸ñ ÇöÀç °ú¸ñ ÀÎµ¦½º ¹øÈ£ ÀúÀå ³ªÁß¿¡ ÀÔÀå ¸Ş½ÃÁö¸¦ º¸³»±â À§ÇÔ
+								checkRoom[cnt++]=resultSubjects.size()-1; //ìƒˆë¡œ ë“£ëŠ” ê³¼ëª© í˜„ì¬ ê³¼ëª© ì¸ë±ìŠ¤ ë²ˆí˜¸ ì €ì¥ ë‚˜ì¤‘ì— ì…ì¥ ë©”ì‹œì§€ë¥¼ ë³´ë‚´ê¸° ìœ„í•¨
 								break;
 							}
 						}
@@ -202,19 +202,19 @@ public class LoginServiceImpl implements LoginService{
 				}
 			}
 			
-			dbRepository.updateUserRoom(studentId,resultSubjects); //À¯Àú Á¤º¸¸¦ db¿¡ ¾÷µ¥ÀÌÆ® ÇÑ´Ù
+			dbRepository.updateUserRoom(studentId,resultSubjects); //ìœ ì € ì •ë³´ë¥¼ dbì— ì—…ë°ì´íŠ¸ í•œë‹¤
 			
-			for(int i=0;i<beforeSize;i++) { //±âÁ¸ °ú¸ñÁß¿¡¼­ °ãÄ¡Áö ¾Ê´Â °ú¸ñ¿¡ ÀÖ¾î¼­ ÅğÀå¸Ş½ÃÁö¸¦ º¸³½´Ù.
-				if(overlap[i])continue; //°ãÄ¡´Â °ú¸ñÀº ¹æÀ» À¯ÁöÇÑ´Ù.
+			for(int i=0;i<beforeSize;i++) { //ê¸°ì¡´ ê³¼ëª©ì¤‘ì—ì„œ ê²¹ì¹˜ì§€ ì•ŠëŠ” ê³¼ëª©ì— ìˆì–´ì„œ í‡´ì¥ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ë‹¤.
+				if(overlap[i])continue; //ê²¹ì¹˜ëŠ” ê³¼ëª©ì€ ë°©ì„ ìœ ì§€í•œë‹¤.
 				serverRepository.removeRoomInName(beforeSubjects.get(i).getRoomName(),
 						beforeSubjects.get(i).getNickName());
 				serverRepository.removeRoomInToken(beforeSubjects.get(i).getRoomName(),
 						reqLogin.getFcm());
-				//ÅğÀå ¸Ş½ÃÁö Àü¼Û
+				//í‡´ì¥ ë©”ì‹œì§€ ì „ì†¡
 				fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
 				chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
 			}	
-			for(int i=0;i<cnt;i++) { //ÇöÀç °ú¸ñÁß¿¡¼­ °ãÄ¡Áö ¾Ê´Â »õ·Î¿î °ú¸ñ¿¡ ÀÖ¾î¼­ ÀÔÀå¸Ş½ÃÁö¸¦ º¸³½´Ù.
+			for(int i=0;i<cnt;i++) { //í˜„ì¬ ê³¼ëª©ì¤‘ì—ì„œ ê²¹ì¹˜ì§€ ì•ŠëŠ” ìƒˆë¡œìš´ ê³¼ëª©ì— ìˆì–´ì„œ ì…ì¥ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ë‹¤.
 				fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
 						resultSubjects.get(checkRoom[i]).getNickName());
 				chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
@@ -232,34 +232,34 @@ public class LoginServiceImpl implements LoginService{
 				roomInfos.add(roomInfo);
 			}
 			resLogin.setRoomInfos(roomInfos);
-			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt »ı¼º
-		} else { //´Ù¸¥ ±â±â·Î ·Î±×ÀÎÇÏ°Å³ª »èÁ¦ÇÏ°í ´Ù½Ã ±ñ È¸¿ø(ÅäÅ«ÀÌ ´Ş¶óÁü)
-			resLogin.setSignal(doubleLoginSignal); //´Ù¸¥ ±â±â·Î ·Î±×ÀÎÇÑ È¸¿ø ½ÅÈ£4
+			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt ìƒì„±
+		} else { //ë‹¤ë¥¸ ê¸°ê¸°ë¡œ ë¡œê·¸ì¸í•˜ê±°ë‚˜ ì‚­ì œí•˜ê³  ë‹¤ì‹œ ê¹ íšŒì›(í† í°ì´ ë‹¬ë¼ì§)
+			resLogin.setSignal(doubleLoginSignal); //ë‹¤ë¥¸ ê¸°ê¸°ë¡œ ë¡œê·¸ì¸í•œ íšŒì› ì‹ í˜¸4
 			User user=dbRepository.findUser(studentId);
-			ArrayList<SubjectInfo> curSubjects=userSubjects; //»ç¿ëÀÚÀÇ °ú¸ñ Á¤º¸¸¦ ÀÓ½Ã º¯¼ö¿¡ ÀúÀå
-			List<UserRoomData> beforeSubjects=user.getRoomIds(); //ÀÌÀü ¼ö°­°ú¸ñ
+			ArrayList<SubjectInfo> curSubjects=userSubjects; //ì‚¬ìš©ìì˜ ê³¼ëª© ì •ë³´ë¥¼ ì„ì‹œ ë³€ìˆ˜ì— ì €ì¥
+			List<UserRoomData> beforeSubjects=user.getRoomIds(); //ì´ì „ ìˆ˜ê°•ê³¼ëª©
 			List<String> authorities=user.getAuthorities();
-			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //responseÇÏ±â À§ÇÑ °ú¸ñº° ¹æ¾È¿¡ À¯Àú ´Ğ³×ÀÓ
-			int[] checkRoom=new int[curSubjects.size()]; //»õ·Ó°Ô µè´Â °ú¸ñ ÀÎµ¦½º ±âÁ¸ ¹æÀº À¯Áö ½ÃÄÑ¾ßÇÏ±â ¶§¹®ÀÌ´Ù.
-			int cnt=0; //ÀÌÀü °ú¸ñ°ú °ãÄ¡Áö ¾Ê´Â »õ·Î µè´Â °ú¸ñ ¼ö
-			ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //ÃÖÁ¾ ¼ö°­°ú¸ñ db ÀúÀå¿ë
-			boolean[] overlap=new boolean[beforeSubjects.size()]; //ÀÌÀü°ú ÇöÀç ¼ö°­°ú¸ñ Áß °ãÄ¡´Â ºÎºĞ Ã¼Å©
+			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>(); //responseí•˜ê¸° ìœ„í•œ ê³¼ëª©ë³„ ë°©ì•ˆì— ìœ ì € ë‹‰ë„¤ì„
+			int[] checkRoom=new int[curSubjects.size()]; //ìƒˆë¡­ê²Œ ë“£ëŠ” ê³¼ëª© ì¸ë±ìŠ¤ ê¸°ì¡´ ë°©ì€ ìœ ì§€ ì‹œì¼œì•¼í•˜ê¸° ë•Œë¬¸ì´ë‹¤.
+			int cnt=0; //ì´ì „ ê³¼ëª©ê³¼ ê²¹ì¹˜ì§€ ì•ŠëŠ” ìƒˆë¡œ ë“£ëŠ” ê³¼ëª© ìˆ˜
+			ArrayList<UserRoomData> resultSubjects=new ArrayList<UserRoomData>(); //ìµœì¢… ìˆ˜ê°•ê³¼ëª© db ì €ì¥ìš©
+			boolean[] overlap=new boolean[beforeSubjects.size()]; //ì´ì „ê³¼ í˜„ì¬ ìˆ˜ê°•ê³¼ëª© ì¤‘ ê²¹ì¹˜ëŠ” ë¶€ë¶„ ì²´í¬
 			
-			int curSize=curSubjects.size(); //ÇöÀç ¼ö°­°ú¸ñ ¼ö
-			int beforeSize=beforeSubjects.size(); //ÀÌÀü ¼ö°­°ú¸ñ ¼ö
+			int curSize=curSubjects.size(); //í˜„ì¬ ìˆ˜ê°•ê³¼ëª© ìˆ˜
+			int beforeSize=beforeSubjects.size(); //ì´ì „ ìˆ˜ê°•ê³¼ëª© ìˆ˜
 						
-			//ÀÌÀü ¼ö°­°ú¸ñ¿¡ ´ëÇØ ¸ğµç ÅäÅ« °ªÀ» »èÁ¦ÇÑ´Ù.
+			//ì´ì „ ìˆ˜ê°•ê³¼ëª©ì— ëŒ€í•´ ëª¨ë“  í† í° ê°’ì„ ì‚­ì œí•œë‹¤.
 			for(int i=0;i<beforeSubjects.size();i++) {
 				serverRepository.removeRoomInToken(beforeSubjects.get(i).getRoomName(), user.getFcm());
 			}
 			
-			for(int i=0;i<curSize;i++) { //ÇöÀç ¼ö°­°ú¸ñ
-				for(int j=0;j<beforeSize;j++) { //¹Ù²î±â Àü ¼ö°­°ú¸ñ
-					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //¹Ù²î±â Àü ¼ö°­°ú¸ñ°ú ±âÁ¸ÀÇ ¼ö°­°ú¸ñÀÌ µ¿ÀÏÇÏ´Ù¸é
+			for(int i=0;i<curSize;i++) { //í˜„ì¬ ìˆ˜ê°•ê³¼ëª©
+				for(int j=0;j<beforeSize;j++) { //ë°”ë€Œê¸° ì „ ìˆ˜ê°•ê³¼ëª©
+					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //ë°”ë€Œê¸° ì „ ìˆ˜ê°•ê³¼ëª©ê³¼ ê¸°ì¡´ì˜ ìˆ˜ê°•ê³¼ëª©ì´ ë™ì¼í•˜ë‹¤ë©´
 						UserRoomData userRoomData=new UserRoomData(beforeSubjects.get(j).getNickName(),
 								beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),beforeSubjects.get(i).getProfessorName());
 						resultSubjects.add(userRoomData);
-						overlap[j]=true; //°ãÄ¡´Â ¼ö°­°ú¸ñ ÀÎµ¦½º Ã¼Å© °ãÄ¡Áö ¾Ê´Â ±âÁ¸ÀÇ ÀÌÀü ¹æµéÀ» ³ª°¡±â À§ÇÔÀÌ´Ù.
+						overlap[j]=true; //ê²¹ì¹˜ëŠ” ìˆ˜ê°•ê³¼ëª© ì¸ë±ìŠ¤ ì²´í¬ ê²¹ì¹˜ì§€ ì•ŠëŠ” ê¸°ì¡´ì˜ ì´ì „ ë°©ë“¤ì„ ë‚˜ê°€ê¸° ìœ„í•¨ì´ë‹¤.
 						RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
 								,beforeSubjects.get(j).getRoomId()
 								,beforeSubjects.get(j).getNickName()
@@ -269,14 +269,14 @@ public class LoginServiceImpl implements LoginService{
 						break;
 					}
 					
-					if(j==(beforeSize-1)) { //´Ù ºñ±³ÇÒ¶§±îÁö °ãÄ¡´Â °ú¸ñÀÌ ¾ø´Ù¸é ±× °ú¸ñÀº »õ·Î µè´Â °ú¸ñÀÓ
+					if(j==(beforeSize-1)) { //ë‹¤ ë¹„êµí• ë•Œê¹Œì§€ ê²¹ì¹˜ëŠ” ê³¼ëª©ì´ ì—†ë‹¤ë©´ ê·¸ ê³¼ëª©ì€ ìƒˆë¡œ ë“£ëŠ” ê³¼ëª©ì„
 						String subjectName=curSubjects.get(i).getSubjectName();
 						for(int k=serverRepository.getStartRandomNickNameIdx(subjectName);k<200;k++){
-							if(serverRepository.setCheckRoomName(subjectName, k)) {//ÇØ´ç °ú¸ñ¿¡ ·£´ı´Ğ³×ÀÓ ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ÀÌ¸§À» »ç¿ëÇÏ´Â »ç¿ëÀÚ°¡ ¾ø´Ù¸é
+							if(serverRepository.setCheckRoomName(subjectName, k)) {//í•´ë‹¹ ê³¼ëª©ì— ëœë¤ë‹‰ë„¤ì„ ì¸ë±ìŠ¤ì— í•´ë‹¹í•˜ëŠ” ì´ë¦„ì„ ì‚¬ìš©í•˜ëŠ” ì‚¬ìš©ìê°€ ì—†ë‹¤ë©´
 								UserRoomData userRoomData=new UserRoomData(serverRepository.getRandomNickName(k)
 										,serverRepository.getRoomId(subjectName), subjectName,curSubjects.get(i).getProfessorName());
 								resultSubjects.add(userRoomData);
-								checkRoom[cnt++]=resultSubjects.size()-1; //»õ·Î µè´Â °ú¸ñ ÇöÀç °ú¸ñ ÀÎµ¦½º ¹øÈ£ ÀúÀå ³ªÁß¿¡ ÀÔÀå ¸Ş½ÃÁö¸¦ º¸³»±â À§ÇÔ
+								checkRoom[cnt++]=resultSubjects.size()-1; //ìƒˆë¡œ ë“£ëŠ” ê³¼ëª© í˜„ì¬ ê³¼ëª© ì¸ë±ìŠ¤ ë²ˆí˜¸ ì €ì¥ ë‚˜ì¤‘ì— ì…ì¥ ë©”ì‹œì§€ë¥¼ ë³´ë‚´ê¸° ìœ„í•¨
 								break;
 							}
 						}
@@ -284,10 +284,10 @@ public class LoginServiceImpl implements LoginService{
 				}
 			}
 			
-			dbRepository.updateUserRoomAndToken(studentId,resultSubjects,reqLogin.getFcm()); //À¯Àú Á¤º¸ ¹æ°ú fcmÀ» db¿¡ ¾÷µ¥ÀÌÆ® ÇÑ´Ù
+			dbRepository.updateUserRoomAndToken(studentId,resultSubjects,reqLogin.getFcm()); //ìœ ì € ì •ë³´ ë°©ê³¼ fcmì„ dbì— ì—…ë°ì´íŠ¸ í•œë‹¤
 			
-			for(int i=0;i<beforeSize;i++) { //±âÁ¸ °ú¸ñÁß¿¡¼­ °ãÄ¡Áö ¾Ê´Â °ú¸ñ¿¡ ÀÖ¾î¼­ ÅğÀå¸Ş½ÃÁö¸¦ º¸³½´Ù.
-				//°ãÄ¡´Â °ú¸ñÀº ¹æÀ» À¯ÁöÇÏ°í ¹Ù²ï ÅäÅ« °ªÀ» ³Ö¾îÁØ´Ù.
+			for(int i=0;i<beforeSize;i++) { //ê¸°ì¡´ ê³¼ëª©ì¤‘ì—ì„œ ê²¹ì¹˜ì§€ ì•ŠëŠ” ê³¼ëª©ì— ìˆì–´ì„œ í‡´ì¥ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ë‹¤.
+				//ê²¹ì¹˜ëŠ” ê³¼ëª©ì€ ë°©ì„ ìœ ì§€í•˜ê³  ë°”ë€ í† í° ê°’ì„ ë„£ì–´ì¤€ë‹¤.
 				if(overlap[i]) {
 					serverRepository.addRoomInToken(beforeSubjects.get(i).getRoomName(), reqLogin.getFcm());
 					continue; 
@@ -295,11 +295,11 @@ public class LoginServiceImpl implements LoginService{
 				serverRepository.removeRoomInName(beforeSubjects.get(i).getRoomName(),
 						beforeSubjects.get(i).getNickName());
 			
-				//ÅğÀå ¸Ş½ÃÁö Àü¼Û
+				//í‡´ì¥ ë©”ì‹œì§€ ì „ì†¡
 				fcmService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(),beforeSubjects.get(i).getNickName());
 				chatService.enterExitMsg(exitMsgSignal, beforeSubjects.get(i).getRoomId(), beforeSubjects.get(i).getNickName());
 			}			
-			for(int i=0;i<cnt;i++) { //ÇöÀç °ú¸ñÁß¿¡¼­ °ãÄ¡Áö ¾Ê´Â »õ·Î¿î °ú¸ñ¿¡ ÀÖ¾î¼­ ÀÔÀå¸Ş½ÃÁö¸¦ º¸³½´Ù.
+			for(int i=0;i<cnt;i++) { //í˜„ì¬ ê³¼ëª©ì¤‘ì—ì„œ ê²¹ì¹˜ì§€ ì•ŠëŠ” ìƒˆë¡œìš´ ê³¼ëª©ì— ìˆì–´ì„œ ì…ì¥ë©”ì‹œì§€ë¥¼ ë³´ë‚¸ë‹¤.
 				fcmService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
 						resultSubjects.get(checkRoom[i]).getNickName());
 				chatService.enterExitMsg(enterMsgSignal,resultSubjects.get(checkRoom[i]).getRoomId(),
@@ -320,7 +320,7 @@ public class LoginServiceImpl implements LoginService{
 			resLogin.setRoomInfos(roomInfos);
 			serverRepository.addUserInfo(studentId,
 					new StringBuilder().append(reqLogin.getFcm()+",0").toString());
-			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt »ı¼º
+			jwt=jwtTokenProvider.createToken(studentId, authorities); //jwt ìƒì„±
 		}
 		
 		resLogin.setJwt(jwt);
@@ -332,11 +332,11 @@ public class LoginServiceImpl implements LoginService{
 		// TODO Auto-generated method stub
 		ResLogout resLogout=new ResLogout();
 		String userInfo=serverRepository.getUserInfo(reqLogout.getStudentId());
-		if(userInfo==null) { //»õÇĞ±â ½ÃÀÛ
+		if(userInfo==null) { //ìƒˆí•™ê¸° ì‹œì‘
 			resLogout.setSignal(successLogoutSignal);
 			return resLogout;
 		}
-		if(!userInfo.split(",")[0].equals(reqLogout.getFcm())) { //ÀÌÁß·Î±×ÀÎ ÀÌ¹Ç·Î ·Î±×¾Æ¿ô¸¸ ½ÃÅ²´Ù.
+		if(!userInfo.split(",")[0].equals(reqLogout.getFcm())) { //ì´ì¤‘ë¡œê·¸ì¸ ì´ë¯€ë¡œ ë¡œê·¸ì•„ì›ƒë§Œ ì‹œí‚¨ë‹¤.
 			resLogout.setSignal(successLogoutSignal);
 			return resLogout;
 		}
@@ -344,7 +344,7 @@ public class LoginServiceImpl implements LoginService{
 		User user=dbRepository.findUser(reqLogout.getStudentId());
 		List<UserRoomData> subjects=user.getRoomIds();
 		for(int i=0;i<subjects.size();i++) {
-			serverRepository.removeRoomInToken(subjects.get(i).getRoomName(), user.getFcm()); //¹æ¿¡ ¼ÓÇÑ ÆÄº£ÅäÅ« »èÁ¦
+			serverRepository.removeRoomInToken(subjects.get(i).getRoomName(), user.getFcm()); //ë°©ì— ì†í•œ íŒŒë² í† í° ì‚­ì œ
 		}
 		resLogout.setSignal(successLogoutSignal);
 		return resLogout;
@@ -386,36 +386,36 @@ public class LoginServiceImpl implements LoginService{
                 .method(Connection.Method.POST)
                 .execute();
 
-        html=Jsoup.parse(response.body()); //¼ö°­°ú¸ñ ÆÄ½Ì
+        html=Jsoup.parse(response.body()); //ìˆ˜ê°•ê³¼ëª© íŒŒì‹±
 
         Elements crawlingList=html.select(".class_sbox select>option");
-        if(crawlingList.size()>1){ //¼ö°­°ú¸ñÀÌ ÀÖÀ¸´Ï ÇöÀç ÀçÇĞ»ıÀÓ        	
+        if(crawlingList.size()>1){ //ìˆ˜ê°•ê³¼ëª©ì´ ìˆìœ¼ë‹ˆ í˜„ì¬ ì¬í•™ìƒì„        	
         	ArrayList<SubjectInfo> subjectList=new ArrayList<>();
             for(int i=1;i< crawlingList.size();i++){
             	String attr=crawlingList.get(i).attr("value");
             	String[] attrValue=attr.split(",");
-            	//º»ÇĞ±â
+            	//ë³¸í•™ê¸°
             	subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString(), attrValue[1]));
-            	//°èÀıÇĞ±â¿ë
-            	//subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()+" "+attrValue[1], attrValue[1])); //°èÀıÇĞ±â¿ë
+            	//ê³„ì ˆí•™ê¸°ìš©
+            	//subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()+" "+attrValue[1], attrValue[1])); //ê³„ì ˆí•™ê¸°ìš©
             }
             return subjectList;
         }
         return null;
 	}
 	
-	//PC·Î±×ÀÎ
+	//PCë¡œê·¸ì¸
 	@Override
 	public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException {
 		// TODO Auto-generated method stub
 		ResPcLogin resPcLogin=new ResPcLogin();
 		String userInfo=serverRepository.getUserInfo(reqPcLogin.getStudentId());
-		if(userInfo==null) { //¸ğ¹ÙÀÏ¿¡¼­ ·Î±×ÀÎ ¾È ÇÑ À¯Àú¶ó¸é
+		if(userInfo==null) { //ëª¨ë°”ì¼ì—ì„œ ë¡œê·¸ì¸ ì•ˆ í•œ ìœ ì €ë¼ë©´
 			resPcLogin.setSignal(pcNotMobileLoginSignal);
 			return resPcLogin;
-		}else { //¸ğ¹ÙÀÏ¿¡¼­ ·Î±×ÀÎ ÇÑ À¯Àú¶ó¸é
+		}else { //ëª¨ë°”ì¼ì—ì„œ ë¡œê·¸ì¸ í•œ ìœ ì €ë¼ë©´
 			String suspendedPriod=userInfo.split(",")[1];
-			if(!suspendedPriod.equals("0")) { //Á¤Áö È¸¿øÀÌ¶ó¸é
+			if(!suspendedPriod.equals("0")) { //ì •ì§€ íšŒì›ì´ë¼ë©´
 				resPcLogin.setSignal(pcSuspendedUserLoginSignal);
 				resPcLogin.setSuspendedDate(suspendedPriod);
 				return resPcLogin;
@@ -462,11 +462,11 @@ public class LoginServiceImpl implements LoginService{
                 .data(data)
                 .method(Connection.Method.POST)
                 .execute();
-        html=Jsoup.parse(response.body()); //¼ö°­°ú¸ñ ÆÄ½Ì
+        html=Jsoup.parse(response.body()); //ìˆ˜ê°•ê³¼ëª© íŒŒì‹±
 
         Elements crawlingList=html.select(".class_sbox select>option");
-        if(crawlingList.size()>1){ //¼ö°­°ú¸ñÀÌ ÀÖÀ¸´Ï ÇöÀç ÀçÇĞ»ıÀÓ
-        	User user=dbRepository.findUser(reqPcLogin.getStudentId()); //¸ğ¹ÙÀÏ·Î ·Î±×ÀÎÇÑ db¿¡ ÀúÀåµÈ À¯Àú Á¤º¸¸¦ ºÒ·¯¿Â´Ù
+        if(crawlingList.size()>1){ //ìˆ˜ê°•ê³¼ëª©ì´ ìˆìœ¼ë‹ˆ í˜„ì¬ ì¬í•™ìƒì„
+        	User user=dbRepository.findUser(reqPcLogin.getStudentId()); //ëª¨ë°”ì¼ë¡œ ë¡œê·¸ì¸í•œ dbì— ì €ì¥ëœ ìœ ì € ì •ë³´ë¥¼ ë¶ˆëŸ¬ì˜¨ë‹¤
         	
         	ArrayList<UserRoomData> userRoomInfos=user.getRoomIds();
 			ArrayList<RoomInfo> roomInfos=new ArrayList<RoomInfo>();
@@ -484,11 +484,11 @@ public class LoginServiceImpl implements LoginService{
 			resPcLogin.setJwt(jwtTokenProvider.createToken(reqPcLogin.getStudentId(), user.getAuthorities()));
 			resPcLogin.setRoomInfos(roomInfos);
         }else {
-        	resPcLogin.setSignal(pcFailLoginSignal); //ºñ¹Ğ¹øÈ£°¡ Àß¸ø ÀÔ·ÂµÊ
+        	resPcLogin.setSignal(pcFailLoginSignal); //ë¹„ë°€ë²ˆí˜¸ê°€ ì˜ëª» ì…ë ¥ë¨
         }
 	}
 
-	//ÇöÀç³¯Â¥ ±¸ÇÏ´Â ÇÔ¼ö
+	//í˜„ì¬ë‚ ì§œ êµ¬í•˜ëŠ” í•¨ìˆ˜
     private String getCurrentTime() {
         long now = System.currentTimeMillis();
         TimeZone tz=TimeZone.getTimeZone("Asia/Seoul");

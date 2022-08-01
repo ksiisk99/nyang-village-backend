@@ -4,12 +4,12 @@ import com.ay.talk.dto.Msg;
 import com.ay.talk.dto.request.ReqConnectChat;
 
 public interface ChatService {
-	//ÀÔÀå ÅğÀå ¸Ş½ÃÁö Àü¼Û
+	//ì…ì¥ í‡´ì¥ ë©”ì‹œì§€ ì „ì†¡
 	void enterExitMsg(int type, int roomId, String nickName);
-	//Ã¤ÆÃ ¸Ş½ÃÁö Àü¼Û
+	//ì±„íŒ… ë©”ì‹œì§€ ì „ì†¡
 	void sendMsg(Msg msg);
-	//Ã¹ À¥¼ÒÄÏ ¿¬°á ½Ã ¹öÀü, ÀÌÁß·Î±×ÀÎ, Á¤ÁöÀ¯¹«, »õÇĞ±âÀÎÁö¸¦ È®ÀÎÇÑ´Ù.
+	//ì²« ì›¹ì†Œì¼“ ì—°ê²° ì‹œ ë²„ì „, ì´ì¤‘ë¡œê·¸ì¸, ì •ì§€ìœ ë¬´, ìƒˆí•™ê¸°ì¸ì§€ë¥¼ í™•ì¸í•œë‹¤.
 	void connectChat(ReqConnectChat cc);
-	//pc Ã¤ÆÃ ¸Ş½ÃÁö Àü¼Û
+	//pc ì±„íŒ… ë©”ì‹œì§€ ì „ì†¡
 	void sendPcMsg(Msg msg);
 }

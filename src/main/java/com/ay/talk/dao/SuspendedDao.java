@@ -6,12 +6,12 @@ import com.ay.talk.dto.request.ReqSuspend;
 import com.ay.talk.entity.Suspended;
 
 public interface SuspendedDao {
-	//Á¤Áö À¯Àú Á¤º¸µé °¡Á®¿À±â
+	//ì •ì§€ ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<Suspended> findSuspendedUserList();
 
-	//Á¤Áö ±â°£ Ç®¸° À¯Àú Á¤º¸ »èÁ¦
+	//ì •ì§€ ê¸°ê°„ í’€ë¦° ìœ ì € ì •ë³´ ì‚­ì œ
 	public void removeSuspendedUser(String studentId);
 	
-	//Á¤Áö È¸¿ø Ãß°¡
+	//ì •ì§€ íšŒì› ì¶”ê°€
 	public void insertSuspendedUser(ReqSuspend reqSuspend);
 }

@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.internal.build.AllowSysOut;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
  * Handles requests for the application home page.
  */
 @ApiOperation("swagger")
-@Api(tags = "·Î±×ÀÎ API")
+@Api(tags = "ë¡œê·¸ì¸ API")
 @RestController
 @RequestMapping("/ay")
 @PropertySource("classpath:application.properties")
@@ -64,31 +63,31 @@ public class LoginController{
 	 * @throws IOException 
 	 */
 
-	//¸ğ¹ÙÀÏ ·Î±×ÀÎ
+	//ëª¨ë°”ì¼ ë¡œê·¸ì¸
 	@PostMapping(path = "/login")
-	@ApiOperation(value = "¸ğ¹ÙÀÏ ·Î±×ÀÎ", notes = "¸ğ¹ÙÀÏ Àü¿ë ·Î±×ÀÎ")
+	@ApiOperation(value = "ëª¨ë°”ì¼ ë¡œê·¸ì¸", notes = "ëª¨ë°”ì¼ ì „ìš© ë¡œê·¸ì¸")
 	public @ResponseBody ResLogin login(@RequestBody ReqLogin reqLogin) throws FirebaseMessagingException, IOException {
 		long beforeTime = System.currentTimeMillis();
 
 		ResLogin resLogin=loginService.login(reqLogin);
 
-		long afterTime = System.currentTimeMillis(); // ÄÚµå ½ÇÇà ÈÄ¿¡ ½Ã°£ ¹Ş¾Æ¿À±â
-		long secDiffTime = (afterTime - beforeTime); //µÎ ½Ã°£¿¡ Â÷ °è»ê
+		long afterTime = System.currentTimeMillis(); // ì½”ë“œ ì‹¤í–‰ í›„ì— ì‹œê°„ ë°›ì•„ì˜¤ê¸°
+		long secDiffTime = (afterTime - beforeTime); //ë‘ ì‹œê°„ì— ì°¨ ê³„ì‚°
 		logger.info("login: {}ms",secDiffTime);
 		return resLogin;
 	}
 	
-	//pc ·Î±×ÀÎ
+	//pc ë¡œê·¸ì¸
 	@PostMapping(path="/pc/login")
-	@ApiOperation(value = "PC ·Î±×ÀÎ", notes = "PC Àü¿ë ·Î±×ÀÎ")
+	@ApiOperation(value = "PC ë¡œê·¸ì¸", notes = "PC ì „ìš© ë¡œê·¸ì¸")
 	public @ResponseBody ResPcLogin pcLogin(@RequestBody ReqPcLogin reqPcLogin) throws IOException {
 	
 		return loginService.pcLogin(reqPcLogin);
 	}
 
-	//·Î±×¾Æ¿ô
+	//ë¡œê·¸ì•„ì›ƒ
 	@PostMapping(path="/logout")
-	@ApiOperation(value = "·Î±×¾Æ¿ô", notes = "·Î±×¾Æ¿ô")
+	@ApiOperation(value = "ë¡œê·¸ì•„ì›ƒ", notes = "ë¡œê·¸ì•„ì›ƒ")
 	public @ResponseBody ResLogout logout(@RequestBody ReqLogout reqLogout) {
 		return loginService.logout(reqLogout);
 	}

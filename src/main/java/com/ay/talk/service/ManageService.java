@@ -7,7 +7,7 @@ import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.dto.request.ReqSuspend;
 
 public interface ManageService {
-	List<ReportDto> displayReports(); //½Å°í¸ñ·Ï
-	boolean manageReport(ReqSuspend reqSuspend); //½Å°í´ë»óÀÚ Á¤Áö³¯Â¥ ÁÖ±â
-	void report(ReqReportMsg reportMsg); //½Å°íÇÏ±â
+	List<ReportDto> displayReports(); //ì‹ ê³ ëª©ë¡
+	boolean manageReport(ReqSuspend reqSuspend); //ì‹ ê³ ëŒ€ìƒì ì •ì§€ë‚ ì§œ ì£¼ê¸°
+	void report(ReqReportMsg reportMsg); //ì‹ ê³ í•˜ê¸°
 }

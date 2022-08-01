@@ -3,15 +3,15 @@ package com.ay.talk.dto.request;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ReqSuspend {
-	@ApiModelProperty(example = "°íÀ¯ ½Äº° ¹øÈ£(=½Å°í ¸ñ·Ï ¹øÈ£)")
+	@ApiModelProperty(example = "ê³ ìœ  ì‹ë³„ ë²ˆí˜¸(=ì‹ ê³  ëª©ë¡ ë²ˆí˜¸)")
 	private String id;
-	@ApiModelProperty(example = "Á¤Áö¹ŞÀ» »ç¿ëÀÚ ¾ÆÀÌµğ(ÇĞ¹ø)")
+	@ApiModelProperty(example = "ì •ì§€ë°›ì„ ì‚¬ìš©ì ì•„ì´ë””(í•™ë²ˆ)")
 	private String studentId;
-	@ApiModelProperty(example = "Á¤Áö±â°£")
+	@ApiModelProperty(example = "ì •ì§€ê¸°ê°„")
 	private String period;
-	@ApiModelProperty(example = "Ã¤ÆÃ³»¿ë")
+	@ApiModelProperty(example = "ì±„íŒ…ë‚´ìš©")
 	private String reportContent;
-	@ApiModelProperty(example = "Á¤Áö»çÀ¯")
+	@ApiModelProperty(example = "ì •ì§€ì‚¬ìœ ")
 	private String reportWhy;
 	
 	public ReqSuspend() {}

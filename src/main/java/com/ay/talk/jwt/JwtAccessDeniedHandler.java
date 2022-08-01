@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +16,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler{
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		//±ÇÇÑÀÌ ¾øÀÌ Á¢±ÙÇÏ·Á ÇÒ¶§ 403¿¡·¯ ex)°ü¸®ÀÚ ÆäÀÌÁö
+		//ê¶Œí•œ ì—†ì´ ì ‘ê·¼í•˜ë ¤ í• ë•Œ 403ì—ëŸ¬ ex)ê´€ë¦¬ì í˜ì´ì§€
 		response.sendError(HttpServletResponse.SC_FORBIDDEN);
 	}
 

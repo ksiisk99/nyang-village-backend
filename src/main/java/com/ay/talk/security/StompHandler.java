@@ -27,7 +27,7 @@ public class StompHandler implements ChannelInterceptor{
 		StompHeaderAccessor accessor=StompHeaderAccessor.wrap(message);
 		
 		if(accessor.getCommand()==StompCommand.CONNECT) {
-			if(!jwtTokenProvider.validateToken(accessor.getFirstNativeHeader("jwt"))) {//≈‰≈´∏∏∑·
+			if(!jwtTokenProvider.validateToken(accessor.getFirstNativeHeader("jwt"))) {//stomp Ïó∞Í≤∞ Ï†Ñ jwt Ïù∏Ï¶ù
 				throw new AccessDeniedException("No JWT");
 			}
 		}

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.ay.talk.dao.SubjectDao;
@@ -19,10 +18,10 @@ public class SubjectDaoImpl implements SubjectDao{
 
 	@Autowired
 	public SubjectDaoImpl(MongoTemplate mongoTemplate) {
-		this.mongoTemplate=mongoTemplate; //find ¿ë
+		this.mongoTemplate=mongoTemplate; //find
 	}
 	
-	//ÀüÃ¼ °ú¸ñ °¡Á®¿À±â
+	//ì „ì²´ ê³¼ëª© ì¡°íšŒ
 	public List<Subject> findSubjects(){ 
 		return mongoTemplate.find(new Query().with(Sort.by(Sort.Direction.ASC,"_id")), Subject.class);
 	}

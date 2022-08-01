@@ -5,21 +5,20 @@ import java.util.List;
 import com.ay.talk.entity.User;
 import com.ay.talk.entity.UserRoomData;
 
-
 public interface UserDao {
 	
-	//À¯Àú Á¤º¸µé °¡Á®¿À±â
+	//ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<User> findUserList();
 
-	//»õ·Î¿î À¯Àú Ãß°¡
+	//ìƒˆë¡œìš´ ìœ ì € ì¶”ê°€
 	public void insertUser(User user);
 
-	//À¯Àú Á¤º¸ °¡Á®¿À±â
+	//ìœ ì € ì •ë³´ ê°€ì ¸ì˜¤ê¸°
 	public User findUser(String studentId);
 
-	//À¯Àú Á¤º¸ ¹æ¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+	//ìœ ì € ì •ë³´ ë°©ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 	public void updateUserRoom(String studentId,ArrayList<UserRoomData> roomIds);
 
-	//À¯Àú Á¤º¸ ¹æ°ú ÅäÅ«¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+	//ìœ ì € ì •ë³´ ë°©ê³¼ í† í°ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 	public  void updateUserRoomAndToken(String studentId,ArrayList<UserRoomData> roomIds, String fcm);
 }

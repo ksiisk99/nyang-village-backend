@@ -3,8 +3,6 @@ package com.ay.talk.dao.impl;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 import com.ay.talk.dao.ReportDao;
 import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.entity.Report;
-import com.ay.talk.entity.Suspended;
 import com.ay.talk.entity.User;
 import com.ay.talk.entity.UserRoomData;
 import com.mongodb.client.MongoCollection;
@@ -27,21 +24,21 @@ public class ReportDaoImpl implements ReportDao{
 
 	@Autowired
 	public ReportDaoImpl(MongoTemplate mongoTemplate, MongoDatabase mongoDatabase) {
-		this.mongoTemplate=mongoTemplate; //find ¿ë
-		this.mongoDatabase=mongoDatabase; //insert update¿ë
+		this.mongoTemplate=mongoTemplate; //find ìš©
+		this.mongoDatabase=mongoDatabase; //insert updateìš©
 	}
 	
 	@PostConstruct
 	public void initMongoCollections() {
-		reportCollection=mongoDatabase.getCollection("Report",Report.class); //½Å°í ÄÃ·º¼Ç ÃÊ±âÈ­
+		reportCollection=mongoDatabase.getCollection("Report",Report.class); //ì‹ ê³  ì»¬ë ‰ì…˜ ì´ˆê¸°í™”
 	}
 	
-	//À¯Àú ½Å°í
+	//ìœ ì € ì‹ ê³ 
 	public void insertReport(UserRoomData userRoomData, ReqReportMsg reportMsg) {
 		Query query=new Query();
 		query.addCriteria(Criteria.where("roomIds").is(userRoomData));
 		query.fields().include("studentId");		
-		User reportUser=mongoTemplate.findOne(query, User.class); //½Å°í ´ë»ó ÇĞ¹ø Ã£±â
+		User reportUser=mongoTemplate.findOne(query, User.class); //ì‹ ê³  ëŒ€ìƒ í•™ë²ˆ ì°¾ê¸°
 
 		Report report=new Report(reportMsg.getRoomName(), reportMsg.getReportName(), 
 				reportMsg.getReportContent(), reportMsg.getReportWhy(), 
@@ -49,14 +46,14 @@ public class ReportDaoImpl implements ReportDao{
 		reportCollection.insertOne(report);
 	}
 	
-	//½Å°í ¸ñ·Ï
+	//ì‹ ê³  ëª©ë¡
 	@Override
 	public List<Report> findReports() {
 		// TODO Auto-generated method stub
 		return mongoTemplate.findAll(Report.class);
 	}
 
-	//Ã³¸® ¿Ï·áµÈ ½Å°í Ç×¸ñ »èÁ¦
+	//ì²˜ë¦¬ ì™„ë£Œëœ ì‹ ê³  í•­ëª© ì‚­ì œ
 	@Override
 	public void removeReports(String id) {
 		// TODO Auto-generated method stub

@@ -2,19 +2,8 @@ package com.ay.talk.repository;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
-
-import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
-
 import com.ay.talk.dao.ChatMsgDao;
 import com.ay.talk.dao.RandomNameDao;
 import com.ay.talk.dao.ReportDao;
@@ -30,9 +19,6 @@ import com.ay.talk.entity.Subject;
 import com.ay.talk.entity.Suspended;
 import com.ay.talk.entity.User;
 import com.ay.talk.entity.UserRoomData;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 
 
 
@@ -45,111 +31,94 @@ public class MongoRepository implements DbRepository{
 	private final SuspendedDao suspendedDao;
 	private final UserDao userDao;
 	private final RandomNameDao randomNameDao;
-	private final MongoTemplate mongoTemplate;
-	private final MongoDatabase mongoDatabase;
-//	private MongoCollection<ChatMsg> chatMsgCollection; //Ã¤ÆÃ ¸Ş½ÃÁö insert
-//	private MongoCollection<Report> reportCollection; //½Å°í insert
-	
-//	@Autowired
-//	public MongoRepository(MongoTemplate mongoTemplate, MongoDatabase mongoDatabase) {
-//		this.mongoTemplate=mongoTemplate; //find ¿ë
-//		this.mongoDatabase=mongoDatabase; //insert update¿ë
-//	}
-//	
-//	@PostConstruct
-//	public void initMongoCollections() {
-//		chatMsgCollection=mongoDatabase.getCollection("chat",ChatMsg.class); //Ã¤ÆÃ¸Ş½ÃÁö ÄÃ·º¼Ç ÃÊ±âÈ­
-//		reportCollection=mongoDatabase.getCollection("reports",Report.class); //»ç¿ëÀÚ ½Å°í ÄÃ·º¼Ç ÃÊ±âÈ­
-//	}
+
 
 	@Autowired
 	public MongoRepository(ChatMsgDao chatMsgDao, ReportDao reportDao, SubjectDao subjectDao, SuspendedDao suspendedDao,
-			UserDao userDao, RandomNameDao randomNameDao,MongoTemplate mongoTemplate, MongoDatabase mongoDatabase) {
+			UserDao userDao, RandomNameDao randomNameDao) {
 			this.chatMsgDao = chatMsgDao;
 			this.reportDao = reportDao;
 			this.subjectDao = subjectDao;
 			this.suspendedDao = suspendedDao;
 			this.userDao = userDao;
 			this.randomNameDao=randomNameDao;
-			this.mongoTemplate=mongoTemplate; //find ¿ë
-			this.mongoDatabase=mongoDatabase; //insert update¿ë
 	}
 	
-	//ÀüÃ¼ °ú¸ñ °¡Á®¿À±â
+	//ì „ì²´ ê³¼ëª© ê°€ì ¸ì˜¤ê¸°
 	public List<Subject> findSubjects(){ 
 		return subjectDao.findSubjects();
 	}
 
-	//·£´ı ´Ğ³×ÀÓµé °¡Á®¿À±â
+	//ëœë¤ ë‹‰ë„¤ì„ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<RandomName> findRandomNames(){ 
 		return randomNameDao.findRandomNames();
 	}
 	
-	//À¯Àú Á¤º¸µé °¡Á®¿À±â
+	//ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<User> findUserList(){ 
 		return userDao.findUserList();
 	}
 	
-	//¹æ Á¤º¸µé °¡Á®¿À±â
+	//ë°© ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 //	public List<Room> findRoomList(){
 //		//return mongoTemplate.findAll(Room.class);
 //	}
 	
-	//Á¤Áö À¯Àú Á¤º¸µé °¡Á®¿À±â
+	//ì •ì§€ ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<Suspended> findSuspendedUserList(){
 		return suspendedDao.findSuspendedUserList();
 	}
 	
-	//Á¤Áö ±â°£ Ç®¸° À¯Àú Á¤º¸ »èÁ¦
+	//ì •ì§€ ê¸°ê°„ í’€ë¦° ìœ ì € ì •ë³´ ì‚­ì œ
 	public void removeSuspendedUser(String studentId) {
 		suspendedDao.removeSuspendedUser(studentId);
 	}
 	
-	//»õ·Î¿î À¯Àú Ãß°¡
+	//ìƒˆë¡œìš´ ìœ ì € ì¶”ê°€
 	public void insertUser(User user) {
 		userDao.insertUser(user);
 	}
 	
-	//Ã¤ÆÃ ¸Ş½ÃÁö Ãß°¡
+	//ì±„íŒ… ë©”ì‹œì§€ ì¶”ê°€
 	public void insertChatMsg(ChatMsg chatMsg) {
 		chatMsgDao.insertChatMsg(chatMsg);
 	}
 	
-	//À¯Àú Á¤º¸ °¡Á®¿À±â
+	//ìœ ì € ì •ë³´ ê°€ì ¸ì˜¤ê¸°
 	public User findUser(String studentId) {
 		return userDao.findUser(studentId);
 	}
 	
-	//À¯Àú Á¤º¸ ¹æ¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+	//ìœ ì € ì •ë³´ ë°©ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 	public void updateUserRoom(String studentId,ArrayList<UserRoomData> roomIds) {
 		userDao.updateUserRoom(studentId, roomIds);
 	}
 	
-	//À¯Àú Á¤º¸ ¹æ°ú ÅäÅ«¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+	//ìœ ì € ì •ë³´ ë°©ê³¼ í† í°ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 	public  void updateUserRoomAndToken(String studentId,ArrayList<UserRoomData> roomIds, String fcm) {
 		userDao.updateUserRoomAndToken(studentId, roomIds, fcm);
 	}
 	
-	//À¯Àú ½Å°í
+	//ìœ ì € ì‹ ê³ 
 	public void insertReport(UserRoomData userRoomData, ReqReportMsg reportMsg) {
 		reportDao.insertReport(userRoomData, reportMsg);
 	}
 	
-	//À¯Àú ¸ñ·Ï
+	//ìœ ì € ëª©ë¡
 	@Override
 	public List<Report> findReports() {
 		// TODO Auto-generated method stub
 		return reportDao.findReports();
 	}
 
-	//Á¤Áö È¸¿ø Ãß°¡
+	//ì •ì§€ íšŒì› ì¶”ê°€
 	@Override
 	public void insertSuspendedUser(ReqSuspend reqSuspend) {
 		// TODO Auto-generated method stub
 		suspendedDao.insertSuspendedUser(reqSuspend);
 	}
 
-	//Ã³¸® ¿Ï·áµÈ ½Å°í Ç×¸ñ »èÁ¦
+	//ì²˜ë¦¬ ì™„ë£Œëœ ì‹ ê³  í•­ëª© ì‚­ì œ
 	@Override
 	public void removeReports(String id) {
 		// TODO Auto-generated method stub

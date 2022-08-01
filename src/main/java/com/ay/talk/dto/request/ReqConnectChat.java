@@ -2,15 +2,15 @@ package com.ay.talk.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 
-//À¥¼ÒÄÏ Ã³À½ ¿¬°á½Ã Àü´ŞÇÏ´Â µ¥ÀÌÅÍ Á¤ÁöÀ¯Àú³ª ÀÌÁß·Î±×ÀÎÀ» ÆÇº°ÇÑ´Ù.
+//ì›¹ì†Œì¼“ ì²˜ìŒ ì—°ê²°ì‹œ ì „ë‹¬í•˜ëŠ” ë°ì´í„° ì •ì§€ìœ ì €ë‚˜ ì´ì¤‘ë¡œê·¸ì¸ì„ íŒë³„í•œë‹¤.
 public class ReqConnectChat {
-	@ApiModelProperty(example = "Ã¤ÆÃ¹æ¹æ ¹øÈ£")
+	@ApiModelProperty(example = "ì±„íŒ…ë°©ë°© ë²ˆí˜¸")
 	private String roomId;
-	@ApiModelProperty(example = "ÇĞ¹ø")
+	@ApiModelProperty(example = "í•™ë²ˆ")
 	private String studentId;
-	@ApiModelProperty(example = "ÆÄº£ÅäÅ«")
+	@ApiModelProperty(example = "íŒŒë² í† í°")
 	private String token;
-	@ApiModelProperty(example = "¾Û ¾÷µ¥ÀÌÆ® ¹öÀü")
+	@ApiModelProperty(example = "ì•± ì—…ë°ì´íŠ¸ ë²„ì „")
 	int version;
 	
 	public ReqConnectChat() {}

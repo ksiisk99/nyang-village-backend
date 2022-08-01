@@ -17,7 +17,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint{
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		//È¸¿øÀÌ ¾Æ´Ñµ¥ Á¢±ÙÇÏ·Á ÇÒ¶§ 401¿¡·¯
+		//íšŒì›ì´ ì•„ë‹Œë° ì ‘ê·¼í•˜ë ¤ í• ë•Œ 401ì—ëŸ¬
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 

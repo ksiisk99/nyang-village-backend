@@ -46,7 +46,7 @@ public class FcmServiceImpl implements FcmService{
 	}
 	
 	
-	//ÆÄÀÌ¾îº£ÀÌ½º ¼¼ÆÃ
+	//íŒŒì´ì–´ë² ì´ìŠ¤ ì„¸íŒ…
 	@PostConstruct
 	public void Init() throws IOException{
 		List<FirebaseApp> firebaseApps=FirebaseApp.getApps();
@@ -76,11 +76,11 @@ public class FcmServiceImpl implements FcmService{
 				.setPriority(Priority.HIGH).build();
 	}
 	
-	//ÀÔÀå ÅğÀå fcm
+	//ì…ì¥ í‡´ì¥ fcm
 	@Override
 	public void enterExitMsg(int type, int roomId, String nickName) throws FirebaseMessagingException {
-		//type 0:ÀÔÀå / 1:ÅğÀå / 2:¸Ş½ÃÁö
-		MulticastMessage message=MulticastMessage.builder() //fcm Àü¼Û
+		//type 0:ì…ì¥ / 1:í‡´ì¥ / 2:ë©”ì‹œì§€
+		MulticastMessage message=MulticastMessage.builder() //fcm ì „ì†¡
 				.putData("type", String.valueOf(type))
 				.putData("roomId", String.valueOf(roomId))
 				.putData("nickName", nickName)
@@ -91,10 +91,10 @@ public class FcmServiceImpl implements FcmService{
 		ApiFuture<BatchResponse> response=instance.sendMulticastAsync(message);
 	}
 	
-	//¸Ş½ÃÁö fcm
+	//ë©”ì‹œì§€ fcm
 	@Override
 	public void sendMsg(Msg msg) throws FirebaseMessagingException {
-		MulticastMessage message=MulticastMessage.builder() //fcm Àü¼Û
+		MulticastMessage message=MulticastMessage.builder() //fcm ì „ì†¡
 				.putData("type", String.valueOf(msg.getType()))
 				.putData("roomId", msg.getRoomId())
 				.putData("nickName", msg.getNickName())
@@ -112,7 +112,7 @@ public class FcmServiceImpl implements FcmService{
 	@Override
 	public void sendPcMsg(Msg msg) throws FirebaseMessagingException {
 		// TODO Auto-generated method stub
-		MulticastMessage message=MulticastMessage.builder() //fcm Àü¼Û
+		MulticastMessage message=MulticastMessage.builder() //fcm ì „ì†¡
 				.putData("type", String.valueOf(msg.getType()))
 				.putData("roomId", msg.getRoomId())
 				.putData("nickName", msg.getNickName())

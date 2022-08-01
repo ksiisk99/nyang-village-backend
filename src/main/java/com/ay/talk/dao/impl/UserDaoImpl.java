@@ -27,45 +27,43 @@ public class UserDaoImpl implements UserDao{
 
 	@Autowired
 	public UserDaoImpl(MongoTemplate mongoTemplate, MongoDatabase mongoDatabase) {
-		this.mongoTemplate=mongoTemplate; //find ¿ë
-		this.mongoDatabase=mongoDatabase; //insert update¿ë
+		this.mongoTemplate=mongoTemplate; //find
+		this.mongoDatabase=mongoDatabase; //insert update
 	}
 	
 	@PostConstruct
 	public void initMongoCollection() {
-		userCollection=mongoDatabase.getCollection("User",User.class); //À¯Àú ÄÃ·º¼Ç ÃÊ±âÈ­
+		userCollection=mongoDatabase.getCollection("User",User.class); //ìœ ì € ì»¬ë ‰ì…˜ ì´ˆê¸°í™”
 	}
 
-	//À¯Àú Á¤º¸µé °¡Á®¿À±â
+	//ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<User> findUserList(){ 
 		return mongoTemplate.findAll(User.class);
 	}
 
-	//»õ·Î¿î À¯Àú Ãß°¡
+	//ìƒˆë¡œìš´ ìœ ì € ì¶”ê°€
 	public void insertUser(User user) {
 		//mongoTemplate.insert(user,"User");
 		userCollection.insertOne(user);
 	}
 
-	//À¯Àú Á¤º¸ °¡Á®¿À±â
+	//ìœ ì € ì •ë³´ ê°€ì ¸ì˜¤ê¸°
 	public User findUser(String studentId) {
 		return mongoTemplate.findOne(Query.query(Criteria.where("studentId").is(studentId)), User.class);
 	}
 
-	//À¯Àú Á¤º¸ ¹æ¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+	//ìœ ì € ì •ë³´ ë°©ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 	public void updateUserRoom(String studentId,ArrayList<UserRoomData> roomIds) {
 		Update update=new Update();
 		update.set("roomIds", roomIds);
 		mongoTemplate.updateFirst(Query.query(Criteria.where("studentId").is(studentId)), update, "User");
 	}
 	
-	//À¯Àú Á¤º¸ ¹æ°ú ÅäÅ«¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+	//ìœ ì € ì •ë³´ ë°©ê³¼ í† í°ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 	public  void updateUserRoomAndToken(String studentId,ArrayList<UserRoomData> roomIds, String fcm) {
 		Update update=new Update();
 		update.set("roomIds", roomIds);
 		update.set("fcm", fcm);
 		mongoTemplate.updateFirst(Query.query(Criteria.where("studentId").is(studentId)), update, "User");
-	}
-	
-	
+	}	
 }

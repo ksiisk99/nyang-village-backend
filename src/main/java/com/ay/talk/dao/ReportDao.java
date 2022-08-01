@@ -2,19 +2,18 @@ package com.ay.talk.dao;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 
 import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.entity.Report;
 import com.ay.talk.entity.UserRoomData;
 
 public interface ReportDao {
-	//À¯Àú ½Å°í
+	//ìœ ì € ì‹ ê³ 
 	public void insertReport(UserRoomData userRoomData, ReqReportMsg reportMsg);
 	
-	//½Å°í ¸ñ·Ï
+	//ì‹ ê³  ëª©ë¡
 	public List<Report> findReports();
 	
-	//Ã³¸® ¿Ï·áµÈ ½Å°í Ç×¸ñ »èÁ¦
+	//ì²˜ë¦¬ ì™„ë£Œëœ ì‹ ê³  í•­ëª© ì‚­ì œ
 	public void removeReports(String id);
 }

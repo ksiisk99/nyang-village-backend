@@ -3,8 +3,6 @@ package com.ay.talk.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.dto.request.ReqSuspend;
 import com.ay.talk.entity.ChatMsg;
@@ -16,47 +14,47 @@ import com.ay.talk.entity.User;
 import com.ay.talk.entity.UserRoomData;
 
 public interface DbRepository {
-	//ÀüÃ¼ °ú¸ñ °¡Á®¿À±â
+	//ì „ì²´ ê³¼ëª© ê°€ì ¸ì˜¤ê¸°
 		public List<Subject> findSubjects();
 		
-		//·£´ı ´Ğ³×ÀÓµé °¡Á®¿À±â
+		//ëœë¤ ë‹‰ë„¤ì„ë“¤ ê°€ì ¸ì˜¤ê¸°
 		public List<RandomName> findRandomNames();
 		
-		//À¯Àú Á¤º¸µé °¡Á®¿À±â
+		//ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 		public List<User> findUserList();
 		
-		//¹æ Á¤º¸µé °¡Á®¿À±â
+		//ë°© ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 		//public List<Room> findRoomList();
 		
-		//Á¤Áö À¯Àú Á¤º¸µé °¡Á®¿À±â
+		//ì •ì§€ ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 		public List<Suspended> findSuspendedUserList();
 		
-		//Á¤Áö ±â°£ Ç®¸° À¯Àú Á¤º¸ »èÁ¦
+		//ì •ì§€ ê¸°ê°„ í’€ë¦° ìœ ì € ì •ë³´ ì‚­ì œ
 		public void removeSuspendedUser(String studentId);
 		
-		//»õ·Î¿î À¯Àú Ãß°¡
+		//ìƒˆë¡œìš´ ìœ ì € ì¶”ê°€
 		public void insertUser(User user);
 		
-		//Ã¤ÆÃ ¸Ş½ÃÁö Ãß°¡
+		//ì±„íŒ… ë©”ì‹œì§€ ì¶”ê°€
 		public void insertChatMsg(ChatMsg chatMsg);
 		
-		//À¯Àú Á¤º¸ °¡Á®¿À±â
+		//ìœ ì € ì •ë³´ ê°€ì ¸ì˜¤ê¸°
 		public User findUser(String studentId);
 		
-		//À¯Àú Á¤º¸ ¹æ¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+		//ìœ ì € ì •ë³´ ë°©ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 		public void updateUserRoom(String studentId,ArrayList<UserRoomData> roomIds);
 		
-		//À¯Àú Á¤º¸ ¹æ°ú ÅäÅ«¿¡ ´ëÇØ¼­ ¾÷µ¥ÀÌÆ®
+		//ìœ ì € ì •ë³´ ë°©ê³¼ í† í°ì— ëŒ€í•´ì„œ ì—…ë°ì´íŠ¸
 		public  void updateUserRoomAndToken(String studentId,ArrayList<UserRoomData> roomIds, String fcm);
 		
-		//À¯Àú ½Å°í
+		//ìœ ì € ì‹ ê³ 
 		public void insertReport(UserRoomData userRoomData, ReqReportMsg reportMsg);
 		
 		public List<Report> findReports();
 		
-		//Á¤Áö È¸¿ø Ãß°¡
+		//ì •ì§€ íšŒì› ì¶”ê°€
 		public void insertSuspendedUser(ReqSuspend reqSuspend);
 
-		//Ã³¸® ¿Ï·áµÈ ½Å°í Ç×¸ñ »èÁ¦
+		//ì²˜ë¦¬ ì™„ë£Œëœ ì‹ ê³  í•­ëª© ì‚­ì œ
 		public void removeReports(String id);
 }

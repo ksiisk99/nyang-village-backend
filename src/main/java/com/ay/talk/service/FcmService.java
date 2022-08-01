@@ -1,17 +1,15 @@
 package com.ay.talk.service;
 
-import java.io.IOException;
-
 import com.ay.talk.dto.Msg;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
 public interface FcmService {
-	//¸Ş½ÃÁö Àü¼Û
+	//ë©”ì‹œì§€ ì „ì†¡
 	void sendMsg(Msg msg) throws FirebaseMessagingException;
-	//ÀÔÀå ÅğÀå ¸Ş½ÃÁö
+	//ì…ì¥ í‡´ì¥ ë©”ì‹œì§€
 	void enterExitMsg(int type, int roomId, String nickName) throws FirebaseMessagingException;
-	//fcm ¼³Á¤ ÃÊ±âÈ­
-	//void Init() throws IOException;
-	//pc ¸Ş½ÃÁö Àü¼Û
+	//fcm ì„¤ì • ì´ˆê¸°í™”
+	
+	//pc ë©”ì‹œì§€ ì „ì†¡
 	void sendPcMsg(Msg msg) throws FirebaseMessagingException;
 }

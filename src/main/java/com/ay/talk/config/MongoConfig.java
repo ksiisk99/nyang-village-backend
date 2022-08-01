@@ -53,7 +53,7 @@ public class MongoConfig {
 		return new MongoTemplate(factory, converter);	
 	}
 	
-	public @Bean MongoDatabase mongoDatabase() { //Insert Update ¿ë
+	public @Bean MongoDatabase mongoDatabase() { //Insert Update
 		return mongoClient().getDatabase(mongodbName);
 	}
 }

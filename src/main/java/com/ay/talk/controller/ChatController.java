@@ -1,5 +1,8 @@
 package com.ay.talk.controller;
 
+
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,8 @@ import com.ay.talk.service.FcmService;
 import com.ay.talk.service.ManageService;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 //import ch.qos.logback.classic.LoggerContext;
 import io.swagger.annotations.ApiOperation;
 
@@ -35,10 +40,9 @@ import io.swagger.annotations.ApiOperation;
 @ApiOperation("swagger")
 @RestController
 public class ChatController{
-	private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ChatController.class);
-	private ApplicationContext ac=new AnnotationConfigApplicationContext(MongoConfig.class);
-	//LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
-	//ch.qos.logback.classic.Logger logger2=loggerContext.getLogger("org.mongodb.driver");	
+	LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
+	ch.qos.logback.classic.Logger mongoLogger=loggerContext.getLogger("org.mongodb.driver");
+	ch.qos.logback.classic.Logger redisLogger=loggerContext.getLogger("io.lettuce.core");
 	private final ManageService manageService;
 	private final FcmService fcmService;
 	private final ChatService chatService;
@@ -53,7 +57,13 @@ public class ChatController{
 		logger=LogManager.getLogger();
 	}
 	
-	@MessageMapping(value = "/ay/chat") //¸ğ¹ÙÀÏÃ¤ÆÃ
+	@PostConstruct
+	public void init() {
+		mongoLogger.setLevel(Level.OFF);
+		redisLogger.setLevel(Level.OFF);
+	}
+	
+	@MessageMapping(value = "/ay/chat") //ëª¨ë°”ì¼ì±„íŒ…
 	public void Message(Msg msg) throws FirebaseMessagingException {
 		long beforeTime = System.currentTimeMillis();
 		
@@ -62,13 +72,13 @@ public class ChatController{
 		chatService.sendMsg(msg);
 		
 		fcmService.sendMsg(msg);	
-		long afterTime = System.currentTimeMillis(); // ÄÚµå ½ÇÇà ÈÄ¿¡ ½Ã°£ ¹Ş¾Æ¿À±â
-		long secDiffTime = (afterTime - beforeTime); //µÎ ½Ã°£¿¡ Â÷ °è»ê
+		long afterTime = System.currentTimeMillis(); // ì½”ë“œ ì‹¤í–‰ í›„ì— ì‹œê°„ ë°›ì•„ì˜¤ê¸°
+		long secDiffTime = (afterTime - beforeTime); //ë‘ ì‹œê°„ì— ì°¨ ê³„ì‚°
 //		System.out.println("chat : "+secDiffTime+"ms");
 		logger.info("chat: {}ms",secDiffTime);
 	}
 	
-	@MessageMapping(value = "/ay/pc/chat") //pcÃ¤ÆÃ
+	@MessageMapping(value = "/ay/pc/chat") //pcì±„íŒ…
 	public void PcMessage(Msg msg) throws FirebaseMessagingException {
 		long beforeTime = System.currentTimeMillis();
 		
@@ -77,32 +87,32 @@ public class ChatController{
 		chatService.sendPcMsg(msg);
 		
 		fcmService.sendPcMsg(msg);	
-		long afterTime = System.currentTimeMillis(); // ÄÚµå ½ÇÇà ÈÄ¿¡ ½Ã°£ ¹Ş¾Æ¿À±â
-		long secDiffTime = (afterTime - beforeTime); //µÎ ½Ã°£¿¡ Â÷ °è»ê
+		long afterTime = System.currentTimeMillis(); // ì½”ë“œ ì‹¤í–‰ í›„ì— ì‹œê°„ ë°›ì•„ì˜¤ê¸°
+		long secDiffTime = (afterTime - beforeTime); //ë‘ ì‹œê°„ì— ì°¨ ê³„ì‚°
 //		System.out.println("chat : "+secDiffTime+"ms");
 		logger.info("pcchat: {}ms",secDiffTime);
 	}
 	
-	@MessageMapping(value="/ay/connectchat") //Ã¹ À¥¼ÒÄÏ ¿¬°á ½Ã ÀÌÁß·Î±×ÀÎ, Á¤ÁöÀ¯¹«¿Í »õÇĞ±âÀÎÁö¸¦ È®ÀÎÇÑ´Ù.
+	@MessageMapping(value="/ay/connectchat") //ì²« ì›¹ì†Œì¼“ ì—°ê²° ì‹œ ì´ì¤‘ë¡œê·¸ì¸, ì •ì§€ìœ ë¬´ì™€ ìƒˆí•™ê¸°ì¸ì§€ë¥¼ í™•ì¸í•œë‹¤.
 	public void startConnect(ReqConnectChat cc) {
 		long beforeTime = System.currentTimeMillis();
 		
 		chatService.connectChat(cc);
 		
-		long afterTime = System.currentTimeMillis(); // ÄÚµå ½ÇÇà ÈÄ¿¡ ½Ã°£ ¹Ş¾Æ¿À±â
-		long secDiffTime = (afterTime - beforeTime); //µÎ ½Ã°£¿¡ Â÷ °è»ê
+		long afterTime = System.currentTimeMillis(); // ì½”ë“œ ì‹¤í–‰ í›„ì— ì‹œê°„ ë°›ì•„ì˜¤ê¸°
+		long secDiffTime = (afterTime - beforeTime); //ë‘ ì‹œê°„ì— ì°¨ ê³„ì‚°
 		logger.info("connectchat: {}ms",secDiffTime);
 //		System.out.println("connectchat : "+secDiffTime+"ms");
 	}
 	
-	@MessageMapping(value="/ay/report") //½Å°í
+	@MessageMapping(value="/ay/report") //ì‹ ê³ 
 	public void Report(ReqReportMsg reportMsg) {
 		long beforeTime = System.currentTimeMillis();
 	
 		manageService.report(reportMsg);
 		
-		long afterTime = System.currentTimeMillis(); // ÄÚµå ½ÇÇà ÈÄ¿¡ ½Ã°£ ¹Ş¾Æ¿À±â
-		long secDiffTime = (afterTime - beforeTime); //µÎ ½Ã°£¿¡ Â÷ °è»ê
+		long afterTime = System.currentTimeMillis(); // ì½”ë“œ ì‹¤í–‰ í›„ì— ì‹œê°„ ë°›ì•„ì˜¤ê¸°
+		long secDiffTime = (afterTime - beforeTime); //ë‘ ì‹œê°„ì— ì°¨ ê³„ì‚°
 		logger.info("report: {}ms",secDiffTime);
 //		System.out.println("report : "+secDiffTime+"ms");
 	}

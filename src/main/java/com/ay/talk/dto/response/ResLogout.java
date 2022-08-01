@@ -3,7 +3,7 @@ package com.ay.talk.dto.response;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ResLogout {
-	@ApiModelProperty(example = "·Î±×¾Æ¿ô ½Ã ½ÅÈ£ => 0:½ÇÆÐ / 1:¼º°ø")
+	@ApiModelProperty(example = "ë¡œê·¸ì•„ì›ƒ ì‹œ ì‹ í˜¸ => 0:ì‹¤íŒ¨ / 1:ì„±ê³µ")
 	private int signal;
 	
 	public ResLogout() {}

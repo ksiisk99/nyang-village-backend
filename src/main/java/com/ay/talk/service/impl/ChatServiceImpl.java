@@ -25,11 +25,11 @@ public class ChatServiceImpl implements ChatService{
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final ServerRepository serverRepository;
 	private final DbRepository dbRepository;
-	private final int doubleLoginSignal=1; //ÀÌÁß·Î±×ÀÎ ½ÅÈ£ 1
-	private final int suspendedSignal=2; //Á¤ÁöÈ¸¿ø ½ÅÈ£ 2
-	private final int semeterSignal=3; //»õÇĞ±â ½ÅÈ£ 3
-	private final int updateSignal=4; //¾÷µ¥ÀÌÆ® ½ÅÈ£ 4
-	private final int sendMsgSignal=2; //¸Ş½ÃÁö Àü¼Û ½ÅÈ£ 2
+	private final int doubleLoginSignal=1; //ì´ì¤‘ë¡œê·¸ì¸ ì‹ í˜¸ 1
+	private final int suspendedSignal=2; //ì •ì§€íšŒì› ì‹ í˜¸ 2
+	private final int semeterSignal=3; //ìƒˆí•™ê¸° ì‹ í˜¸ 3
+	private final int updateSignal=4; //ì—…ë°ì´íŠ¸ ì‹ í˜¸ 4
+	private final int sendMsgSignal=2; //ë©”ì‹œì§€ ì „ì†¡ ì‹ í˜¸ 2
 	
 	@Autowired
 	public ChatServiceImpl(SimpMessagingTemplate simpMessagingTemplate, ServerRepository serverRepository
@@ -39,70 +39,70 @@ public class ChatServiceImpl implements ChatService{
 		this.dbRepository=dbRepository;
 	}
 	
-	//ÀÔÀå ÅğÀå ¸Ş½ÃÁö Àü¼Û
+	//ì…ì¥ í‡´ì¥ ë©”ì‹œì§€ ì „ì†¡
 	@Override
 	public void enterExitMsg(int type, int roomId, String nickName) { 
-		//type 0:ÀÔÀå / 1:ÅğÀå / 2:¸Ş½ÃÁö
+		//type 0:ì…ì¥ / 1:í‡´ì¥ / 2:ë©”ì‹œì§€
 		Msg msg=new Msg(String.valueOf(roomId),nickName, type);
 		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
 	}
 	
-	//Ã¤ÆÃ ¸Ş½ÃÁö Àü¼Û
+	//ì±„íŒ… ë©”ì‹œì§€ ì „ì†¡
 	@Override
 	public void sendMsg(Msg msg) { 
-		//type 0:ÀÔÀå / 1:ÅğÀå / 2:¸Ş½ÃÁö
+		//type 0:ì…ì¥ / 1:í‡´ì¥ / 2:ë©”ì‹œì§€
 		msg.setType(sendMsgSignal);
 		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
 		dbRepository.insertChatMsg(new ChatMsg(msg.getRoomId(), msg.getNickName(),msg.getContent(),msg.getTime()));
 	}
 	
-	//pc Ã¤ÆÃ ¸Ş½ÃÁö Àü¼Û
+	//pc ì±„íŒ… ë©”ì‹œì§€ ì „ì†¡
 	@Override
 	public void sendPcMsg(Msg msg) {
 		// TODO Auto-generated method stub
-		msg.setpmType(); //pc º¸³½ ½ÅÈ£ 1
+		msg.setpmType(); //pc ë³´ë‚¸ ì‹ í˜¸ 1
 		msg.setType(sendMsgSignal);
 		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
 		dbRepository.insertChatMsg(new ChatMsg(msg.getRoomId(), msg.getNickName(),msg.getContent(),msg.getTime()));
 	}
 	
-	//Ã¹ À¥¼ÒÄÏ ¿¬°á ½Ã ¹öÀü, ÀÌÁß·Î±×ÀÎ, Á¤ÁöÀ¯¹«, »õÇĞ±âÀÎÁö¸¦ È®ÀÎÇÑ´Ù.
+	//ì²« ì›¹ì†Œì¼“ ì—°ê²° ì‹œ ë²„ì „, ì´ì¤‘ë¡œê·¸ì¸, ì •ì§€ìœ ë¬´, ìƒˆí•™ê¸°ì¸ì§€ë¥¼ í™•ì¸í•œë‹¤.
 	@Override
 	public void connectChat(ReqConnectChat cc) {
-		//ÀÚµ¿·Î±×ÀÎÀÎµ¥ ÅäÅ« °ªÀÌ ´Ş¶óÁ³´Ù¸é ´Ù¸¥ ±â±â¿¡¼­ ·Î±×ÀÎ Çß´Ù´Â °ÍÀÌ´Ï ÇöÀç ±â±â¸¦ ·Î±×¾Æ¿ô ½ÃÅ²´Ù.
+		//ìë™ë¡œê·¸ì¸ì¸ë° í† í° ê°’ì´ ë‹¬ë¼ì¡Œë‹¤ë©´ ë‹¤ë¥¸ ê¸°ê¸°ì—ì„œ ë¡œê·¸ì¸ í–ˆë‹¤ëŠ” ê²ƒì´ë‹ˆ í˜„ì¬ ê¸°ê¸°ë¥¼ ë¡œê·¸ì•„ì›ƒ ì‹œí‚¨ë‹¤.
 		//System.out.println(cc.getStudentId()+" "+cc.getToken());
-		if(cc.getVersion()!=serverRepository.getVersion()) { //¾Û ¹öÀüÀÌ ´Ù¸£¹Ç·Î Å¬¶óÀÌ¾ğÆ® ¾÷µ¥ÀÌÆ®
-			ResConnectChat resConnectChat=new ResConnectChat(updateSignal, null,cc.getStudentId()); //¾Û ¹öÀü ¾÷µ¥ÀÌÆ® ½ÅÈ£
+		if(cc.getVersion()!=serverRepository.getVersion()) { //ì•± ë²„ì „ì´ ë‹¤ë¥´ë¯€ë¡œ í´ë¼ì´ì–¸íŠ¸ ì—…ë°ì´íŠ¸
+			ResConnectChat resConnectChat=new ResConnectChat(updateSignal, null,cc.getStudentId()); //ì•± ë²„ì „ ì—…ë°ì´íŠ¸ ì‹ í˜¸
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 			return;
 		}
 		
 		String userInfo=serverRepository.getUserInfo(cc.getStudentId());
 		
-		if(userInfo==null){ //»õÇĞ±â ½ÃÀÛÀÌ¶ó ÇØ´çÇÏ´Â ÇĞ¹ø¿¡ ÅäÅ«°ªÀÌ ¾ø´Ù¸é ÀÌÀü ÇĞ±â¿¡¼­ »õ·Ó°Ô ·Î±×ÀÎÀ» ¾ÈÇÑ À¯ÀúÀÌ´Ù.
-			ResConnectChat resConnectChat=new ResConnectChat(semeterSignal, null,cc.getStudentId()); //3 »õÇĞ±â ½ÅÈ£
+		if(userInfo==null){ //ìƒˆí•™ê¸° ì‹œì‘ì´ë¼ í•´ë‹¹í•˜ëŠ” í•™ë²ˆì— í† í°ê°’ì´ ì—†ë‹¤ë©´ ì´ì „ í•™ê¸°ì—ì„œ ìƒˆë¡­ê²Œ ë¡œê·¸ì¸ì„ ì•ˆí•œ ìœ ì €ì´ë‹¤.
+			ResConnectChat resConnectChat=new ResConnectChat(semeterSignal, null,cc.getStudentId()); //3 ìƒˆí•™ê¸° ì‹ í˜¸
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 			return;
 		}
 		String[] userInfos=userInfo.split(",");
-		if(!userInfos[0].equals(cc.getToken())){//ÀÌÁß·Î±×ÀÎ ÀÌ¶ó¸é
-			ResConnectChat resConnectChat=new ResConnectChat(doubleLoginSignal, null,cc.getStudentId()); //1 ÀÌÁß·Î±×ÀÎ ½ÅÈ£
+		if(!userInfos[0].equals(cc.getToken())){//ì´ì¤‘ë¡œê·¸ì¸ ì´ë¼ë©´
+			ResConnectChat resConnectChat=new ResConnectChat(doubleLoginSignal, null,cc.getStudentId()); //1 ì´ì¤‘ë¡œê·¸ì¸ ì‹ í˜¸
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 		}else{
-			if(!userInfos[1].equals("0")) { //Á¤Áö È¸¿øÀÌ¶ó¸é
-				//ÇöÀç³¯Â¥¿Í Á¤Áö³¯Â¥¸¦ ºñ±³ÇÑ´Ù
-				if(Integer.parseInt(userInfos[1])>=Integer.parseInt(getCurrentTime())) { //Á¤ÁöÈ¸¿ø
-					ResConnectChat resConnectChat=new ResConnectChat(suspendedSignal, userInfos[1],cc.getStudentId()); //2 Á¤Áö È¸¿ø
+			if(!userInfos[1].equals("0")) { //ì •ì§€ íšŒì›ì´ë¼ë©´
+				//í˜„ì¬ë‚ ì§œì™€ ì •ì§€ë‚ ì§œë¥¼ ë¹„êµí•œë‹¤
+				if(Integer.parseInt(userInfos[1])>=Integer.parseInt(getCurrentTime())) { //ì •ì§€íšŒì›
+					ResConnectChat resConnectChat=new ResConnectChat(suspendedSignal, userInfos[1],cc.getStudentId()); //2 ì •ì§€ íšŒì›
 					simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 					
-					//¸ğµç ¹æµé¿¡ ´ëÇØ¼­ ÅäÅ« °ªµéÀ» Á¦°ÅÇÑ´Ù. Á¤ÁöÀ¯Àú¿¡°Ô ¸Ş½ÃÁö°¡ ¾È°¡°Ô µÈ´Ù.
+					//ëª¨ë“  ë°©ë“¤ì— ëŒ€í•´ì„œ í† í° ê°’ë“¤ì„ ì œê±°í•œë‹¤. ì •ì§€ìœ ì €ì—ê²Œ ë©”ì‹œì§€ê°€ ì•ˆê°€ê²Œ ëœë‹¤.
 					User user=dbRepository.findUser(cc.getStudentId());
 					ArrayList<UserRoomData>curSubjects=user.getRoomIds();
 					for(int i=0;i<curSubjects.size();i++) {
 						serverRepository.removeRoomInToken(curSubjects.get(i).getRoomName(), cc.getToken());
 					}
-					//System.out.println("Á¤Áö È¸¿ø");
-				}else { //Á¤Áö°¡ Ç®¸° È¸¿ø
+					//System.out.println("ì •ì§€ íšŒì›");
+				}else { //ì •ì§€ê°€ í’€ë¦° íšŒì›
 					serverRepository.removeSuspendedUser(cc.getStudentId()
 							,new StringBuilder().append(cc.getToken()+",0").toString());
 					dbRepository.removeSuspendedUser(cc.getStudentId());
@@ -111,7 +111,7 @@ public class ChatServiceImpl implements ChatService{
 		}
 	}
 	
-	//ÇöÀç³¯Â¥
+	//í˜„ì¬ë‚ ì§œ
     private String getCurrentTime() {
         long now = System.currentTimeMillis();
         TimeZone tz=TimeZone.getTimeZone("Asia/Seoul");

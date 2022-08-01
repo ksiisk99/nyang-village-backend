@@ -5,18 +5,18 @@ import java.util.ArrayList;
 
 import io.swagger.annotations.ApiModelProperty;
 
-//Å¬¶óÀÌ¾ğÆ®¿¡°Ô Àü¼ÛÀ» À§ÇÑ  ¹æ Á¤º¸
+//í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì „ì†¡ì„ ìœ„í•œ  ë°© ì •ë³´
 public class RoomInfo implements Serializable{
-	@ApiModelProperty(example = "°ú¸ñ¸í")
-	private String roomName; //°ú¸ñÀÌ¸§
-	@ApiModelProperty(example = "¹æ¹øÈ£")
-    private int roomId; //°ú¸ñÀÎµ¦½º ¼­¹ö¿¡¼­ Ã¤ÆÃ¹æ ÀÎµ¦½º¿¡ ÇØ´çÇÔ
-	@ApiModelProperty(example = "·£´ı´Ğ³×ÀÓ")
-    private String nickName; //Ã¤ÆÃ¹æ ¾È¿¡¼­ ³» ·£´ı´Ğ³×ÀÓ
-	@ApiModelProperty(example = "±³¼ö´Ô¼ºÇÔ")
-    private String professorName; //±³¼öÀÌ¸§
-	@ApiModelProperty(example = "¹æ¾È¿¡ ÀÖ´Â »ç¿ëÀÚµé ´Ğ³×ÀÓ")
-    private ArrayList<String> roomInNames; //Ã¤ÆÃ¹æ ¾È¿¡ ÀÖ´Â À¯Àú ´Ğ³×ÀÓ
+	@ApiModelProperty(example = "ê³¼ëª©ëª…")
+	private String roomName; //ê³¼ëª©ì´ë¦„
+	@ApiModelProperty(example = "ë°©ë²ˆí˜¸")
+  private int roomId; //ê³¼ëª©ì¸ë±ìŠ¤ ì„œë²„ì—ì„œ ì±„íŒ…ë°© ì¸ë±ìŠ¤ì— í•´ë‹¹í•¨
+	@ApiModelProperty(example = "ëœë¤ë‹‰ë„¤ì„")
+  private String nickName; //ì±„íŒ…ë°© ì•ˆì—ì„œ ë‚´ ëœë¤ë‹‰ë„¤ì„
+	@ApiModelProperty(example = "êµìˆ˜ë‹˜ì„±í•¨")
+  private String professorName; //êµìˆ˜ì´ë¦„
+	@ApiModelProperty(example = "ë°©ì•ˆì— ìˆëŠ” ì‚¬ìš©ìë“¤ ë‹‰ë„¤ì„")
+  private ArrayList<String> roomInNames; //ì±„íŒ…ë°© ì•ˆì— ìˆëŠ” ìœ ì € ë‹‰ë„¤ì„
     
     public RoomInfo() {}
  

@@ -15,7 +15,7 @@ public class RandomNameDaoImpl implements RandomNameDao{
 
 	@Autowired
 	public RandomNameDaoImpl(MongoTemplate mongoTemplate) {
-		this.mongoTemplate=mongoTemplate; //find ¿ë
+		this.mongoTemplate=mongoTemplate; //find
 	}
 	
 	@Override

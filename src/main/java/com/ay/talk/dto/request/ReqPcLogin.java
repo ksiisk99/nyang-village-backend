@@ -3,9 +3,9 @@ package com.ay.talk.dto.request;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ReqPcLogin {
-	@ApiModelProperty(example = "ÇÐ¹ø")
+	@ApiModelProperty(example = "í•™ë²ˆ")
 	private String studentId;
-	@ApiModelProperty(example = "ºñ¹Ð¹øÈ£")
+	@ApiModelProperty(example = "ë¹„ë°€ë²ˆí˜¸")
 	private String password;
 	
 	public ReqPcLogin() {}

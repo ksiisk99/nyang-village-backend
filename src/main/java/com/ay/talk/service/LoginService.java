@@ -10,22 +10,22 @@ import com.ay.talk.dto.request.ReqPcLogin;
 import com.ay.talk.dto.response.ResLogin;
 import com.ay.talk.dto.response.ResLogout;
 import com.ay.talk.dto.response.ResPcLogin;
-import com.ay.talk.entity.UserRoomData;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
 public interface LoginService {
 	
-	//¸ğ¹ÙÀÏ ·Î±×ÀÎ
+	//ëª¨ë°”ì¼ ë¡œê·¸ì¸
 	public ResLogin login(ReqLogin reqLogin) throws FirebaseMessagingException, IOException;
 	
-	//¸ğ¹ÙÀÏ¿¡¼­ ¿äÃ»ÇÑ Å©·Ñ¸µ Á¤º¸
+	//ëª¨ë°”ì¼ì—ì„œ ìš”ì²­í•œ í¬ë¡¤ë§ ì •ë³´
 	public ArrayList<SubjectInfo> Crawling(String studentId, String password) throws IOException;
 	
-	//pc¿¡¼­ ¿äÃ»ÇÑ Å©·Ñ¸µ Á¤º¸
+	//pcì—ì„œ ìš”ì²­í•œ í¬ë¡¤ë§ ì •ë³´
 	public void pcCrawling(ReqPcLogin reqPcLogin, ResPcLogin resPcLogin) throws IOException;
 	 
-	//pc ·Î±×ÀÎ
+	//pc ë¡œê·¸ì¸
 	public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException; 
 	
+	//ë¡œê·¸ì•„ì›ƒ
 	public ResLogout logout(ReqLogout reqLogout);
 }

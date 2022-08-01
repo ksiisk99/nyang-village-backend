@@ -22,8 +22,8 @@ public class SuspendedDaoImpl implements SuspendedDao{
 	private MongoCollection<Suspended> suspendedCollection;
 	@Autowired
 	public SuspendedDaoImpl(MongoTemplate mongoTemplate, MongoDatabase mongoDatabase) {
-		this.mongoTemplate=mongoTemplate; //find ¿ë
-		this.mongoDatabase=mongoDatabase; //insert update¿ë
+		this.mongoTemplate=mongoTemplate; //find ìš©
+		this.mongoDatabase=mongoDatabase; //insert updateìš©
 	}
 	
 	@PostConstruct
@@ -31,17 +31,17 @@ public class SuspendedDaoImpl implements SuspendedDao{
 		suspendedCollection=mongoDatabase.getCollection("Suspended",Suspended.class);
 	}
 
-	//Á¤Áö À¯Àú Á¤º¸µé °¡Á®¿À±â
+	//ì •ì§€ ìœ ì € ì •ë³´ë“¤ ê°€ì ¸ì˜¤ê¸°
 	public List<Suspended> findSuspendedUserList(){
 		return mongoTemplate.findAll(Suspended.class);
 	}
 
-	//Á¤Áö ±â°£ Ç®¸° À¯Àú Á¤º¸ »èÁ¦
+	//ì •ì§€ ê¸°ê°„ í’€ë¦° ìœ ì € ì •ë³´ ì‚­ì œ
 	public void removeSuspendedUser(String studentId) {
 		mongoTemplate.remove(new Query().addCriteria(Criteria.where("studentId").is(studentId)),Suspended.class);
 	}
 
-	//Á¤Áö È¸¿ø Ãß°¡
+	//ì •ì§€ íšŒì› ì¶”ê°€
 	@Override
 	public void insertSuspendedUser(ReqSuspend reqSuspend) {
 		// TODO Auto-generated method stub

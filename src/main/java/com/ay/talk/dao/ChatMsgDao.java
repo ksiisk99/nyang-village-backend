@@ -3,6 +3,6 @@ package com.ay.talk.dao;
 import com.ay.talk.entity.ChatMsg;
 
 public interface ChatMsgDao {
-	//Ã¤ÆÃ ¸Þ½ÃÁö Ãß°¡
+	//ì±„íŒ…ë©”ì‹œì§€ ì €ìž¥
 	public void insertChatMsg(ChatMsg chatMsg);
 }

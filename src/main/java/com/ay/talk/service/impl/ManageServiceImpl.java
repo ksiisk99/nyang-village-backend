@@ -42,20 +42,20 @@ public class ManageServiceImpl implements ManageService{
 	public boolean manageReport(ReqSuspend reqSuspend) {
 		// TODO Auto-generated method stub
 		String[] userInfo=serverRepository.getUserInfo(reqSuspend.getStudentId()).split(",");
-		if(!userInfo[1].equals("0"))return false; //ÀÌ¹Ì Á¤Áö È¸¿ø
+		if(!userInfo[1].equals("0"))return false; //ì´ë¯¸ ì •ì§€ íšŒì›
 		else {
-			//Á¤ÁöÈ¸¿øÃß°¡
+			//ì •ì§€íšŒì›ì¶”ê°€
 			dbRepository.insertSuspendedUser(reqSuspend);
 			serverRepository.addSuspendedUser(reqSuspend.getStudentId()
 					,new StringBuilder().append(userInfo[0]+","+reqSuspend.getPeriod()).toString());
 			
-			//Ã³¸® ¿Ï·áµÈ ½Å°í Ç×¸ñ »èÁ¦
+			//ì²˜ë¦¬ ì™„ë£Œëœ ì‹ ê³  í•­ëª© ì‚­ì œ
 			dbRepository.removeReports(reqSuspend.getId());
 			return true;
 		}
 	}
 
-	//»ç¿ëÀÚ ½Å°í
+	//ì‚¬ìš©ì ì‹ ê³ 
 	@Override
 	public void report(ReqReportMsg reportMsg) {
 		UserRoomData userRoomData=new UserRoomData(reportMsg.getReportName(),

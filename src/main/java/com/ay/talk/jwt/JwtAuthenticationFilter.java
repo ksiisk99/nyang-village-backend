@@ -4,14 +4,11 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.JwtException;
@@ -34,15 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		boolean valid=jwtTokenProvider.validateToken(token);
 		if(token != null && valid) {
 			//throw new JwtException("anyang");
-			//System.out.println("ÅäÅ« Á¸Àç: "+token);
+			//System.out.println("í† í° ì¡´ì¬: "+token);
 		}else if(token==null) {
 			response.setStatus(401);
 			//System.out.println("No Token??");
-			//throw new JwtException("ÅäÅ« ¾øÀ½");
+			//throw new JwtException("í† í° ì—†ìŒ");
 		}else if(!valid){
 			response.setStatus(401);
-			//System.out.println("¸¸·áµÈ ÅäÅ«");
-			//throw new JwtException("¸¸·áµÈ ÅäÅ«");
+			//System.out.println("ë§Œë£Œëœ í† í°");
+			//throw new JwtException("ë§Œë£Œëœ í† í°");
 		}
 		filterChain.doFilter(request, response);
 	}

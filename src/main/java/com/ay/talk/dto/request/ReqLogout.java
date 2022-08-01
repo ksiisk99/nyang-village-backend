@@ -3,9 +3,9 @@ package com.ay.talk.dto.request;
 import io.swagger.annotations.ApiModelProperty;
 
 public class ReqLogout {
-	@ApiModelProperty(example = "»ç¿ëÀÚ ÇĞ¹ø")
+	@ApiModelProperty(example = "í•™ë²ˆ")
 	private String studentId;
-	@ApiModelProperty(example = "ÆÄº£ ÅäÅ«")
+	@ApiModelProperty(example = "íŒŒì´ì–´ë² ì´ìŠ¤ í† í°")
 	private String fcm;
 
     public ReqLogout(){}

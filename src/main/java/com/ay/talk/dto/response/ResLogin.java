@@ -7,16 +7,15 @@ import io.swagger.annotations.ApiModelProperty;
 
 
 public class ResLogin{
-	@ApiModelProperty(example = "·Î±×ÀÎ ½Ã ½ÅÈ£ => 1:¾÷µ¥ÀÌÆ® / 2:°­Á¦·Î±×¾Æ¿ô / 3:Ã¹·Î±×ÀÎ¼º°ø / 4:¼ö°­Á¤Á¤orÀÌÁß·Î±×ÀÎ ¼º°ø "
-			+ "/ 5:Àß¸øÀÔ·Â / 6:Á¤ÁöÈ¸¿ø")
+	@ApiModelProperty(example = "ë¡œê·¸ì¸ ì‹œ ì‹ í˜¸ => 1:ì—…ë°ì´íŠ¸ / 2:ê°•ì œë¡œê·¸ì•„ì›ƒ / 3:ì²«ë¡œê·¸ì¸ì„±ê³µ / 4:ìˆ˜ê°•ì •ì •orì´ì¤‘ë¡œê·¸ì¸ ì„±ê³µ "
+			+ "/ 5:ì˜ëª»ì…ë ¥ / 6:ì •ì§€íšŒì›")
 	private int signal;
-	@ApiModelProperty(example = "signal 6ÀÌ¸é Á¤Áö±â°£ ¾Æ´Ï¸é NULL")
+	@ApiModelProperty(example = "signal 6ì´ë©´ ì •ì§€ê¸°ê°„ ì•„ë‹ˆë©´ NULL")
 	private String suspendedDate;
-	@ApiModelProperty(example = "Ã¤ÆÃ¹æ ¸ñ·Ï")
+	@ApiModelProperty(example = "ì±„íŒ…ë°© ëª©ë¡")
 	private ArrayList<RoomInfo> roomInfos;
 	@ApiModelProperty(example = "jwt")
 	private String jwt;
-	
 	
 	public String getJwt() {
 		return jwt;

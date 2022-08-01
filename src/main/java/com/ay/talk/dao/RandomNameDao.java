@@ -5,6 +5,6 @@ import java.util.List;
 import com.ay.talk.entity.RandomName;
 
 public interface RandomNameDao {
-	//·£´ı´Ğ³×ÀÓ °¡Á®¿À±â
+	//ëœë¤ë‹‰ë„¤ì„ ì¡°íšŒ
 	public List<RandomName> findRandomNames();
 }

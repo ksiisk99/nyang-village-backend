@@ -2,11 +2,8 @@ package com.ay.talk.jwt;
 
 import java.security.Key;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -26,7 +23,7 @@ public class JwtTokenProvider implements InitializingBean{
 	@Value("${jwt.secret.key}")
 	private String secretKey;
 	@Value("${jwt.valid.time}")
-	private long tokenValidTime; //2ºĞ
+	private long tokenValidTime; //2ë¶„
 	private Key key;
 	
 	
@@ -52,15 +49,15 @@ public class JwtTokenProvider implements InitializingBean{
 				.compact();
 	}
 	
-	public String resolveToken(HttpServletRequest request) { //Çì´õ¿¡¼­ ÅäÅ« ÃßÃâ
+	public String resolveToken(HttpServletRequest request) { //í—¤ë”ì—ì„œ í† í° ì¶”ì¶œ
 		return request.getHeader("AY_TOKEN");
 	}
 	
-	public String getStudentId(String token) { //ÅäÅ«¿¡¼­ ÇĞ¹ø °¡Á®¿À±â
+	public String getStudentId(String token) { //í† í°ì—ì„œ í•™ë²ˆ ê°€ì ¸ì˜¤ê¸°
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
 	
-	public boolean validateToken(String token) { //ÅäÅ« À¯È¿¼º °Ë»ç
+	public boolean validateToken(String token) { //í† í° ìœ íš¨ì„± ê²€ì‚¬
 		try {
 			return !Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
 		}catch(Exception e) {
@@ -68,7 +65,7 @@ public class JwtTokenProvider implements InitializingBean{
 		}
 	}
 	
-	public ArrayList<String> getAuthorities(String token){ //±ÇÇÑ °¡Á®¿À±â
+	public ArrayList<String> getAuthorities(String token){ //ê¶Œí•œ ê°€ì ¸ì˜¤ê¸°
 		if(validateToken(token)) {
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("authorities",ArrayList.class);
 		}
