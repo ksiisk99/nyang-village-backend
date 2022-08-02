@@ -16,12 +16,16 @@ public class UserRoomInfo {
     private Long Id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "student_id")
 	private User user;
 	
+	@Column(name = "nick_name", length = 30)
 	private String nickName;
+	@Column(name = "room_id", length=4)
 	private String roomId;
+	@Column(name = "room_name", length=30)
 	private String roomName;
+	@Column(name = "professor_name", length=20)
 	private String professorName;
 	
 	protected UserRoomInfo() {}
