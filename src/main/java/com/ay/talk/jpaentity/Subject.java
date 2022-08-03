@@ -11,7 +11,7 @@ public class Subject {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "subject_id")
 	private Long Id;
-	@Column(length = 30)
+	@Column(length = 70)
 	private String name;
 	
 	protected Subject() {}
