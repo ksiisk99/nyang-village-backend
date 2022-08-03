@@ -22,7 +22,7 @@ public class UserRoomInfo {
 	@Column(name = "nick_name", length = 30)
 	private String nickName;
 	@Column(name = "room_id", length=4)
-	private String roomId;
+	private int roomId;
 	@Column(name = "room_name", length=30)
 	private String roomName;
 	@Column(name = "professor_name", length=20)
@@ -30,10 +30,7 @@ public class UserRoomInfo {
 	
 	protected UserRoomInfo() {}
 	
-	public UserRoomInfo(Long id, User user, String nickName, String roomId, String roomName, String professorName) {
-		super();
-		Id = id;
-		this.user = user;
+	public UserRoomInfo(String nickName, int roomId, String roomName, String professorName) {
 		this.nickName = nickName;
 		this.roomId = roomId;
 		this.roomName = roomName;
@@ -49,7 +46,7 @@ public class UserRoomInfo {
 	public String getNickName() {
 		return nickName;
 	}
-	public String getRoomId() {
+	public int getRoomId() {
 		return roomId;
 	}
 	public String getRoomName() {
