@@ -38,7 +38,7 @@ public class JwtTokenProvider implements InitializingBean{
 
 
 
-	public String createToken(String studentId, String authority) {
+	public String createToken(String studentId,Authority authority) {
 		Claims claims=Jwts.claims().setSubject(studentId);
 		claims.put("authority", authority);
 		Date now=new Date();
@@ -67,9 +67,9 @@ public class JwtTokenProvider implements InitializingBean{
 		}
 	}
 	
-	public String getAuthority(String token){ //권한 가져오기
+	public Authority getAuthority(String token){ //권한 가져오기
 		if(validateToken(token)) {
-			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("authority",String.class);
+			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("authority",Authority.class);
 		}
 		return null;
 	}
