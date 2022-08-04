@@ -1,6 +1,7 @@
 package com.ay.talk.dto.response;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.ay.talk.dto.RoomInfo;
 import com.ay.talk.jpaentity.Authority;
@@ -15,13 +16,13 @@ public class ResPcLogin {
 	@ApiModelProperty(example = "유저 권한(Customer or Manager)")
 	private Authority authority;
 	@ApiModelProperty(example = "채팅방 목록")
-	private ArrayList<RoomInfo> roomInfos;
+	private List<RoomInfo> roomInfos;
 	@ApiModelProperty(example = "jwt")
 	private String jwt;
 	
 	public ResPcLogin() {}
 	
-	public ResPcLogin(int signal, String suspendedDate, Authority authority, ArrayList<RoomInfo> roomInfos, String jwt) {
+	public ResPcLogin(int signal, String suspendedDate, Authority authority, List<RoomInfo> roomInfos, String jwt) {
 		super();
 		this.signal = signal;
 		this.suspendedDate = suspendedDate;
@@ -60,10 +61,10 @@ public class ResPcLogin {
 	public void setSuspendedDate(String suspendedDate) {
 		this.suspendedDate = suspendedDate;
 	}
-	public ArrayList<RoomInfo> getRoomInfos() {
+	public List<RoomInfo> getRoomInfos() {
 		return roomInfos;
 	}
-	public void setRoomInfos(ArrayList<RoomInfo> roomInfos) {
+	public void setRoomInfos(List<RoomInfo> roomInfos) {
 		this.roomInfos = roomInfos;
 	}
 	
