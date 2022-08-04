@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class ReqSuspend {
 	@ApiModelProperty(example = "고유 식별 번호(=신고 목록 번호)")
-	private String id;
+	private Long id;
 	@ApiModelProperty(example = "정지받을 사용자 아이디(학번)")
 	private String studentId;
 	@ApiModelProperty(example = "정지기간")
@@ -15,7 +15,7 @@ public class ReqSuspend {
 	private String reportWhy;
 	
 	public ReqSuspend() {}
-	public ReqSuspend(String id, String studentId, String period, String reportContent, String reportWhy) {
+	public ReqSuspend(Long id, String studentId, String period, String reportContent, String reportWhy) {
 		super();
 		this.id = id;
 		this.studentId = studentId;
@@ -24,10 +24,10 @@ public class ReqSuspend {
 		this.reportWhy = reportWhy;
 	}
 	
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getStudentId() {
