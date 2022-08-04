@@ -14,12 +14,10 @@ import org.springframework.stereotype.Service;
 import com.ay.talk.dto.Msg;
 import com.ay.talk.repository.ServerRepository;
 import com.ay.talk.service.FcmService;
-import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.AndroidConfig;
-import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
@@ -44,7 +42,6 @@ public class FcmServiceImpl implements FcmService{
 	public FcmServiceImpl(ServerRepository serverRepository) {
 		this.serverRepository=serverRepository;
 	}
-	
 	
 	//파이어베이스 세팅
 	@PostConstruct
@@ -87,8 +84,7 @@ public class FcmServiceImpl implements FcmService{
 				.setAndroidConfig(androidConfig)
 				.setApnsConfig(apnsConfig)
 				.addAllTokens(serverRepository.getRoomInTokens2(roomId)).build();
-
-		ApiFuture<BatchResponse> response=instance.sendMulticastAsync(message);
+		instance.sendMulticastAsync(message);
 	}
 	
 	//메시지 fcm
@@ -104,10 +100,8 @@ public class FcmServiceImpl implements FcmService{
 				.setAndroidConfig(androidConfig)
 				.setApnsConfig(apnsConfig)
 				.addAllTokens(serverRepository.getRoomInTokens(msg.getRoomId())).build();
-				
-		ApiFuture<BatchResponse> response=instance.sendMulticastAsync(message);			
+		instance.sendMulticastAsync(message);
 	}
-
 
 	@Override
 	public void sendPcMsg(Msg msg) throws FirebaseMessagingException {
@@ -122,11 +116,6 @@ public class FcmServiceImpl implements FcmService{
 				.setAndroidConfig(androidConfig)
 				.setApnsConfig(apnsConfig)
 				.addAllTokens(serverRepository.getRoomInTokens(msg.getRoomId())).build();
-				
-		ApiFuture<BatchResponse> response=instance.sendMulticastAsync(message);
-		
+		instance.sendMulticastAsync(message);
 	}
-	
-	
-
 }
