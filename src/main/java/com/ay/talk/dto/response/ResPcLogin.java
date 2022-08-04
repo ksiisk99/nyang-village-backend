@@ -3,6 +3,7 @@ package com.ay.talk.dto.response;
 import java.util.ArrayList;
 
 import com.ay.talk.dto.RoomInfo;
+import com.ay.talk.jpaentity.Authority;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -11,8 +12,8 @@ public class ResPcLogin {
 	private int signal;
 	@ApiModelProperty(example = "signal이 3이면 정지기간 아니면 NULL")
 	private String suspendedDate;
-	@ApiModelProperty(example = "유저 권한(Customer , Manager")
-	private ArrayList<String> authority;
+	@ApiModelProperty(example = "유저 권한(Customer or Manager)")
+	private Authority authority;
 	@ApiModelProperty(example = "채팅방 목록")
 	private ArrayList<RoomInfo> roomInfos;
 	@ApiModelProperty(example = "jwt")
@@ -20,7 +21,7 @@ public class ResPcLogin {
 	
 	public ResPcLogin() {}
 	
-	public ResPcLogin(int signal, String suspendedDate, ArrayList<String> authority, ArrayList<RoomInfo> roomInfos, String jwt) {
+	public ResPcLogin(int signal, String suspendedDate, Authority authority, ArrayList<RoomInfo> roomInfos, String jwt) {
 		super();
 		this.signal = signal;
 		this.suspendedDate = suspendedDate;
@@ -39,11 +40,11 @@ public class ResPcLogin {
 		this.jwt = jwt;
 	}
 
-	public ArrayList<String> getAuthority() {
+	public Authority getAuthority() {
 		return authority;
 	}
 
-	public void setAuthority(ArrayList<String> authority) {
+	public void setAuthority(Authority authority) {
 		this.authority = authority;
 	}
 
