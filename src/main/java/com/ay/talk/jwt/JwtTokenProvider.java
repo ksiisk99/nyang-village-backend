@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import com.ay.talk.jpaentity.Authority;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -36,9 +38,9 @@ public class JwtTokenProvider implements InitializingBean{
 
 
 
-	public String createToken(String studentId, List<String> authorities) {
+	public String createToken(String studentId, String authority) {
 		Claims claims=Jwts.claims().setSubject(studentId);
-		claims.put("authorities", authorities);
+		claims.put("authority", authority);
 		Date now=new Date();
 		
 		return Jwts.builder()
@@ -65,9 +67,9 @@ public class JwtTokenProvider implements InitializingBean{
 		}
 	}
 	
-	public ArrayList<String> getAuthorities(String token){ //권한 가져오기
+	public String getAuthority(String token){ //권한 가져오기
 		if(validateToken(token)) {
-			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("authorities",ArrayList.class);
+			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("authority",String.class);
 		}
 		return null;
 	}
