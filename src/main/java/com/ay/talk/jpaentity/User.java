@@ -59,4 +59,8 @@ public class User {
 	public void changeUserRoomInfos(List<UserRoomInfo> userRoomInfos) {
 		this.userRoomInfos=userRoomInfos;
 	}
+	
+	public void changeFcm(String fcm) {
+		this.fcm=fcm;
+	}
 }
