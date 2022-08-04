@@ -56,5 +56,7 @@ public class User {
 		return authority;
 	}
 	
-	
+	public void changeUserRoomInfos(List<UserRoomInfo> userRoomInfos) {
+		this.userRoomInfos=userRoomInfos;
+	}
 }
