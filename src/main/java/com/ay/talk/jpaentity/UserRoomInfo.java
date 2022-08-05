@@ -23,7 +23,7 @@ public class UserRoomInfo {
 	private String nickName;
 	@Column(name = "room_id", length=4)
 	private int roomId;
-	@Column(name = "room_name", length=30)
+	@Column(name = "room_name", length=70)
 	private String roomName;
 	@Column(name = "professor_name", length=20)
 	private String professorName;

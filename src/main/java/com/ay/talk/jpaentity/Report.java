@@ -11,7 +11,7 @@ public class Report {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "report_id")
     private Long Id;
-	@Column(name = "room_name",length = 30)
+	@Column(name = "room_name",length = 70)
 	private String roomName;	//채팅방 이름
 	@Column(name = "report_name",length = 20)
 	private String reportName;	//신고 대상
