@@ -55,6 +55,10 @@ public class UserRoomInfo {
 	public String getProfessorName() {
 		return professorName;
 	}
+
+	public void makeFk(User user) {
+		this.user=user;
+	}
 	
 	
 }
