@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 import com.ay.talk.dto.ReportDto;
 import com.ay.talk.dto.request.ReqReportMsg;
 import com.ay.talk.dto.request.ReqSuspend;
-import com.ay.talk.entity.Report;
-import com.ay.talk.entity.UserRoomData;
-import com.ay.talk.repository.DbRepository;
+import com.ay.talk.jpaentity.Report;
+import com.ay.talk.jpaentity.Suspended;
+import com.ay.talk.jpaentity.UserRoomInfo;
+import com.ay.talk.jparepository.ReportRepository;
+import com.ay.talk.jparepository.SuspendedRepository;
+import com.ay.talk.jparepository.UserRoomInfoRepository;
 import com.ay.talk.repository.ServerRepository;
 import com.ay.talk.service.ManageService;
 
@@ -20,20 +23,25 @@ import com.ay.talk.service.ManageService;
 public class ManageServiceImpl implements ManageService{
 	private final ModelMapper modelMapper;
 	private final ServerRepository serverRepository;
-	private final DbRepository dbRepository;
+	@Autowired
+	private ReportRepository reportRepository;
+	@Autowired
+	private SuspendedRepository suspendedRepository;
+	@Autowired
+	private UserRoomInfoRepository userRoomInfoRepository;
 	
 	@Autowired
-	public ManageServiceImpl(ModelMapper modelMapper, ServerRepository serverRepository, DbRepository dbRepository) {
+	public ManageServiceImpl(ModelMapper modelMapper, ServerRepository serverRepository) {
 		super();
 		this.modelMapper = modelMapper;
 		this.serverRepository = serverRepository;
-		this.dbRepository = dbRepository;
 	}
 	
 	@Override
 	public List<ReportDto> displayReports() {
 		// TODO Auto-generated method stub
-		List<Report> reportList=dbRepository.findReports();
+		List<Report> reportList=reportRepository.findAll();
+		
 		return reportList.stream()
 				.map(report -> modelMapper.map(report, ReportDto.class)).collect(Collectors.toList());
 	}
@@ -45,12 +53,13 @@ public class ManageServiceImpl implements ManageService{
 		if(!userInfo[1].equals("0"))return false; //이미 정지 회원
 		else {
 			//정지회원추가
-			dbRepository.insertSuspendedUser(reqSuspend);
+			suspendedRepository.save(new Suspended(reqSuspend.getStudentId(), reqSuspend.getPeriod()
+					, reqSuspend.getReportContent(), reqSuspend.getReportWhy()));
 			serverRepository.addSuspendedUser(reqSuspend.getStudentId()
 					,new StringBuilder().append(userInfo[0]+","+reqSuspend.getPeriod()).toString());
 			
 			//처리 완료된 신고 항목 삭제
-			dbRepository.removeReports(reqSuspend.getId());
+			reportRepository.deleteById(reqSuspend.getId());
 			return true;
 		}
 	}
@@ -58,9 +67,11 @@ public class ManageServiceImpl implements ManageService{
 	//사용자 신고
 	@Override
 	public void report(ReqReportMsg reportMsg) {
-		UserRoomData userRoomData=new UserRoomData(reportMsg.getReportName(),
-				serverRepository.getRoomId(reportMsg.getRoomName()),reportMsg.getRoomName(),reportMsg.getProfessorName());
-		dbRepository.insertReport(userRoomData,reportMsg);
+		UserRoomInfo userRoomInfo=userRoomInfoRepository
+				.findUserByRoomNameAndNickName(reportMsg.getRoomName(), reportMsg.getReportName()).get();	
+		reportRepository.save(new Report(reportMsg.getRoomName(), reportMsg.getReportName(), 
+				reportMsg.getReportContent(), reportMsg.getReportWhy(), 
+				reportMsg.getReporter(), reportMsg.getStudentId(),userRoomInfo.getUser().getStudentId()));
 	}
 	
 	

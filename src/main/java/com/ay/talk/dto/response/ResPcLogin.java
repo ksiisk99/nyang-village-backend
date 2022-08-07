@@ -1,8 +1,6 @@
 package com.ay.talk.dto.response;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import com.ay.talk.dto.RoomInfo;
 import com.ay.talk.jpaentity.Authority;
 

@@ -1,8 +1,8 @@
 package com.ay.talk.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 import com.ay.talk.dto.Msg;
 import com.ay.talk.dto.request.ReqConnectChat;
 import com.ay.talk.dto.response.ResConnectChat;
-import com.ay.talk.entity.ChatMsg;
-import com.ay.talk.entity.User;
-import com.ay.talk.entity.UserRoomData;
-import com.ay.talk.repository.DbRepository;
+import com.ay.talk.jpaentity.ChatMsg;
+import com.ay.talk.jpaentity.User;
+import com.ay.talk.jpaentity.UserRoomInfo;
+import com.ay.talk.jparepository.ChatMsgRepository;
+import com.ay.talk.jparepository.SuspendedRepository;
+import com.ay.talk.jparepository.UserRepository;
 import com.ay.talk.repository.ServerRepository;
 import com.ay.talk.service.ChatService;
 
@@ -24,19 +26,25 @@ import com.ay.talk.service.ChatService;
 public class ChatServiceImpl implements ChatService{
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final ServerRepository serverRepository;
-	private final DbRepository dbRepository;
 	private final int doubleLoginSignal=1; //이중로그인 신호 1
 	private final int suspendedSignal=2; //정지회원 신호 2
 	private final int semeterSignal=3; //새학기 신호 3
 	private final int updateSignal=4; //업데이트 신호 4
 	private final int sendMsgSignal=2; //메시지 전송 신호 2
+
+	private final UserRepository userRepository;
+	private final ChatMsgRepository chatMsgRepository;
+	private final SuspendedRepository suspendedRepository;
 	
 	@Autowired
-	public ChatServiceImpl(SimpMessagingTemplate simpMessagingTemplate, ServerRepository serverRepository
-			,DbRepository dbRepository) {
+	public ChatServiceImpl(SimpMessagingTemplate simpMessagingTemplate
+			,ServerRepository serverRepository, SuspendedRepository suspendedRepository
+			,ChatMsgRepository chatMsgRepository, UserRepository userRepository) {
 		this.simpMessagingTemplate=simpMessagingTemplate;
 		this.serverRepository=serverRepository;
-		this.dbRepository=dbRepository;
+		this.userRepository=userRepository;
+		this.chatMsgRepository=chatMsgRepository;
+		this.suspendedRepository=suspendedRepository;
 	}
 	
 	//입장 퇴장 메시지 전송
@@ -53,7 +61,7 @@ public class ChatServiceImpl implements ChatService{
 		//type 0:입장 / 1:퇴장 / 2:메시지
 		msg.setType(sendMsgSignal);
 		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
-		dbRepository.insertChatMsg(new ChatMsg(msg.getRoomId(), msg.getNickName(),msg.getContent(),msg.getTime()));
+		chatMsgRepository.save(new ChatMsg(msg.getRoomId(), msg.getNickName(), msg.getContent(), msg.getTime()));
 	}
 	
 	//pc 채팅 메시지 전송
@@ -63,14 +71,13 @@ public class ChatServiceImpl implements ChatService{
 		msg.setpmType(); //pc 보낸 신호 1
 		msg.setType(sendMsgSignal);
 		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
-		dbRepository.insertChatMsg(new ChatMsg(msg.getRoomId(), msg.getNickName(),msg.getContent(),msg.getTime()));
+		chatMsgRepository.save(new ChatMsg(msg.getRoomId(), msg.getNickName(), msg.getContent(), msg.getTime()));
 	}
 	
 	//첫 웹소켓 연결 시 버전, 이중로그인, 정지유무, 새학기인지를 확인한다.
 	@Override
 	public void connectChat(ReqConnectChat cc) {
 		//자동로그인인데 토큰 값이 달라졌다면 다른 기기에서 로그인 했다는 것이니 현재 기기를 로그아웃 시킨다.
-		//System.out.println(cc.getStudentId()+" "+cc.getToken());
 		if(cc.getVersion()!=serverRepository.getVersion()) { //앱 버전이 다르므로 클라이언트 업데이트
 			ResConnectChat resConnectChat=new ResConnectChat(updateSignal, null,cc.getStudentId()); //앱 버전 업데이트 신호
 			simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
@@ -96,16 +103,15 @@ public class ChatServiceImpl implements ChatService{
 					simpMessagingTemplate.convertAndSend("/sub/chat/"+cc.getRoomId(),resConnectChat);
 					
 					//모든 방들에 대해서 토큰 값들을 제거한다. 정지유저에게 메시지가 안가게 된다.
-					User user=dbRepository.findUser(cc.getStudentId());
-					ArrayList<UserRoomData>curSubjects=user.getRoomIds();
+					User user=userRepository.findById(cc.getStudentId()).get();
+					List<UserRoomInfo>curSubjects=user.getUserRoomInfos();
 					for(int i=0;i<curSubjects.size();i++) {
 						serverRepository.removeRoomInToken(curSubjects.get(i).getRoomName(), cc.getToken());
 					}
-					//System.out.println("정지 회원");
 				}else { //정지가 풀린 회원
 					serverRepository.removeSuspendedUser(cc.getStudentId()
 							,new StringBuilder().append(cc.getToken()+",0").toString());
-					dbRepository.removeSuspendedUser(cc.getStudentId());
+					suspendedRepository.deleteById(cc.getStudentId());
 				}
 			}
 		}

@@ -7,8 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -16,7 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ay.talk.config.MongoConfig;
 import com.ay.talk.dto.Msg;
 import com.ay.talk.dto.request.ReqConnectChat;
 import com.ay.talk.dto.request.ReqReportMsg;
@@ -27,7 +24,6 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-//import ch.qos.logback.classic.LoggerContext;
 import io.swagger.annotations.ApiOperation;
 
 
@@ -41,7 +37,6 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 public class ChatController{
 	LoggerContext loggerContext=(LoggerContext) LoggerFactory.getILoggerFactory();
-	ch.qos.logback.classic.Logger mongoLogger=loggerContext.getLogger("org.mongodb.driver");
 	ch.qos.logback.classic.Logger redisLogger=loggerContext.getLogger("io.lettuce.core");
 	private final ManageService manageService;
 	private final FcmService fcmService;
@@ -59,22 +54,18 @@ public class ChatController{
 	
 	@PostConstruct
 	public void init() {
-		mongoLogger.setLevel(Level.OFF);
 		redisLogger.setLevel(Level.OFF);
 	}
 	
 	@MessageMapping(value = "/ay/chat") //모바일채팅
 	public void Message(Msg msg) throws FirebaseMessagingException {
 		long beforeTime = System.currentTimeMillis();
-		
-		//System.out.println("Tokens: "+roomInTokens.get(Integer.parseInt(msg.getRoomId())));
-		
+	
 		chatService.sendMsg(msg);
 		
 		fcmService.sendMsg(msg);	
-		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
-//		System.out.println("chat : "+secDiffTime+"ms");
+		long afterTime = System.currentTimeMillis();
+		long secDiffTime = (afterTime - beforeTime);
 		logger.info("chat: {}ms",secDiffTime);
 	}
 	
@@ -82,14 +73,12 @@ public class ChatController{
 	public void PcMessage(Msg msg) throws FirebaseMessagingException {
 		long beforeTime = System.currentTimeMillis();
 		
-		//System.out.println("Tokens: "+roomInTokens.get(Integer.parseInt(msg.getRoomId())));
 		
 		chatService.sendPcMsg(msg);
 		
 		fcmService.sendPcMsg(msg);	
 		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
-//		System.out.println("chat : "+secDiffTime+"ms");
 		logger.info("pcchat: {}ms",secDiffTime);
 	}
 	
@@ -102,7 +91,6 @@ public class ChatController{
 		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
 		logger.info("connectchat: {}ms",secDiffTime);
-//		System.out.println("connectchat : "+secDiffTime+"ms");
 	}
 	
 	@MessageMapping(value="/ay/report") //신고
@@ -114,7 +102,6 @@ public class ChatController{
 		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
 		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
 		logger.info("report: {}ms",secDiffTime);
-//		System.out.println("report : "+secDiffTime+"ms");
 	}
 	
 	

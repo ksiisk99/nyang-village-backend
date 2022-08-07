@@ -13,11 +13,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
-import com.ay.talk.entity.RandomName;
-import com.ay.talk.entity.Subject;
-import com.ay.talk.entity.Suspended;
-import com.ay.talk.entity.User;
-import com.ay.talk.entity.UserRoomData;
+import com.ay.talk.jpaentity.RandomName;
+import com.ay.talk.jpaentity.Subject;
+import com.ay.talk.jpaentity.Suspended;
+import com.ay.talk.jpaentity.User;
+import com.ay.talk.jpaentity.UserRoomInfo;
+import com.ay.talk.jparepository.RandomNameRepository;
+import com.ay.talk.jparepository.SubjectRepository;
+import com.ay.talk.jparepository.SuspendedRepository;
+import com.ay.talk.jparepository.UserRepository;
 
 @Repository
 public class InMemoryRepository implements ServerRepository{
@@ -31,15 +35,21 @@ public class InMemoryRepository implements ServerRepository{
 	private ValueOperations<String, String> userInfos; //학번에 해당하는 파베,정지기간 정지기간이 없으면 0
 	@SuppressWarnings("rawtypes")
 	private final RedisTemplate redisTemplate;
-	private final DbRepository dbRepository;
 	private AtomicIntegerArray checkRoomNames; //모든 방안에 있는 랜덤닉네임 체크 중복제거
-	
+	private final SubjectRepository subjectRepository;
+	private final UserRepository userRepository;
+	private final RandomNameRepository randomNameRepository;
+	private final SuspendedRepository suspendedRepository;
 	
 	@Autowired
 	public InMemoryRepository(@SuppressWarnings("rawtypes") RedisTemplate redisTemplate
-			,DbRepository dbRepository) {
+			,SuspendedRepository suspendedRepository, RandomNameRepository randomNameRepository,
+			UserRepository userRepository, SubjectRepository subjectRepository) {
 		this.redisTemplate = redisTemplate;
-		this.dbRepository=dbRepository;
+		this.subjectRepository=subjectRepository;
+		this.userRepository=userRepository;
+		this.randomNameRepository=randomNameRepository;
+		this.suspendedRepository=suspendedRepository;
 	}
 
 	//모든 변수 초기화
@@ -56,30 +66,31 @@ public class InMemoryRepository implements ServerRepository{
 		userInfos=redisTemplate.opsForValue();
 		
 		//수강과목 초기화
-		List<Subject> subjectList=dbRepository.findSubjects();
+		List<Subject> subjectList=subjectRepository.findAll();
 		for(int roomId=0;roomId<subjectList.size();roomId++) {
 			initRoomIn(subjectList.get(roomId).getName(),roomId);
 		}
 		initCheckRoomNames(subjectList.size()); //checkRoomNames 초기화
-		
+	
 		
 		//랜덤 닉네임 초기화
-		List<RandomName> randomNameList=dbRepository.findRandomNames();
+		List<RandomName>randomNameList=randomNameRepository.findAll();
 		for(int idx=0; idx<randomNameList.size();idx++) {
 			initRandomName(randomNameList.get(idx).getName(),idx);
 		}
 		
 		//정지 회원 정보 초기화
-		List<Suspended> suspendedUserList=dbRepository.findSuspendedUserList();
+		List<Suspended>suspendedUserList=suspendedRepository.findAll();
 		Map<String,String>suspendedUserMap=new HashMap<String,String>();
 		for(int i=0;i<suspendedUserList.size();i++) {
 			suspendedUserMap.put(suspendedUserList.get(i).getStudentId(), suspendedUserList.get(i).getPeriod());
 		}
 		
 		//사용자 정보 초기화
-		List<User> userList=dbRepository.findUserList();
+		List<User>userList=userRepository.findAll();
 		for(int i=0;i<userList.size();i++) {
-			List<UserRoomData> roomIds=userList.get(i).getRoomIds();
+			//List<UserRoomData> roomIds=userList.get(i).getRoomIds();
+			List<UserRoomInfo> userRoomInfos=userList.get(i).getUserRoomInfos();
 			String fcm=userList.get(i).getFcm();
 			String studentId=userList.get(i).getStudentId();
 			String suspendedPriod;
@@ -88,13 +99,13 @@ public class InMemoryRepository implements ServerRepository{
 			}else {
 				suspendedPriod="0";
 			}
-			for(int j=0;j<roomIds.size();j++) {
+			for(int j=0;j<userRoomInfos.size();j++) {
 				initUser(fcm
 						,studentId
-						,String.valueOf(roomIds.get(j).getRoomId())
-						,roomIds.get(j).getNickName()
+						,String.valueOf(userRoomInfos.get(j).getRoomId())
+						,userRoomInfos.get(j).getNickName()
 						,suspendedPriod
-						,roomIds.get(j).getRoomName());
+						,userRoomInfos.get(j).getRoomName());
 			}
 		}
 	}
@@ -107,8 +118,7 @@ public class InMemoryRepository implements ServerRepository{
 	
 	//subjects,strSubjects 초기화
 	@Override
-	public void initRoomIn(String subjectName, int roomId) { 
-		
+	public void initRoomIn(String subjectName, int roomId) { 		
 		subjects.put(subjectName, roomId);
 		strSubjects.put(subjectName, String.valueOf(roomId));
 		roomInTokens.rightPush(String.valueOf(roomId), "a");
@@ -175,15 +185,12 @@ public class InMemoryRepository implements ServerRepository{
 	//방 안의 사용자 닉네임들
 	@Override
 	public List<String> getRoomInNames(String roomName){
-		//System.out.println(roomInNames.get(subjects.get(roomName)));
 		return roomInNames.range(roomName, 0, -1);
-		//return roomInNames.get(subjects.get(roomName));
 	}
 	
 	//방 안의 사용자 토큰들
 	@Override
 	public List<String> getRoomInTokens(String roomId){
-		//System.out.println(roomInTokens.get(Integer.parseInt(roomId)));
 		return roomInTokens.range(roomId, 0, -1);
 	}
 	
@@ -203,28 +210,24 @@ public class InMemoryRepository implements ServerRepository{
 	@Override
 	public void addRoomInName(String roomName,String nickName) {
 		roomInNames.rightPush(roomName, nickName);
-		//System.out.println("addRoomInName2:"+roomInNames.get(roomId));
 	}
 	
 	//방 안에 사용자 토큰 추가
 	@Override
 	public void addRoomInToken(String roomName,String fcm) {
 		roomInTokens.rightPush(strSubjects.get(roomName), fcm);
-		//System.out.println("addRoomInToken"+roomInTokens.get(subjects.get(roomName)));
 	}
 	
 	//방 안의 사용자 닉네임 삭제
 	@Override
 	public void removeRoomInName(String roomName, String nickName) {
 		roomInNames.remove(roomName, 1, nickName);
-		//System.out.println("removeRoomInName"+roomInNames.get(roomId));
 	}
 	
 	//방 안의 사용자 토큰 삭제
 	@Override
 	public void removeRoomInToken(String roomName, String fcm) {
 		roomInTokens.remove(strSubjects.get(roomName), 1, fcm);
-		//System.out.println("removeRoomToken"+roomInTokens.get(roomId));
 	}
 
 	//정지 회원 추가

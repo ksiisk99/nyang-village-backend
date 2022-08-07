@@ -61,9 +61,10 @@ public class JpaConfig {
 	
 	public Properties jpaProperties() {
 		 Properties properties=new Properties();
+		 properties.setProperty("logging.level.org.hibernate.SQL", "ERROR");
 		 properties.setProperty("hibernate.format_sql", "true");
-		 properties.setProperty("hibernate.show_sql", "true");
-		 properties.setProperty("hibernate.hbm2ddl.auto","none");
+		 //properties.setProperty("hibernate.show_sql", "true");
+		 properties.setProperty("hibernate.hbm2ddl.auto","validate");
 		 properties.setProperty("hibernate.dialect", jpadatabasePlatform);
 		return properties;
 	}
