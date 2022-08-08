@@ -5,8 +5,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "randomname")
 public class RandomName {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "random_name_id")

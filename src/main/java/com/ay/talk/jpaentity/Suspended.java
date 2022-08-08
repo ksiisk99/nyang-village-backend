@@ -3,8 +3,10 @@ package com.ay.talk.jpaentity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "suspended")
 public class Suspended {
 	@Id
 	@Column(name = "student_id", length = 10)
