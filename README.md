@@ -6,9 +6,9 @@
 ​
 ## 기술스택
 - Java 11 / Spring Framework 5 <br>
-- MongoDB 5 <br>
+- MySQL 5.7 <br>
 - AWS EC2 <br>
 - 개발환경: Eclipse<br>
 
-## 몽고디비 컬렉션 스키마(클래스)
-![UML](https://user-images.githubusercontent.com/89206300/177042403-06ac8c39-8725-477f-b2ee-6480b9154d69.png)
+## 데이터 모델링
+![nyangERD](https://user-images.githubusercontent.com/89206300/184104466-333b007d-9da9-40d3-bf4e-27e1a64b48d8.png)
