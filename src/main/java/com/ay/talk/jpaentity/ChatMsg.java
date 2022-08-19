@@ -18,7 +18,7 @@ public class ChatMsg {
 	@Column(name = "nick_name", length = 20)
 	private String nickName;
 	private String content;
-	@Column(length = 6)
+	@Column(length = 15)
 	private String time;
 	
 	protected ChatMsg() {}
