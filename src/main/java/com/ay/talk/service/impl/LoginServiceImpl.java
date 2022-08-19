@@ -408,7 +408,7 @@ public class LoginServiceImpl implements LoginService{
         html=Jsoup.parse(response.body()); //수강과목 파싱
 
         Elements crawlingList=html.select(".class_sbox select>option");
-        if(crawlingList.size()>1){ //수강과목이 있으니 현재 재학생임        	
+        if(crawlingList.size()>0){ //수강과목이 있으니 현재 재학생임        	
         	ArrayList<SubjectInfo> subjectList=new ArrayList<>();
             for(int i=1;i< crawlingList.size();i++){
             	String attr=crawlingList.get(i).attr("value");
