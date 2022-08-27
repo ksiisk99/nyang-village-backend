@@ -15,6 +15,8 @@ public class Subject {
 	private Long Id;
 	@Column(length = 70)
 	private String name;
+	@Column(length=70)
+	private String professorName;
 	
 	protected Subject() {}
 
@@ -28,6 +30,10 @@ public class Subject {
 
 	public String getName() {
 		return name;
+	}
+	
+	public String getProfessorName() {
+		return professorName;
 	}
 	
 }
