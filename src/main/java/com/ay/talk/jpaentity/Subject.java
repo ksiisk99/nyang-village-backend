@@ -15,7 +15,7 @@ public class Subject {
 	private Long Id;
 	@Column(length = 70)
 	private String name;
-	@Column(length=70)
+	@Column(name = "professor_name", length=70)
 	private String professorName;
 	
 	protected Subject() {}
