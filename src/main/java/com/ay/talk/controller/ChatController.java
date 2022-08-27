@@ -69,18 +69,18 @@ public class ChatController{
 		logger.info("chat: {}ms",secDiffTime);
 	}
 	
-	@MessageMapping(value = "/ay/pc/chat") //pc채팅
-	public void PcMessage(Msg msg) throws FirebaseMessagingException {
-		long beforeTime = System.currentTimeMillis();
-		
-		
-		chatService.sendPcMsg(msg);
-		
-		fcmService.sendPcMsg(msg);	
-		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
-		logger.info("pcchat: {}ms",secDiffTime);
-	}
+//	@MessageMapping(value = "/ay/pc/chat") //pc채팅
+//	public void PcMessage(Msg msg) throws FirebaseMessagingException {
+//		long beforeTime = System.currentTimeMillis();
+//		
+//		
+//		chatService.sendPcMsg(msg);
+//		
+//		fcmService.sendPcMsg(msg);	
+//		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+//		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
+//		logger.info("pcchat: {}ms",secDiffTime);
+//	}
 	
 	@MessageMapping(value="/ay/connectchat") //첫 웹소켓 연결 시 이중로그인, 정지유무와 새학기인지를 확인한다.
 	public void startConnect(ReqConnectChat cc) {

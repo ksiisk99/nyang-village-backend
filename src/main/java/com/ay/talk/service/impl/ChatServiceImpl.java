@@ -65,14 +65,14 @@ public class ChatServiceImpl implements ChatService{
 	}
 	
 	//pc 채팅 메시지 전송
-	@Override
-	public void sendPcMsg(Msg msg) {
-		// TODO Auto-generated method stub
-		msg.setpmType(); //pc 보낸 신호 1
-		msg.setType(sendMsgSignal);
-		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
-		chatMsgRepository.save(new ChatMsg(msg.getRoomId(), msg.getNickName(), msg.getContent(), msg.getTime()));
-	}
+//	@Override
+//	public void sendPcMsg(Msg msg) {
+//		// TODO Auto-generated method stub
+//		msg.setpmType(); //pc 보낸 신호 1
+//		msg.setType(sendMsgSignal);
+//		simpMessagingTemplate.convertAndSend("/sub/chat/"+msg.getRoomId(),msg);
+//		chatMsgRepository.save(new ChatMsg(msg.getRoomId(), msg.getNickName(), msg.getContent(), msg.getTime()));
+//	}
 	
 	//첫 웹소켓 연결 시 버전, 이중로그인, 정지유무, 새학기인지를 확인한다.
 	@Override

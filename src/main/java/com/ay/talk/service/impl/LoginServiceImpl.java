@@ -26,10 +26,8 @@ import com.ay.talk.dto.RoomInfo;
 import com.ay.talk.dto.SubjectInfo;
 import com.ay.talk.dto.request.ReqLogin;
 import com.ay.talk.dto.request.ReqLogout;
-import com.ay.talk.dto.request.ReqPcLogin;
 import com.ay.talk.dto.response.ResLogin;
 import com.ay.talk.dto.response.ResLogout;
-import com.ay.talk.dto.response.ResPcLogin;
 import com.ay.talk.jpaentity.Authority;
 import com.ay.talk.jpaentity.User;
 import com.ay.talk.jpaentity.UserRoomInfo;
@@ -60,10 +58,10 @@ public class LoginServiceImpl implements LoginService{
 	private final int doubleLoginSignal=4; //이중로그인 신호 수강정정과 클라이언트에서 처리하는 로직이 같음
 	private final int misspellSignal=5; //아이디 비밀번호가 잘못 입력됨 신호 5
 	private final int suspendedSignal=6; //정지회원 신호 6
-	private final int pcNotMobileLoginSignal=2; //pc에서 로그인 할 때 모바일에서 로그인이 안되어 있으면 신호 2
-	private final int pcSuspendedUserLoginSignal=3; //pc에서 로그인 할 때 정지회원이라면 신호3
-	private final int pcSuccessLoginSignal=1; //pc로그인 성공 신호 1
-	private final int pcFailLoginSignal=4; //pc 아이디 비밀번호 잘못 입력됨 신호 4
+//	private final int pcNotMobileLoginSignal=2; //pc에서 로그인 할 때 모바일에서 로그인이 안되어 있으면 신호 2
+//	private final int pcSuspendedUserLoginSignal=3; //pc에서 로그인 할 때 정지회원이라면 신호3
+//	private final int pcSuccessLoginSignal=1; //pc로그인 성공 신호 1
+//	private final int pcFailLoginSignal=4; //pc 아이디 비밀번호 잘못 입력됨 신호 4
 	private final int enterMsgSignal=0; //입장 신호 0
 	private final int exitMsgSignal=1; //퇴장 신호 1
 	//private final int failLogoutSignal=0; //로그아웃 실패 신호 0
@@ -424,88 +422,88 @@ public class LoginServiceImpl implements LoginService{
 	}
 	
 	//PC로그인
-	@Override
-	public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException {
-		// TODO Auto-generated method stub
-		ResPcLogin resPcLogin=new ResPcLogin();
-		String userInfo=serverRepository.getUserInfo(reqPcLogin.getStudentId());
-		if(userInfo==null) { //모바일에서 로그인 안 한 유저라면
-			resPcLogin.setSignal(pcNotMobileLoginSignal);
-			return resPcLogin;
-		}else { //모바일에서 로그인 한 유저라면
-			String suspendedPriod=userInfo.split(",")[1];
-			if(!suspendedPriod.equals("0")) { //정지 회원이라면
-				resPcLogin.setSignal(pcSuspendedUserLoginSignal);
-				resPcLogin.setSuspendedDate(suspendedPriod);
-				return resPcLogin;
-			}else {
-				pcCrawling(reqPcLogin, resPcLogin);
-			}
-		}
-		return resPcLogin;
-	}
+//	@Override
+//	public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException {
+//		// TODO Auto-generated method stub
+//		ResPcLogin resPcLogin=new ResPcLogin();
+//		String userInfo=serverRepository.getUserInfo(reqPcLogin.getStudentId());
+//		if(userInfo==null) { //모바일에서 로그인 안 한 유저라면
+//			resPcLogin.setSignal(pcNotMobileLoginSignal);
+//			return resPcLogin;
+//		}else { //모바일에서 로그인 한 유저라면
+//			String suspendedPriod=userInfo.split(",")[1];
+//			if(!suspendedPriod.equals("0")) { //정지 회원이라면
+//				resPcLogin.setSignal(pcSuspendedUserLoginSignal);
+//				resPcLogin.setSuspendedDate(suspendedPriod);
+//				return resPcLogin;
+//			}else {
+//				pcCrawling(reqPcLogin, resPcLogin);
+//			}
+//		}
+//		return resPcLogin;
+//	}
 	
-	@Override
-	public void pcCrawling(ReqPcLogin reqPcLogin, ResPcLogin resPcLogin) throws IOException {
-		// TODO Auto-generated method stub
-		Document html;
-        Connection.Response loginPageResponse=null;
-        Connection.Response response=null;
-        loginPageResponse = Jsoup.connect(crawlingPath)
-                .timeout(5000)
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                .header("Upgrade-Insecure-Requests", "1")
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36")
-                .header("Aceept-Encoding","gzip, deflate")
-                .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
-                .header("Content-Type", "Content-Type: application/x-www-form-urlencoded")
-                .method(Connection.Method.GET)
-                .execute();
-
-        Map<String, String>loginTryCookie = loginPageResponse.cookies();
-        Map<String, String> data=new HashMap<>();
-
-        data.put("cmd", "loginUser");
-        data.put("userDTO.userId", reqPcLogin.getStudentId());
-        data.put("userDTO.password", reqPcLogin.getPassword());
-        data.put("userDTO.localeKey", "ko");
-
-        response = Jsoup.connect(crawlingPath2)
-                .timeout(5000)
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                .header("Accept-Encoding", "gzip, deflate")
-                .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
-                .header("Upgrade-Insecure-Requests", "1")
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36")
-                .cookies(loginTryCookie)
-                .data(data)
-                .method(Connection.Method.POST)
-                .execute();
-        html=Jsoup.parse(response.body()); //수강과목 파싱
-
-        Elements crawlingList=html.select(".class_sbox select>option");
-        if(crawlingList.size()>1){ //수강과목이 있으니 현재 재학생임
-        	User user=userRepository.findByStudentId(reqPcLogin.getStudentId()).get(); //모바일로 로그인한 db에 저장된 유저 정보를 불러온다
-        	
-        	List<UserRoomInfo> userRoomInfos=user.getUserRoomInfos();
-			List<RoomInfo> roomInfos=new ArrayList<RoomInfo>();
-			
-			for(int i=0;i<userRoomInfos.size();i++) {
-				RoomInfo roomInfo=new RoomInfo(userRoomInfos.get(i).getRoomName()
-						,userRoomInfos.get(i).getRoomId()
-						,userRoomInfos.get(i).getNickName()
-						,userRoomInfos.get(i).getProfessorName()
-						,(ArrayList<String>)serverRepository.getRoomInNames(userRoomInfos.get(i).getRoomName()));
-				roomInfos.add(roomInfo);
-			}
-			resPcLogin.setSignal(pcSuccessLoginSignal);
-			resPcLogin.setAuthority(user.getAuthority());
-			resPcLogin.setJwt(jwtTokenProvider.createToken(reqPcLogin.getStudentId(), user.getAuthority()));
-			resPcLogin.setRoomInfos(roomInfos);
-        }else {
-        	resPcLogin.setSignal(pcFailLoginSignal); //비밀번호가 잘못 입력됨
-        }
-	}
+//	@Override
+//	public void pcCrawling(ReqPcLogin reqPcLogin, ResPcLogin resPcLogin) throws IOException {
+//		// TODO Auto-generated method stub
+//		Document html;
+//        Connection.Response loginPageResponse=null;
+//        Connection.Response response=null;
+//        loginPageResponse = Jsoup.connect(crawlingPath)
+//                .timeout(5000)
+//                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+//                .header("Upgrade-Insecure-Requests", "1")
+//                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36")
+//                .header("Aceept-Encoding","gzip, deflate")
+//                .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
+//                .header("Content-Type", "Content-Type: application/x-www-form-urlencoded")
+//                .method(Connection.Method.GET)
+//                .execute();
+//
+//        Map<String, String>loginTryCookie = loginPageResponse.cookies();
+//        Map<String, String> data=new HashMap<>();
+//
+//        data.put("cmd", "loginUser");
+//        data.put("userDTO.userId", reqPcLogin.getStudentId());
+//        data.put("userDTO.password", reqPcLogin.getPassword());
+//        data.put("userDTO.localeKey", "ko");
+//
+//        response = Jsoup.connect(crawlingPath2)
+//                .timeout(5000)
+//                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+//                .header("Accept-Encoding", "gzip, deflate")
+//                .header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
+//                .header("Upgrade-Insecure-Requests", "1")
+//                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36")
+//                .cookies(loginTryCookie)
+//                .data(data)
+//                .method(Connection.Method.POST)
+//                .execute();
+//        html=Jsoup.parse(response.body()); //수강과목 파싱
+//
+//        Elements crawlingList=html.select(".class_sbox select>option");
+//        if(crawlingList.size()>1){ //수강과목이 있으니 현재 재학생임
+//        	User user=userRepository.findByStudentId(reqPcLogin.getStudentId()).get(); //모바일로 로그인한 db에 저장된 유저 정보를 불러온다
+//        	
+//        	List<UserRoomInfo> userRoomInfos=user.getUserRoomInfos();
+//			List<RoomInfo> roomInfos=new ArrayList<RoomInfo>();
+//			
+//			for(int i=0;i<userRoomInfos.size();i++) {
+//				RoomInfo roomInfo=new RoomInfo(userRoomInfos.get(i).getRoomName()
+//						,userRoomInfos.get(i).getRoomId()
+//						,userRoomInfos.get(i).getNickName()
+//						,userRoomInfos.get(i).getProfessorName()
+//						,(ArrayList<String>)serverRepository.getRoomInNames(userRoomInfos.get(i).getRoomName()));
+//				roomInfos.add(roomInfo);
+//			}
+//			resPcLogin.setSignal(pcSuccessLoginSignal);
+//			resPcLogin.setAuthority(user.getAuthority());
+//			resPcLogin.setJwt(jwtTokenProvider.createToken(reqPcLogin.getStudentId(), user.getAuthority()));
+//			resPcLogin.setRoomInfos(roomInfos);
+//        }else {
+//        	resPcLogin.setSignal(pcFailLoginSignal); //비밀번호가 잘못 입력됨
+//        }
+//	}
 
 	//현재날짜 구하는 함수
     private String getCurrentTime() {

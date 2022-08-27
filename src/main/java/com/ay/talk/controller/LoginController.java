@@ -76,16 +76,16 @@ public class LoginController{
 	}
 	
 	//pc 로그인
-	@PostMapping(path="/pc/login")
-	@ApiOperation(value = "PC 로그인", notes = "PC 전용 로그인")
-	public @ResponseBody ResPcLogin pcLogin(@RequestBody ReqPcLogin reqPcLogin) throws IOException {
-		long beforeTime = System.currentTimeMillis();
-		ResPcLogin resPcLogin=loginService.pcLogin(reqPcLogin);
-		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
-		logger.info("pcLogin: {}ms",secDiffTime);
-		return resPcLogin;
-	}
+//	@PostMapping(path="/pc/login")
+//	@ApiOperation(value = "PC 로그인", notes = "PC 전용 로그인")
+//	public @ResponseBody ResPcLogin pcLogin(@RequestBody ReqPcLogin reqPcLogin) throws IOException {
+//		long beforeTime = System.currentTimeMillis();
+//		ResPcLogin resPcLogin=loginService.pcLogin(reqPcLogin);
+//		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+//		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
+//		logger.info("pcLogin: {}ms",secDiffTime);
+//		return resPcLogin;
+//	}
 
 	//로그아웃
 	@PostMapping(path="/logout")

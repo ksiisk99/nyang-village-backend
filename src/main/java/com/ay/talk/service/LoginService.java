@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import com.ay.talk.dto.SubjectInfo;
 import com.ay.talk.dto.request.ReqLogin;
 import com.ay.talk.dto.request.ReqLogout;
-import com.ay.talk.dto.request.ReqPcLogin;
 import com.ay.talk.dto.response.ResLogin;
 import com.ay.talk.dto.response.ResLogout;
-import com.ay.talk.dto.response.ResPcLogin;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
 public interface LoginService {
@@ -21,10 +19,10 @@ public interface LoginService {
 	public ArrayList<SubjectInfo> Crawling(String studentId, String password) throws IOException;
 	
 	//pc에서 요청한 크롤링 정보
-	public void pcCrawling(ReqPcLogin reqPcLogin, ResPcLogin resPcLogin) throws IOException;
+	//public void pcCrawling(ReqPcLogin reqPcLogin, ResPcLogin resPcLogin) throws IOException;
 	 
 	//pc 로그인
-	public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException; 
+	//public ResPcLogin pcLogin(ReqPcLogin reqPcLogin) throws IOException; 
 	
 	//로그아웃
 	public ResLogout logout(ReqLogout reqLogout);

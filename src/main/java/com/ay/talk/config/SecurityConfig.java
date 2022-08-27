@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                  "/swagger-resources/**",
                  "/configuration/security",
                  "/swagger-ui.html",
-                 "/webjars/**","/ay/login","/ay/pc/login","/ay/login2","/ay/logout"
+                 "/webjars/**","/ay/login","/ay/login2","/ay/logout"
                  ,"/favicon.ico","/","/stomp","/ay/manage","/ay/manage/report");
 	}
 	@Override
@@ -53,8 +53,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 		http
 			.httpBasic().disable()
-			.cors().configurationSource(corsConfigurationSource())
-			.and()
 			.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().authorizeHttpRequests()
@@ -68,16 +66,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 	
 	//cors 허용
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration=new CorsConfiguration();
-		configuration.addAllowedOrigin("*"); //URL
-		configuration.addAllowedHeader("*"); //Header
-		configuration.addAllowedMethod("*"); //Method
-		configuration.setAllowCredentials(true);
-		
-		UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
+//	@Bean
+//	public CorsConfigurationSource corsConfigurationSource() {
+//		CorsConfiguration configuration=new CorsConfiguration();
+//		configuration.addAllowedOrigin("*"); //URL
+//		configuration.addAllowedHeader("*"); //Header
+//		configuration.addAllowedMethod("*"); //Method
+//		configuration.setAllowCredentials(true);
+//		
+//		UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", configuration);
+//		return source;
+//	}
 }
