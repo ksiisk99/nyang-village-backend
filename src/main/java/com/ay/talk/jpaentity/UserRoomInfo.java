@@ -27,7 +27,7 @@ public class UserRoomInfo {
 	private int roomId;
 	@Column(name = "room_name", length=70)
 	private String roomName;
-	@Column(name = "professor_name", length=20)
+	@Column(name = "professor_name", length=70)
 	private String professorName;
 	
 	protected UserRoomInfo() {}

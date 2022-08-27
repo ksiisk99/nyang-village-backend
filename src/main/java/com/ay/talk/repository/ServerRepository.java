@@ -36,6 +36,9 @@ public interface ServerRepository {
 		//과목명에 대한 방 아이디값
 		public int getRoomId(String roomName);
 		
+		//과목명에 대한 교수님 성함
+		public String getProfessorName(String subject);
+		
 		//방 안의 사용자 닉네임들
 		public List<String> getRoomInNames(String roomName);
 		

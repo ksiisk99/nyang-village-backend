@@ -186,6 +186,12 @@ public class InMemoryRepository implements ServerRepository{
 		return subjects.get(roomName);
 	}
 	
+	//과목명에 대한 교수님 성함
+	@Override
+	public String getProfessorName(String subject) {
+		return professors.get(subject);
+	}
+	
 	//방 안의 사용자 닉네임들
 	@Override
 	public List<String> getRoomInNames(String roomName){

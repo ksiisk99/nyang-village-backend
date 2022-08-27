@@ -409,10 +409,11 @@ public class LoginServiceImpl implements LoginService{
         if(crawlingList.size()>0){ //수강과목이 있으니 현재 재학생임        	
         	ArrayList<SubjectInfo> subjectList=new ArrayList<>();
             for(int i=1;i< crawlingList.size();i++){
-            	String attr=crawlingList.get(i).attr("value");
-            	String[] attrValue=attr.split(",");
+//            	String attr=crawlingList.get(i).attr("value");
+//            	String[] attrValue=attr.split(",");
             	//본학기
-            	subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString(), attrValue[1]));
+            	subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()
+            			,serverRepository.getProfessorName(crawlingList.get(i).text().toString())));
             	//계절학기용
             	//subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()+" "+attrValue[1], attrValue[1])); //계절학기용
             }
