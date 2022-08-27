@@ -26,7 +26,8 @@ import com.ay.talk.jparepository.UserRepository;
 @Repository
 public class InMemoryRepository implements ServerRepository{
 	private Map<String,Integer> subjects=null; //모든 과목(과목명,인덱스)
-	private Map<String,String> strSubjects=null; //모든 과목(과목명,인덱스문자열);
+	private Map<String,String> strSubjects=null; //모든 과목(과목명,인덱스문자열)
+	private Map<String,String>professors=null; //교수님 성함(과목명, 성함)
 	private String[] randomNames=null; //랜덤닉네임 200개. 각 방에 랜덤으로 뿌려준다.
 	private Map<String,Integer> idxRandomNames=null; //랜덤닉네임(닉네임,인덱스)
 	private final int VERSION=1; //업데이트 버전
@@ -60,6 +61,7 @@ public class InMemoryRepository implements ServerRepository{
 		idxRandomNames=new HashMap<String, Integer>();
 		randomNames=new String[200];
 		strSubjects=new HashMap<String, String>();
+		professors=new HashMap<String,String>();
 		
 		roomInNames=redisTemplate.opsForList();
 		roomInTokens=redisTemplate.opsForList();
@@ -69,6 +71,8 @@ public class InMemoryRepository implements ServerRepository{
 		List<Subject> subjectList=subjectRepository.findAll();
 		for(int roomId=0;roomId<subjectList.size();roomId++) {
 			initRoomIn(subjectList.get(roomId).getName(),roomId);
+			professors.put(subjectList.get(roomId).getName()
+					,subjectList.get(roomId).getProfessorName());
 		}
 		initCheckRoomNames(subjectList.size()); //checkRoomNames 초기화
 	
