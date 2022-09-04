@@ -269,14 +269,14 @@ public class LoginServiceImpl implements LoginService{
 				for(int j=0;j<beforeSize;j++) { //바뀌기 전 수강과목
 					if(beforeSubjects.get(j).getRoomName().equals(curSubjects.get(i).getSubjectName())) { //바뀌기 전 수강과목과 기존의 수강과목이 동일하다면
 						UserRoomInfo userRoomInfo=new UserRoomInfo(beforeSubjects.get(j).getNickName(),
-								beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),beforeSubjects.get(i).getProfessorName());
+								beforeSubjects.get(j).getRoomId(), beforeSubjects.get(j).getRoomName(),curSubjects.get(i).getProfessorName());
 						userRoomInfo.makeFk(user);
 						resultSubjects.add(userRoomInfo);
 						overlap[j]=true; //겹치는 수강과목 인덱스 체크 겹치지 않는 기존의 이전 방들을 나가기 위함이다.
 						RoomInfo roomInfo=new RoomInfo(beforeSubjects.get(j).getRoomName()
 								,beforeSubjects.get(j).getRoomId()
 								,beforeSubjects.get(j).getNickName()
-								,beforeSubjects.get(i).getProfessorName()
+								,curSubjects.get(i).getProfessorName()
 								,(ArrayList<String>)serverRepository.getRoomInNames(beforeSubjects.get(j).getRoomName()));
 						roomInfos.add(roomInfo);
 						break;
