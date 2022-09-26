@@ -417,6 +417,7 @@ public class LoginServiceImpl implements LoginService{
             	//계절학기용
             	//subjectList.add(new SubjectInfo(crawlingList.get(i).text().toString()+" "+attrValue[1], attrValue[1])); //계절학기용
             }
+            subjectList.add(new SubjectInfo("리눅스프로그래밍_02", serverRepository.getProfessorName("리눅스프로그래밍_02")));
             return subjectList;
         }
         return null;
