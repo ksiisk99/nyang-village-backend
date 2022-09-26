@@ -63,9 +63,8 @@ public class FcmServiceImpl implements FcmService{
 			this.instance=FirebaseMessaging.getInstance(app);
 		}
 		apnsConfig=ApnsConfig.builder()
-				.setAps(Aps.builder().build())
+				.setAps(Aps.builder().setContentAvailable(true).build())
 				.putHeader("apns-priority", "5")
-				.putHeader("content_available", "1")
 				.putHeader("apns-push_type", "background")
 				.putHeader("apns-expiration","1604750400").build();
 		androidConfig=AndroidConfig.builder()
