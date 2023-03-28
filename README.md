@@ -5,10 +5,8 @@
 - 각각의 채팅방(수강 과목)에 대해서 여러 학생들과 자유롭게 채팅<br>
 ​
 ## 기술스택
-- Java 11 / Spring Framework 5 <br>
-- MySQL 5.7 <br>
-- AWS EC2 <br>
-- 개발환경: Eclipse<br>
+<img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=plastic-square&logo=Spring Security&logoColor=white"/> <img src="https://img.shields.io/badge/-JAVA%2011-%23007396"> <img src="https://img.shields.io/badge/-JPA-brightgreen"/> <img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=plastic-square&logo=Amazon EC2&logoColor=white"/> <img src="https://img.shields.io/badge/Swagger-85EA2D?style=plastic-square&logo=Swagger&logoColor=white"/> <img src="https://img.shields.io/badge/-STOMP-%23F56640"><br>
+<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white"> <img src="https://img.shields.io/badge/JSON%20Web%20Tokens-000000?style=for-the-badge&logo=JSON%20Web%20Tokens&logoColor=white"> <img src="https://img.shields.io/badge/firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=white"> <img src="https://img.shields.io/badge/apache%20maven-C71A36?style=for-the-badge&logo=apache%20maven&logoColor=white"> <img src="https://img.shields.io/badge/-JSOUP-%231E8CBE">
 
 ## 데이터 모델링
 ![nyangERD](https://user-images.githubusercontent.com/89206300/184104466-333b007d-9da9-40d3-bf4e-27e1a64b48d8.png)
